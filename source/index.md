@@ -5,8 +5,9 @@ language_tabs:
   - shell
 
 toc_footers:
-  - <a href='http://github.com/slipstream/SlipStreamServer'>SlipStream is hosted on GitHub</a>
+  - <a href='http://github.com/slipstream/SlipStreamServer'>SlipStream code is hosted on GitHub</a>
   - <a href='http://github.com/tripit/slate'>Documentation Powered by Slate</a>
+  - <a href='http://sixsq.com'>SlipStream is developed by SixSq</a>
 
 ---
 
