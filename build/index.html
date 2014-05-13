@@ -1,0 +1,906 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <!-- Always force latest IE rendering engine or request Chrome Frame -->
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+
+    <!-- Use title if it's in the page YAML frontmatter -->
+    <title>SlipStream | API Doc</title>
+
+    <link href="stylesheets/screen.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="stylesheets/print.css" rel="stylesheet" type="text/css" media="print" />
+    <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="javascripts/all.js" type="text/javascript"></script>
+
+    <script>
+      $(function() {
+        var toc = $("#toc").tocify({
+          selectors: "h1,h2",
+          extendPage: false,
+          theme: "none",
+          smoothScroll: false,
+          showEffectSpeed: 0,
+          hideEffectSpeed: 180,
+          ignoreSelector: ".toc-ignore",
+          hashGenerator: 'pretty',
+          highlightOffset: 60,
+          scrollTo: -2,
+          scrollHistory: true,
+          hashGenerator: function(text, element) {
+            return element[0].getAttribute('id');
+          }
+        }).data("toc-tocify");
+        // Hack to make already open sections to start opened,
+        // instead of displaying an ugly animation
+        setTimeout(function() {
+          toc.setOption("showEffectSpeed", 180);
+        },50);
+        setupLanguages([
+                'shell',
+        ]);
+      });
+    </script>
+  </head>
+
+  <body class="index">
+    <div class="tocify-wrapper">
+      <img src="images/logo.png" />
+      <div id="toc">
+      </div>
+      <ul class="toc-footer">
+          <li><a href='http://github.com/slipstream/SlipStreamServer'>SlipStream code is hosted on GitHub</a></li>
+          <li><a href='http://github.com/tripit/slate'>Documentation Powered by Slate</a></li>
+          <li><a href='http://sixsq.com'>SlipStream is developed by SixSq</a></li>
+      </ul>
+    </div>
+    <div class="page-wrapper">
+      <div class="dark-box"></div>
+      <div class="content">
+        <h1 id="slipstream-v2.2-api-reference">SlipStream v2.2 API Reference</h1>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Welcome to the SlipStream API. You can use our API to access SlipStream endpoints in order to manipulate
+different REST resources, including project, image, deployment, available as <em>module</em>, as well as run and user.</p>
+
+<p>This API focuses on the REST service offered and has been documented in Bash. You can view code examples in the dark area to the right.</p>
+
+<p>This API documentation page was created with <a href="http://github.com/tripit/slate">Slate</a>. Feel free to report
+any snags in the document in <a href="http://github.com/slipstream/SlipStreamDocumentationAPI">GitHub</a>.</p>
+
+<blockquote>
+<p>Adding <code class="prettyprint">?media=xml</code>(for XML) at the end of the URL in the browser, you request the response to be returned in the specified content-type:</p>
+</blockquote>
+<pre class="highlight shell">https://slipstream.sixsq.com?media<span class="o">=</span>xml
+</pre>
+
+<blockquote>
+<p>is equivalent to</p>
+</blockquote>
+<pre class="highlight shell">https://slipstream.sixsq.com -H <span class="s2">"Content-Type: application/xml"</span>
+</pre>
+
+<p><aside class="notice">
+You can get a serialised version of most SlipStream resources directly in the browser.
+</aside></p>
+
+<h2 id="resource-oriented-architecture-(roa)">Resource Oriented Architecture (ROA)</h2>
+
+<p>SlipStream&rsquo;s REST design was inspired from Richardson and Ruby&rsquo;s excellent book:
+<a href="http://shop.oreilly.com/product/9780596529260.do">RESTful Web Services</a>. They present the
+Resource Oriented Architecture (ROA) concept, which guided several design choices, including
+the resources-based architecture underpinning SlipStream.  For example, each version of an image,
+deployment and project can be uniquely identified via a unique URI.</p>
+
+<h1 id="authentication">Authentication</h1>
+
+<p>With the exception of the documentation and the login pages, all resources require authentication.</p>
+
+<p>SlipStream currently supports both <code class="prettyprint">Basic Authentication</code> and <code class="prettyprint">Cookies</code>. To generate a time limited
+cookie, use the <code class="prettyprint">/login</code> resource.</p>
+
+<h1 id="login">Login</h1>
+
+<h2 id="basic-authentication">Basic authentication</h2>
+
+<p>SlipStream supports basic authentication.  This can be tested using simple username/password pair.</p>
+<pre class="highlight shell">curl https://slipstream.sixsq.com?media<span class="o">=</span>xml -u &lt;user&gt;:&lt;password&gt;
+</pre>
+
+<blockquote>
+<p>or</p>
+</blockquote>
+<pre class="highlight shell">curl https://&lt;user&gt;:&lt;password&gt;@slipstream.sixsq.com?media<span class="o">=</span>xml
+</pre>
+<pre class="highlight xml"><span class="nt">&lt;welcome&gt;</span>
+   <span class="nt">&lt;modules&gt;</span>
+      <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"module/Mebster/48"</span> <span class="na">category=</span><span class="s">"Project"</span> <span class="na">version=</span><span class="s">"48"</span> <span class="na">name=</span><span class="s">"Mebster"</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;authz</span> <span class="na">owner=</span><span class="s">"meb"</span> <span class="na">ownerGet=</span><span class="s">"true"</span> <span class="na">ownerPut=</span><span class="s">"true"</span> <span class="na">ownerPost=</span><span class="s">"false"</span> <span class="na">ownerDelete=</span><span class="s">"true"</span> <span class="na">ownerCreateChildren=</span><span class="s">"true"</span> <span class="na">groupGet=</span><span class="s">"false"</span> <span class="na">groupPut=</span><span class="s">"false"</span> <span class="na">groupPost=</span><span class="s">"false"</span> <span class="na">groupDelete=</span><span class="s">"false"</span> <span class="na">groupCreateChildren=</span><span class="s">"false"</span> <span class="na">publicGet=</span><span class="s">"false"</span> <span class="na">publicPut=</span><span class="s">"false"</span> <span class="na">publicPost=</span><span class="s">"false"</span> <span class="na">publicDelete=</span><span class="s">"false"</span> <span class="na">publicCreateChildren=</span><span class="s">"false"</span> <span class="na">inheritedGroupMembers=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;groupMembers</span> <span class="na">class=</span><span class="s">"java.util.ArrayList"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;/authz&gt;</span>
+      <span class="nt">&lt;/item&gt;</span>
+      <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"module/SlipStream/280"</span> <span class="na">category=</span><span class="s">"Project"</span> <span class="na">description=</span><span class="s">"SlipStream dog fooding :-)"</span> <span class="na">version=</span><span class="s">"280"</span> <span class="na">name=</span><span class="s">"SlipStream"</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;authz</span> <span class="na">owner=</span><span class="s">"sixsq_dev"</span> <span class="na">ownerGet=</span><span class="s">"true"</span> <span class="na">ownerPut=</span><span class="s">"true"</span> <span class="na">ownerPost=</span><span class="s">"false"</span> <span class="na">ownerDelete=</span><span class="s">"true"</span> <span class="na">ownerCreateChildren=</span><span class="s">"true"</span> <span class="na">groupGet=</span><span class="s">"true"</span> <span class="na">groupPut=</span><span class="s">"true"</span> <span class="na">groupPost=</span><span class="s">"false"</span> <span class="na">groupDelete=</span><span class="s">"false"</span> <span class="na">groupCreateChildren=</span><span class="s">"false"</span> <span class="na">publicGet=</span><span class="s">"false"</span> <span class="na">publicPut=</span><span class="s">"false"</span> <span class="na">publicPost=</span><span class="s">"false"</span> <span class="na">publicDelete=</span><span class="s">"false"</span> <span class="na">publicCreateChildren=</span><span class="s">"false"</span> <span class="na">inheritedGroupMembers=</span><span class="s">"false"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;groupMembers</span> <span class="na">class=</span><span class="s">"java.util.ArrayList"</span><span class="nt">&gt;</span>
+               <span class="nt">&lt;string&gt;</span>lionel<span class="nt">&lt;/string&gt;</span>
+               <span class="nt">&lt;string&gt;</span>konstan<span class="nt">&lt;/string&gt;</span>
+               <span class="nt">&lt;string&gt;</span>loomis<span class="nt">&lt;/string&gt;</span>
+               <span class="nt">&lt;string&gt;</span>meb<span class="nt">&lt;/string&gt;</span>
+               <span class="nt">&lt;string&gt;</span>rob<span class="nt">&lt;/string&gt;</span>
+               <span class="nt">&lt;string&gt;</span>sebastien.fievet<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;/groupMembers&gt;</span>
+         <span class="nt">&lt;/authz&gt;</span>
+      <span class="nt">&lt;/item&gt;</span>
+...
+
+</pre>
+
+<blockquote>
+<p>The above command returns a header structured like this:</p>
+</blockquote>
+
+<h2 id="generate-a-cookie">Generate a cookie</h2>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/login -d <span class="nv">username</span><span class="o">=</span>&lt;user&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;password&gt; -H <span class="s2">"Content-Type: application/xml"</span>
+</pre>
+
+<blockquote>
+<p>The above command returns a header structured like this:</p>
+</blockquote>
+<pre class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">nginx/1.4.7</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 06 May 2014 18:46:12 GMT</span>
+<span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.1m4</span>
+<span class="na">Set-Cookie</span><span class="p">:</span> <span class="s">com.sixsq.slipstream.cookie=SOME_LONG_STRING; Path=/</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
+</pre>
+
+<p>This resource allows users to generate a time limited cookie. The value of the cookie corresponds
+to the <code class="prettyprint">Set-Cookie</code> of the response header.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">POST https://slipstream.sixsq.com/login</code></p>
+
+<h3 id="body-parameters">Body Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>username</td>
+<td>true</td>
+<td>Username to authenticate with</td>
+</tr>
+<tr>
+<td>password</td>
+<td>true</td>
+<td>Password corresponding to the username</td>
+</tr>
+</tbody></table>
+
+<p><aside class="notice">
+Remember — with the exception of this resource and the documentation, all resources require authentication.
+</aside></p>
+
+<h1 id="module">Module</h1>
+
+<p>(Extracted from the tutorial documentation)</p>
+
+<p>Metadata about your images and deployments are organized into projects in SlipStream. Each project consists of a number of modules. The modules may be Project, Machine Image or Deployment modules:</p>
+
+<ul>
+<li><p><em>Project</em>: A container of modules used to provide logical grouping. A project may contain other projects allowing a hierarchical organization for large projects.</p></li>
+<li><p><em>Machine image</em>: A module that contains information about a virtual machine image. One type of machine image is a native image. These contain a cloud-specific identifier for a particular cloud infrastructure. The other type of machine image, a derived image, references another image (which can be a native image or another derived image) and includes a list of packages to install and/or recipes to configure the machine. These modules also include input/output parameters such that the machine can be synchronized as part of a deployment.</p></li>
+<li><p><em>Deployment</em>: A module that describes a coordinated deployment of one or more nodes. The deployment associates a machine image to each node and defines the synchronizaton necessary for the coordinated deployment.</p></li>
+</ul>
+
+<p>These items are normalised into <em>module</em> resources in the REST API.</p>
+
+<p><aside class="notice">
+Remember, image, deployment and project are type attributes of the module resource.
+</aside></p>
+
+<h2 id="get-a-module">Get a module</h2>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/module/&lt;module&gt; --user &lt;user&gt;:&lt;password&gt; -H <span class="s2">"Content-Type: application/xml"</span>
+</pre>
+
+<blockquote>
+<p>The above command returns a response body structured like this:</p>
+</blockquote>
+<pre class="highlight xml"><span class="nt">&lt;imageModule</span> <span class="na">category=</span><span class="s">"Image"</span> <span class="na">creation=</span><span class="s">"2013-12-02 17:00:37.421 UTC"</span> <span class="na">deleted=</span><span class="s">"false"</span> <span class="na">description=</span><span class="s">"Minimal installation of the Ubuntu 12.04 (LTS) operating system."</span> <span class="na">imageId=</span><span class="s">"8c7e60ae-3a30-4031-a3e6-29832d85d7cb"</span> <span class="na">isBase=</span><span class="s">"true"</span> <span class="na">isLatestVersion=</span><span class="s">"true"</span> <span class="na">lastModified=</span><span class="s">"2014-05-04 12:36:06.105 UTC"</span> <span class="na">loginUser=</span><span class="s">"ubuntu"</span> <span class="na">logoLink=</span><span class="s">"http://design.ubuntu.com/wp-content/uploads/ubuntu-logo14.png"</span> <span class="na">parentUri=</span><span class="s">"module/examples/images"</span> <span class="na">platform=</span><span class="s">"ubuntu"</span> <span class="na">shortName=</span><span class="s">"ubuntu-12.04"</span> <span class="na">version=</span><span class="s">"480"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;parameters&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span>extra.disk.volatile<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">category=</span><span class="s">"Cloud"</span> <span class="na">description=</span><span class="s">"Volatile extra disk in GB"</span> <span class="na">isSet=</span><span class="s">"false"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">name=</span><span class="s">"extra.disk.volatile"</span> <span class="na">order=</span><span class="s">"0"</span> <span class="na">order_=</span><span class="s">"0"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">type=</span><span class="s">"String"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span>exoscale-ch-gva.instance.type<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">category=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">description=</span><span class="s">"Instance type (flavor)"</span> <span class="na">isSet=</span><span class="s">"true"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">name=</span><span class="s">"exoscale-ch-gva.instance.type"</span> <span class="na">order=</span><span class="s">"0"</span> <span class="na">order_=</span><span class="s">"0"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">type=</span><span class="s">"String"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;value&gt;</span>Small<span class="nt">&lt;/value&gt;</span>
+                <span class="nt">&lt;defaultValue&gt;</span>Small<span class="nt">&lt;/defaultValue&gt;</span>
+            <span class="nt">&lt;/parameter&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+...
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span>ec2-eu-west.security.group<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">category=</span><span class="s">"ec2-eu-west"</span> <span class="na">description=</span><span class="s">"Security groups (comma separated list)"</span> <span class="na">isSet=</span><span class="s">"true"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">name=</span><span class="s">"ec2-eu-west.security.group"</span> <span class="na">order=</span><span class="s">"0"</span> <span class="na">order_=</span><span class="s">"0"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">type=</span><span class="s">"String"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;value&gt;</span>default<span class="nt">&lt;/value&gt;</span>
+                <span class="nt">&lt;defaultValue&gt;</span>default<span class="nt">&lt;/defaultValue&gt;</span>
+            <span class="nt">&lt;/parameter&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+    <span class="nt">&lt;/parameters&gt;</span>
+    <span class="nt">&lt;authz</span> <span class="na">groupCreateChildren=</span><span class="s">"false"</span> <span class="na">groupDelete=</span><span class="s">"false"</span> <span class="na">groupGet=</span><span class="s">"true"</span> <span class="na">groupPost=</span><span class="s">"true"</span> <span class="na">groupPut=</span><span class="s">"false"</span> <span class="na">inheritedGroupMembers=</span><span class="s">"true"</span> <span class="na">owner=</span><span class="s">"sixsq"</span> <span class="na">ownerCreateChildren=</span><span class="s">"true"</span> <span class="na">ownerDelete=</span><span class="s">"true"</span> <span class="na">ownerGet=</span><span class="s">"true"</span> <span class="na">ownerPost=</span><span class="s">"true"</span> <span class="na">ownerPut=</span><span class="s">"true"</span> <span class="na">publicCreateChildren=</span><span class="s">"false"</span> <span class="na">publicDelete=</span><span class="s">"false"</span> <span class="na">publicGet=</span><span class="s">"true"</span> <span class="na">publicPost=</span><span class="s">"true"</span> <span class="na">publicPut=</span><span class="s">"false"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;groupMembers</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/authz&gt;</span>
+    <span class="nt">&lt;commit</span> <span class="na">author=</span><span class="s">"sixsq"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;published</span> <span class="na">publicationDate=</span><span class="s">"2014-05-04 12:36:06.105 UTC"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;cloudNames</span> <span class="na">length=</span><span class="s">"3"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;string&gt;</span>exoscale-ch-gva<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;string&gt;</span>ec2-eu-west<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;string&gt;</span>default<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;/cloudNames&gt;</span>
+    <span class="nt">&lt;runs/&gt;</span>
+    <span class="nt">&lt;targets</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;packages</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;prerecipe/&gt;</span>
+    <span class="nt">&lt;recipe/&gt;</span>
+    <span class="nt">&lt;cloudImageIdentifiers&gt;</span>
+        <span class="nt">&lt;cloudImageIdentifier</span> <span class="na">cloudImageIdentifier=</span><span class="s">"ami-a0dd3dd7"</span> <span class="na">cloudServiceName=</span><span class="s">"ec2-eu-west"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;cloudImageIdentifier</span> <span class="na">cloudImageIdentifier=</span><span class="s">"8c7e60ae-3a30-4031-a3e6-29832d85d7cb"</span> <span class="na">cloudServiceName=</span><span class="s">"exoscale-ch-gva"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/cloudImageIdentifiers&gt;</span>
+<span class="nt">&lt;/imageModule&gt;</span>
+</pre>
+
+<p>Get a module (i.e. image, deployment or project).</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/module/[&lt;module&gt;[/&lt;version&gt;]]</code></p>
+
+<h3 id="body-parameters">Body Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>module</td>
+<td>true</td>
+<td>Unique identifier of the module - e.g. <em>examples/images/ubuntu-12.04</em>.</td>
+</tr>
+<tr>
+<td>version</td>
+<td>false</td>
+<td>Version of the module to update. If not provided, get the latest (most recent)</td>
+</tr>
+</tbody></table>
+
+<p><aside class="notice">
+To list the root projects, simply omit the <em>&lt;MODULE&gt;</em> from the request.
+</aside></p>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/module/examples/foo -H <span class="s2">"Content-Type: application/xml"</span> --user &lt;user&gt;:&lt;password&gt; &gt; foo.xml
+</pre>
+
+<h2 id="update-a-module">Update a module</h2>
+
+<p>Update a module (i.e. image, deployment or project).</p>
+
+<p>The PUT request will create a new resource with the same &lt;module&gt; name but a higher &lt;version&gt;. The response includes the new fully qualified resource.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">PUT https://slipstream.sixsq.com/module/&lt;module&gt;/&lt;version&gt;</code></p>
+
+<p>The <strong>Location</strong> attribute in the response header provides the full url of the updated resource, with the incremented version.</p>
+
+<h3 id="body-parameters">Body Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>module</td>
+<td>true</td>
+<td>Unique identifier of the module - e.g. <em>examples/images/ubuntu-12.04</em>. If not provided, list the root modules.</td>
+</tr>
+<tr>
+<td>version</td>
+<td>false</td>
+<td>Version of the module. If not provided, get the latest (most recent)</td>
+</tr>
+</tbody></table>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/module/&lt;module&gt; --user &lt;user&gt;:&lt;password&gt; --data @&lt;file&gt; -X PUT -H <span class="s2">"Content-Type: application/xml"</span>
+</pre>
+
+<blockquote>
+<p>where &lt;file&gt; is an xml file - e.g. the result of a previous GET on the same resource</p>
+
+<p>The above command returns a header structured like this:</p>
+</blockquote>
+<pre class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Mon, 12 May 2014 15:16:49 GMT</span>
+<span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com/module/examples/foo/1199</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.1m4</span>
+<span class="na">Set-Cookie</span><span class="p">:</span> <span class="s">com.sixsq.slipstream.cookie=com.sixsq.idtype=local&amp;com.sixsq.identifier=test&amp;com.sixsq.expirydate=1399951006191&amp;com.sixsq.signature=-cotcj9t5rzu3zx2uof96x8scptxh5mbraazmf63doem22tkvlq1519twaz7uxlvtyyxd0fxvygvrsn1hip09yvn7v11c9a74j21; Path=/</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
+</pre>
+
+<blockquote>
+<p>To see the header, add <em>-D -</em> (with the trailing dash) to the curl command</p>
+</blockquote>
+
+<p><aside class="warning">
+This PUT request is not idem potent - i.e. calling it several times will create new resources.
+</aside></p>
+
+<h2 id="delete-a-module">Delete a module</h2>
+
+<p>Delete a module (i.e. image, deployment or project).</p>
+
+<p>The DELETE request will delete the specified resource if fully qualified (i.e. including the &lt;VERSION&gt;) or the latest version otherwise.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">DELETE https://slipstream.sixsq.com/module/&lt;module&gt;/&lt;version&gt;</code></p>
+
+<h3 id="body-parameters">Body Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>module</td>
+<td>true</td>
+<td>Unique identifier of the module - e.g. <em>examples/images/ubuntu-12.04</em>.</td>
+</tr>
+<tr>
+<td>version</td>
+<td>false</td>
+<td>Version of the module. If not provided, delete the latest (most recent)</td>
+</tr>
+</tbody></table>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/module/&lt;module&gt; -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
+</pre>
+
+<blockquote>
+<p>The above command returns a header structured like this:</p>
+</blockquote>
+<pre class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">No Content</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 13 May 2014 03:08:15 GMT</span>
+<span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com/module/examples/toto/11</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.1m4</span>
+<span class="na">Set-Cookie</span><span class="p">:</span> <span class="s">com.sixsq.slipstream.cookie=com.sixsq.idtype=local&amp;com.sixsq.identifier=test&amp;com.sixsq.expirydate=1399993694970&amp;com.sixsq.signature=izoalqmos489wxw8z25k03nqtsdfyxyv2ak5adi1e0h73zdziq45y1eat66tcob5ybvh7oe5gbh8es1onj4f6orj2enrqu9w9j0; Path=/</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
+</pre>
+
+<h2 id="module-history-(versions)">Module history (versions)</h2>
+
+<p>List all the history (i.e. all the versions) of the module. Since each PUT creates a new version
+of the module, this request allows users to list these. </p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/module/&lt;module&gt;/</code></p>
+
+<p><aside class="notice">
+Notice the trailing &lsquo;/&rsquo; in the URL
+</aside></p>
+
+<h3 id="body-parameters">Body Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>module</td>
+<td>true</td>
+<td>Unique identifier of the module - e.g. <em>examples/images/ubuntu-12.04</em>.</td>
+</tr>
+</tbody></table>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/module/&lt;module&gt;/ -u &lt;user&gt;:&lt;password&gt;
+</pre>
+<pre class="highlight xml"><span class="nt">&lt;versionList&gt;</span>
+   <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"module/examples/an-image/12"</span> <span class="na">lastModified=</span><span class="s">"2014-05-13 04:53:47.339 CEST"</span> <span class="na">version=</span><span class="s">"12"</span> <span class="na">category=</span><span class="s">"Image"</span> <span class="na">name=</span><span class="s">"an-image"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;authz</span> <span class="na">owner=</span><span class="s">"test"</span> <span class="na">ownerGet=</span><span class="s">"true"</span> <span class="na">ownerPut=</span><span class="s">"true"</span> <span class="na">ownerPost=</span><span class="s">"true"</span> <span class="na">ownerDelete=</span><span class="s">"true"</span> <span class="na">ownerCreateChildren=</span><span class="s">"true"</span> <span class="na">groupGet=</span><span class="s">"false"</span> <span class="na">groupPut=</span><span class="s">"false"</span> <span class="na">groupPost=</span><span class="s">"false"</span> <span class="na">groupDelete=</span><span class="s">"false"</span> <span class="na">groupCreateChildren=</span><span class="s">"false"</span> <span class="na">publicGet=</span><span class="s">"false"</span> <span class="na">publicPut=</span><span class="s">"false"</span> <span class="na">publicPost=</span><span class="s">"false"</span> <span class="na">publicDelete=</span><span class="s">"false"</span> <span class="na">publicCreateChildren=</span><span class="s">"false"</span> <span class="na">inheritedGroupMembers=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;groupMembers</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/authz&gt;</span>
+      <span class="nt">&lt;commit</span> <span class="na">author=</span><span class="s">"test"</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;comment&gt;&lt;/comment&gt;</span>
+      <span class="nt">&lt;/commit&gt;</span>
+   <span class="nt">&lt;/item&gt;</span>
+   <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"module/examples/an-image/2"</span> <span class="na">lastModified=</span><span class="s">"2014-05-12 14:33:53.39 CEST"</span> <span class="na">version=</span><span class="s">"2"</span> <span class="na">category=</span><span class="s">"Image"</span> <span class="na">name=</span><span class="s">"an-image"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;authz</span> <span class="na">owner=</span><span class="s">"test"</span> <span class="na">ownerGet=</span><span class="s">"true"</span> <span class="na">ownerPut=</span><span class="s">"true"</span> <span class="na">ownerPost=</span><span class="s">"true"</span> <span class="na">ownerDelete=</span><span class="s">"true"</span> <span class="na">ownerCreateChildren=</span><span class="s">"true"</span> <span class="na">groupGet=</span><span class="s">"false"</span> <span class="na">groupPut=</span><span class="s">"false"</span> <span class="na">groupPost=</span><span class="s">"false"</span> <span class="na">groupDelete=</span><span class="s">"false"</span> <span class="na">groupCreateChildren=</span><span class="s">"false"</span> <span class="na">publicGet=</span><span class="s">"false"</span> <span class="na">publicPut=</span><span class="s">"false"</span> <span class="na">publicPost=</span><span class="s">"false"</span> <span class="na">publicDelete=</span><span class="s">"false"</span> <span class="na">publicCreateChildren=</span><span class="s">"false"</span> <span class="na">inheritedGroupMembers=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;groupMembers</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/authz&gt;</span>
+      <span class="nt">&lt;commit</span> <span class="na">author=</span><span class="s">"test"</span><span class="nt">/&gt;</span>
+   <span class="nt">&lt;/item&gt;</span>
+<span class="nt">&lt;/versionList&gt;</span>
+</pre>
+
+<h1 id="run">Run</h1>
+
+<p>The <em>run</em> resource represents an execution in the cloud - i.e. running VMs.
+SlipStream supports 3 types of runs:</p>
+
+<ul>
+<li>Simple run: result of running an image</li>
+<li>Deployment: result of running a deployment</li>
+<li>Build image: result of creating a new image from an image template (or blueprint)</li>
+</ul>
+
+<p>The run resource therefore represents one or several VMs, running or not depending
+on the state of the run.</p>
+
+<h2 id="list-all-runs">List all Runs</h2>
+
+<p>List all runs of a user.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/run</code></p>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/run -u &lt;user&gt;:&lt;password&gt;
+</pre>
+<pre class="highlight xml"><span class="nt">&lt;runs&gt;</span>
+   <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"run/4f187379-cdb9-470d-9656-b6fac6dc33d8"</span> <span class="na">uuid=</span><span class="s">"4f187379-cdb9-470d-9656-b6fac6dc33d8"</span> <span class="na">moduleResourceUri=</span><span class="s">"module/examples/tutorials/service-testing/system/471"</span>
+<span class="na">status=</span><span class="s">"Done"</span> <span class="na">startTime=</span><span class="s">"2014-05-10 15:22:56.882 UTC"</span> <span class="na">cloudServiceName=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">username=</span><span class="s">"meb"</span> <span class="na">type=</span><span class="s">"Orchestration"</span> <span class="na">tags=</span><span class="s">""</span><span class="nt">/&gt;</span>
+   <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"run/fa3b9652-9dac-49e2-9573-b761777c8238"</span> <span class="na">uuid=</span><span class="s">"fa3b9652-9dac-49e2-9573-b761777c8238"</span> <span class="na">moduleResourceUri=</span><span class="s">"module/examples/tutorials/service-testing/system/471"</span>
+<span class="na">status=</span><span class="s">"Done"</span> <span class="na">startTime=</span><span class="s">"2014-05-10 15:13:29.352 UTC"</span> <span class="na">cloudServiceName=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">username=</span><span class="s">"meb"</span> <span class="na">type=</span><span class="s">"Orchestration"</span> <span class="na">tags=</span><span class="s">""</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/runs&gt;</span>
+</pre>
+
+<h2 id="get-a-run">Get a Run</h2>
+
+<p>Get a specific run.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/run/&lt;run&gt;</code></p>
+
+<h3 id="body-parameters">Body Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>run</td>
+<td>true</td>
+<td>Run unique identifier - e.g. <em>fa3b9652-9dac-49e2-9573-b761777c8238</em>.</td>
+</tr>
+</tbody></table>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/run/&lt;run&gt; -u &lt;user&gt;:&lt;password&gt;
+</pre>
+<pre class="highlight xml"><span class="nt">&lt;runs&gt;</span>
+   <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"run/4f187379-cdb9-470d-9656-b6fac6dc33d8"</span> <span class="na">uuid=</span><span class="s">"4f187379-cdb9-470d-9656-b6fac6dc33d8"</span> <span class="na">moduleResourceUri=</span><span class="s">"module/examples/tutorials/service-testing/system/471"</span> <span class="na">status=</span><span class="s">"Done"</span> <span class="na">startTime=</span><span class="s">"2014-05-10 15:22:56.882 UTC"</span> <span class="na">cloudServiceName=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">username=</span><span class="s">"meb"</span> <span class="na">type=</span><span class="s">"Orchestration"</span> <span class="na">tags=</span><span class="s">""</span><span class="nt">/&gt;</span>
+   <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"run/fa3b9652-9dac-49e2-9573-b761777c8238"</span> <span class="na">uuid=</span><span class="s">"fa3b9652-9dac-49e2-9573-b761777c8238"</span> <span class="na">moduleResourceUri=</span><span class="s">"module/examples/tutorials/service-testing/system/471"</span> <span class="na">status=</span><span class="s">"Done"</span> <span class="na">startTime=</span><span class="s">"2014-05-10 15:13:29.352 UTC"</span> <span class="na">cloudServiceName=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">username=</span><span class="s">"meb"</span> <span class="na">type=</span><span class="s">"Orchestration"</span> <span class="na">tags=</span><span class="s">""</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/runs&gt;</span>
+</pre>
+
+<h2 id="create-a-run">Create a Run</h2>
+
+<p>Create a new run.</p>
+
+<p>The <strong>Location</strong> attribute in the response header provides the full url of the updated resource, with the incremented version.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">POST https://slipstream.sixsq.com/run/</code></p>
+
+<h3 id="body-parameters">Body Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>refqname</td>
+<td>true</td>
+<td>Reference module from which to create a run. Must be an <em>Image</em> or <em>Deployment</em> category - e.g. <em>fa3b9652-9dac-49e2-9573-b761777c8238</em>.</td>
+</tr>
+<tr>
+<td>type</td>
+<td>depends</td>
+<td>Type of run. This is only required when running an image, since we can either deploy a VM (i.e. simple run) or create a new image (i.e. build). See below for type definition.</td>
+</tr>
+</tbody></table>
+
+<table><thead>
+<tr>
+<th>Run Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Orchestration</td>
+<td>Deployment: only applies to deployment category.  This is the only valid type value for deployment, thus does not have to be provided.</td>
+</tr>
+<tr>
+<td>Machine</td>
+<td>Build: build a new image on the targeted cloud and set the unique id back in the image definition.</td>
+</tr>
+<tr>
+<td>Run</td>
+<td>Simple run: single VM deployment.</td>
+</tr>
+</tbody></table>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/run -d <span class="nv">refqname</span><span class="o">=</span>module/examples/an-image -d <span class="nb">type</span><span class="o">=</span>Run -u <span class="nb">test</span>:tesTtesT -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
+</pre>
+
+<blockquote>
+<p>The above command returns a header structured like this:</p>
+</blockquote>
+<pre class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 13 May 2014 11:29:56 GMT</span>
+<span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.1m4</span>
+<span class="na">Set-Cookie</span><span class="p">:</span> <span class="s">com.sixsq.slipstream.cookie=com.sixsq.idtype=local&amp;com.sixsq.identifier=test&amp;com.sixsq.expirydate=1400023769837&amp;com.sixsq.signature=eck79w5qyslb16ke31vfof2b9o6729mcsjgnsqc143nsgqkuepmkgqnaakv544x7nankz4875p0uyg8unl8d5m4dl60wzr6pcpn; Path=/</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
+</pre>
+
+<h1 id="virtual-machines">Virtual machines</h1>
+
+<p>List status of all VMs, as known by the cloud providers.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/vms</code></p>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/vms --user &lt;user&gt;:&lt;password&gt;
+</pre>
+
+<blockquote>
+<p>The above command returns a body structured like this:</p>
+</blockquote>
+<pre class="highlight xml"><span class="nt">&lt;vms&gt;</span>
+   <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"ec2-eu-west"</span> <span class="na">user=</span><span class="s">"meb"</span> <span class="na">instanceId=</span><span class="s">"i-bbeb1dfb"</span> <span class="na">state=</span><span class="s">"Detached"</span> <span class="na">measurement=</span><span class="s">"2014-05-13 11:56:03.166 UTC"</span> <span class="na">runUuid=</span><span class="s">"Running"</span><span class="nt">/&gt;</span>
+   <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"ec2-eu-west"</span> <span class="na">user=</span><span class="s">"meb"</span> <span class="na">instanceId=</span><span class="s">"i-7a3de138"</span> <span class="na">state=</span><span class="s">"Detached"</span> <span class="na">measurement=</span><span class="s">"2014-05-13 11:56:03.189 UTC"</span> <span class="na">runUuid=</span><span class="s">"Running"</span><span class="nt">/&gt;</span>
+   <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"ec2-eu-west"</span> <span class="na">user=</span><span class="s">"meb"</span> <span class="na">instanceId=</span><span class="s">"i-a803dfea"</span> <span class="na">state=</span><span class="s">"terminated"</span> <span class="na">measurement=</span><span class="s">"2014-05-13 11:56:03.209 UTC"</span> <span class="na">runUuid=</span><span class="s">"Unknown"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/vms&gt;</span>
+</pre>
+
+<h1 id="statistics">Statistics</h1>
+
+<p>List status of current runs, including consumption metrics such as core/cpu, ram and disk.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/stats[?user=&lt;username&gt;]</code></p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>username</td>
+<td>false</td>
+<td>Only applicable to privileged user. Filters the stats result for this user.</td>
+</tr>
+</tbody></table>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/stats --user &lt;user&gt;:&lt;password&gt;
+</pre>
+
+<blockquote>
+<p>The above command returns a body structured like this:</p>
+</blockquote>
+<pre class="highlight xml"><span class="nt">&lt;vms&gt;</span>
+   <span class="nt">&lt;vm</span> <span class="na">instance_id=</span><span class="s">"6e08a7d4-c59f-4d52-bf55-f863dd5ad69b"</span> <span class="na">run_id=</span><span class="s">"f0ef787a-984d-4acd-94cd-ecc2a85ed6d5"</span> <span class="na">index=</span><span class="s">"0"</span> <span class="na">node=</span><span class="s">"machine"</span> <span class="na">name=</span><span class="s">"module/examples/images/centos-6/248"</span> <span class="na">image_id=</span><span class="s">"examples/images/centos-6"</span> <span class="na">user_id=</span><span class="s">"meb"</span> <span class="na">type=</span><span class="s">"Run"</span> <span class="na">cloud=</span><span class="s">"cloudsigma-ch1"</span> <span class="na">cpu=</span><span class="s">"1"</span> <span class="na">ram=</span><span class="s">"1"</span> <span class="na">disk=</span><span class="s">"1"</span> <span class="na">created_at=</span><span class="s">"2014-05-13 18:58:40.56 CEST"</span> <span class="na">state=</span><span class="s">"Detached"</span> <span class="na">vmstate=</span><span class="s">"running"</span><span class="nt">/&gt;</span>
+   <span class="nt">&lt;vm</span> <span class="na">run_id=</span><span class="s">"4b15a127-44a5-4912-ba09-34608f967b03"</span> <span class="na">index=</span><span class="s">"0"</span> <span class="na">node=</span><span class="s">"machine"</span> <span class="na">name=</span><span class="s">"module/examples/images/centos-6/248"</span> <span class="na">image_id=</span><span class="s">"examples/images/centos-6"</span> <span class="na">user_id=</span><span class="s">"meb"</span> <span class="na">type=</span><span class="s">"Run"</span> <span class="na">cloud=</span><span class="s">"atos-es1"</span> <span class="na">cpu=</span><span class="s">"0"</span> <span class="na">ram=</span><span class="s">"0"</span> <span class="na">disk=</span><span class="s">"1"</span> <span class="na">created_at=</span><span class="s">"2014-05-13 18:54:08.740 CEST"</span> <span class="na">state=</span><span class="s">"Aborting"</span> <span class="na">vmstate=</span><span class="s">"Unknown"</span><span class="nt">/&gt;</span>
+   <span class="nt">&lt;vm</span> <span class="na">instance_id=</span><span class="s">"535991c9-a7d1-4e79-a56a-1831137d60e5"</span> <span class="na">run_id=</span><span class="s">"4e8d2d74-b5f9-4092-923a-0635c2eee077"</span> <span class="na">index=</span><span class="s">"0"</span> <span class="na">node=</span><span class="s">"machine"</span> <span class="na">name=</span><span class="s">"module/examples/images/centos-6/248"</span> <span class="na">image_id=</span><span class="s">"examples/images/centos-6"</span> <span class="na">user_id=</span><span class="s">"meb"</span> <span class="na">type=</span><span class="s">"Run"</span> <span class="na">cloud=</span><span class="s">"cloudsigma-ch1"</span> <span class="na">cpu=</span><span class="s">"1"</span> <span class="na">ram=</span><span class="s">"1"</span> <span class="na">disk=</span><span class="s">"1"</span> <span class="na">created_at=</span><span class="s">"2014-05-09 10:00:45.272 CEST"</span> <span class="na">state=</span><span class="s">"Detached"</span> <span class="na">vmstate=</span><span class="s">"Unknown"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/vms&gt;</span>
+</pre>
+
+<h1 id="user">User</h1>
+
+<p>The user resource provides user management.</p>
+
+<h2 id="get-all-users">Get All Users</h2>
+
+<p><aside class="notice">This resource is restricted to privileged users.</aside></p>
+
+<p>List all users.</p>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/user --user &lt;user&gt;:&lt;password&gt;
+</pre>
+
+<blockquote>
+<p>The above command returns XML structured like this:</p>
+</blockquote>
+<pre class="highlight xml"><span class="nt">&lt;list&gt;</span>
+<span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">"sixsq"</span> <span class="na">resourceUri=</span><span class="s">"user/sixsq"</span> <span class="na">firstName=</span><span class="s">"SixSq"</span> <span class="na">lastName=</span><span class="s">"Administrator"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2014-04-02 14:22:05.86 CEST"</span> <span class="na">online=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">"super"</span> <span class="na">resourceUri=</span><span class="s">"user/super"</span> <span class="na">firstName=</span><span class="s">"Super"</span> <span class="na">lastName=</span><span class="s">"User"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2014-05-06 21:12:42.520 CEST"</span> <span class="na">online=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">"test"</span> <span class="na">resourceUri=</span><span class="s">"user/test"</span> <span class="na">firstName=</span><span class="s">"Test"</span> <span class="na">lastName=</span><span class="s">"User"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2014-05-06 20:44:19.233 CEST"</span> <span class="na">online=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/list&gt;</span>
+</pre>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/user</code></p>
+
+<h2 id="get-a-specific-user">Get a specific user</h2>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/user/&lt;user&gt; --user &lt;user&gt;:&lt;password&gt;
+</pre>
+
+<blockquote>
+<p>The above command returns xml structured like this:</p>
+</blockquote>
+<pre class="highlight xml"><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;user</span> <span class="na">deleted=</span><span class="s">"false"</span> <span class="na">resourceUri=</span><span class="s">"user/test"</span> <span class="na">name=</span><span class="s">"test"</span> <span class="na">email=</span><span class="s">"test@sixsq.com"</span> <span class="na">firstName=</span><span class="s">"Test"</span> <span class="na">lastName=</span><span class="s">"User"</span> <span class="na">organization=</span><span class="s">"SixSq"</span> <span class="na">issuper=</span><span class="s">"false"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2014-05-07 20:16:44.580 CEST"</span> <span class="na">creation=</span><span class="s">"2014-05-07 20:15:28.664 CEST"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;parameters&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span><span class="cp">&lt;![CDATA[ General.On Error Run Forever ]]&gt;</span><span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.On Error Run Forever"</span> <span class="na">description=</span><span class="s">"If an error occurs, keep the execution running for investigation."</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Boolean"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"30"</span> <span class="na">order=</span><span class="s">"30"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[ false ]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;/parameter&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span><span class="cp">&lt;![CDATA[ General.Verbosity Level ]]&gt;</span><span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.Verbosity Level"</span> <span class="na">description=</span><span class="s">"Level of verbosity. 0 - Actions, 1 - Steps, 2 - Details data, 3 - Debugging."</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Enum"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"99"</span> <span class="na">order=</span><span class="s">"99"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>0<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>1<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>2<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>3<span class="nt">&lt;/string&gt;</span>
+                <span class="nt">&lt;/enumValues&gt;</span>
+                <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[ 0 ]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;/parameter&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span><span class="cp">&lt;![CDATA[ General.Timeout ]]&gt;</span><span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.Timeout"</span> <span class="na">description=</span><span class="s">"Minutes - When this timeout is reached, the execution is forcefully terminated."</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"String"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"90"</span> <span class="na">order=</span><span class="s">"90"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[ 30 ]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;/parameter&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span><span class="cp">&lt;![CDATA[ General.On Success Run Forever ]]&gt;</span><span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.On Success Run Forever"</span> <span class="na">description=</span><span class="s">"If no errors occur, keep the execution running. Useful for deployment or long tests."</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Boolean"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"20"</span> <span class="na">order=</span><span class="s">"20"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[ true ]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;/parameter&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span><span class="cp">&lt;![CDATA[ General.default.cloud.service ]]&gt;</span><span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.default.cloud.service"</span> <span class="na">description=</span><span class="s">"Select which cloud you want to use."</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Enum"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"10"</span> <span class="na">order=</span><span class="s">"10"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"0"</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[ ]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;/parameter&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span><span class="cp">&lt;![CDATA[ General.ssh.public.key ]]&gt;</span><span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.ssh.public.key"</span> <span class="na">description=</span><span class="s">"SSH Public Key(s) (keys must be separated by new line) Warning: Some clouds may take into account only the first key."</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"RestrictedText"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"40"</span> <span class="na">order=</span><span class="s">"40"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+    <span class="nt">&lt;/parameters&gt;</span>
+<span class="nt">&lt;/user&gt;</span>
+</pre>
+
+<p>This resource retrieves a specific user.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/user/&lt;user&gt;</code></p>
+
+<h3 id="url-parameters">URL Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>user</td>
+<td>true</td>
+<td>The user to retrieve</td>
+</tr>
+</tbody></table>
+
+<h1 id="the-new-resource">The <em>new</em> resource</h1>
+
+<p>To retrieve example resource structures, especially for resource types that don&rsquo;t yet exist,
+you can use the special <em>new</em> resource.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/&lt;type&gt;/new[?category=Image]</code></p>
+
+<h3 id="body-parameters">Body Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>type</td>
+<td>true</td>
+<td>Type of resource to retrieve (e.g. module, user)</td>
+</tr>
+<tr>
+<td>category</td>
+<td>false</td>
+<td>Only required for <em>module</em> &lt;type&gt;. Can be: <em>project</em> (default), <em>image</em> or <em>deployment</em>.</td>
+</tr>
+</tbody></table>
+<pre class="highlight shell">curl https://slipstream.sixsq.com/module/examples/new?category<span class="o">=</span>Image login -d <span class="nv">username</span><span class="o">=</span>&lt;USER&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;PASSWORD&gt;
+</pre>
+
+<blockquote>
+<p>The above command returns a response body structured like this:</p>
+</blockquote>
+<pre class="highlight xml"><span class="nt">&lt;imageModule</span> <span class="na">category=</span><span class="s">"Image"</span> <span class="na">creation=</span><span class="s">"2014-05-12 09:59:36.354 UTC"</span> <span class="na">deleted=</span><span class="s">"false"</span> <span class="na">isBase=</span><span class="s">"false"</span> <span class="na">isLatestVersion=</span><span class="s">"false"</span> <span class="na">loginUser=</span><span class="s">""</span> <span class="na">parentUri=</span><span class="s">"module/Mebster"</span> <span class="na">platform=</span><span class="s">""</span> <span class="na">shortName=</span><span class="s">"new"</span> <span class="na">version=</span><span class="s">"-1"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;parameters&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span>instanceid<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">category=</span><span class="s">"Output"</span> <span class="na">description=</span><span class="s">"Cloud instance id"</span> <span class="na">isSet=</span><span class="s">"false"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">name=</span><span class="s">"instanceid"</span> <span class="na">order=</span><span class="s">"0"</span> <span class="na">order_=</span><span class="s">"0"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">type=</span><span class="s">"String"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span>extra.disk.volatile<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">category=</span><span class="s">"Cloud"</span> <span class="na">description=</span><span class="s">"Volatile extra disk in GB"</span> <span class="na">isSet=</span><span class="s">"false"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">name=</span><span class="s">"extra.disk.volatile"</span> <span class="na">order=</span><span class="s">"0"</span> <span class="na">order_=</span><span class="s">"0"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">type=</span><span class="s">"String"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span>ec2-eu-west.instance.type<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">category=</span><span class="s">"ec2-eu-west"</span> <span class="na">description=</span><span class="s">"Cloud instance type"</span> <span class="na">isSet=</span><span class="s">"false"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">name=</span><span class="s">"ec2-eu-west.instance.type"</span> <span class="na">order=</span><span class="s">"0"</span> <span class="na">order_=</span><span class="s">"0"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">type=</span><span class="s">"Enum"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"10"</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>m1.small<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>m1.large<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>m1.xlarge<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>c1.medium<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>c1.xlarge<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>m2.xlarge<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>m2.2xlarge<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>m2.4xlarge<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>cc1.4xlarge<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>t1.micro<span class="nt">&lt;/string&gt;</span>
+                <span class="nt">&lt;/enumValues&gt;</span>
+            <span class="nt">&lt;/parameter&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span>exoscale-ch-gva.security.groups<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">category=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">description=</span><span class="s">"Security Groups (comma separated list)"</span> <span class="na">isSet=</span><span class="s">"true"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">name=</span><span class="s">"exoscale-ch-gva.security.groups"</span> <span class="na">order=</span><span class="s">"0"</span> <span class="na">order_=</span><span class="s">"0"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">type=</span><span class="s">"String"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;value&gt;</span>default<span class="nt">&lt;/value&gt;</span>
+                <span class="nt">&lt;defaultValue&gt;</span>default<span class="nt">&lt;/defaultValue&gt;</span>
+            <span class="nt">&lt;/parameter&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span>ec2-eu-west.security.group<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">category=</span><span class="s">"ec2-eu-west"</span> <span class="na">description=</span><span class="s">"Security groups (comma separated list)"</span> <span class="na">isSet=</span><span class="s">"true"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">name=</span><span class="s">"ec2-eu-west.security.group"</span> <span class="na">order=</span><span class="s">"0"</span> <span class="na">order_=</span><span class="s">"0"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">type=</span><span class="s">"String"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;value&gt;</span>default<span class="nt">&lt;/value&gt;</span>
+                <span class="nt">&lt;defaultValue&gt;</span>default<span class="nt">&lt;/defaultValue&gt;</span>
+            <span class="nt">&lt;/parameter&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span>network<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">category=</span><span class="s">"Cloud"</span> <span class="na">description=</span><span class="s">"Network type"</span> <span class="na">isSet=</span><span class="s">"true"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">name=</span><span class="s">"network"</span> <span class="na">order=</span><span class="s">"0"</span> <span class="na">order_=</span><span class="s">"0"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">type=</span><span class="s">"Enum"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"2"</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>Public<span class="nt">&lt;/string&gt;</span>
+                    <span class="nt">&lt;string&gt;</span>Private<span class="nt">&lt;/string&gt;</span>
+                <span class="nt">&lt;/enumValues&gt;</span>
+                <span class="nt">&lt;value&gt;</span>Public<span class="nt">&lt;/value&gt;</span>
+                <span class="nt">&lt;defaultValue&gt;</span>Public<span class="nt">&lt;/defaultValue&gt;</span>
+            <span class="nt">&lt;/parameter&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span>exoscale-ch-gva.instance.type<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">category=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">description=</span><span class="s">"Instance type (flavor)"</span> <span class="na">isSet=</span><span class="s">"false"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">name=</span><span class="s">"exoscale-ch-gva.instance.type"</span> <span class="na">order=</span><span class="s">"0"</span> <span class="na">order_=</span><span class="s">"0"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">type=</span><span class="s">"String"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;entry&gt;</span>
+            <span class="nt">&lt;string&gt;</span>hostname<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;parameter</span> <span class="na">category=</span><span class="s">"Output"</span> <span class="na">description=</span><span class="s">"hostname/ip of the image"</span> <span class="na">isSet=</span><span class="s">"false"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">name=</span><span class="s">"hostname"</span> <span class="na">order=</span><span class="s">"0"</span> <span class="na">order_=</span><span class="s">"0"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">type=</span><span class="s">"String"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/entry&gt;</span>
+    <span class="nt">&lt;/parameters&gt;</span>
+    <span class="nt">&lt;authz</span> <span class="na">groupCreateChildren=</span><span class="s">"false"</span> <span class="na">groupDelete=</span><span class="s">"false"</span> <span class="na">groupGet=</span><span class="s">"false"</span> <span class="na">groupPost=</span><span class="s">"false"</span> <span class="na">groupPut=</span><span class="s">"false"</span> <span class="na">inheritedGroupMembers=</span><span class="s">"true"</span> <span class="na">owner=</span><span class="s">"meb"</span> <span class="na">ownerCreateChildren=</span><span class="s">"true"</span> <span class="na">ownerDelete=</span><span class="s">"true"</span> <span class="na">ownerGet=</span><span class="s">"true"</span> <span class="na">ownerPost=</span><span class="s">"true"</span> <span class="na">ownerPut=</span><span class="s">"true"</span> <span class="na">publicCreateChildren=</span><span class="s">"false"</span> <span class="na">publicDelete=</span><span class="s">"false"</span> <span class="na">publicGet=</span><span class="s">"false"</span> <span class="na">publicPost=</span><span class="s">"false"</span> <span class="na">publicPut=</span><span class="s">"false"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;groupMembers</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/authz&gt;</span>
+    <span class="nt">&lt;cloudNames</span> <span class="na">length=</span><span class="s">"3"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;string&gt;</span>exoscale-ch-gva<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;string&gt;</span>ec2-eu-west<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;string&gt;</span>default<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;/cloudNames&gt;</span>
+    <span class="nt">&lt;runs/&gt;</span>
+    <span class="nt">&lt;targets</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;packages</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;prerecipe/&gt;</span>
+    <span class="nt">&lt;recipe/&gt;</span>
+    <span class="nt">&lt;cloudImageIdentifiers</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/imageModule&gt;</span>
+</pre>
+
+<p><aside class="notice">
+On the root module resource (i.e. /module), only project category can be requested.
+</aside></p>
+
+<p><aside class="notice">
+This also means that <em>new</em> is a reserved word and modules and users cannot be called new.
+</aside></p>
+
+<h1 id="errors">Errors</h1>
+
+<p>The SlipStream REST API uses the following error codes:</p>
+
+<table><thead>
+<tr>
+<th>Error Code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>400</td>
+<td>Bad Request &ndash; Your request is inconsistent</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Unauthorized &ndash; Your username/password of cookie is wrong</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Forbidden &ndash; You don&rsquo;t have the rights to perform this action</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Not Found &ndash; The requested resource doesn&rsquo;t exist</td>
+</tr>
+<tr>
+<td>405</td>
+<td>Method Not Allowed &ndash; You tried to access a resource with an invalid method</td>
+</tr>
+<tr>
+<td>406</td>
+<td>Not Acceptable &ndash; You requested a format that is not supported</td>
+</tr>
+<tr>
+<td>418</td>
+<td>I&rsquo;m a teapot &ndash; The all time classic :-)</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Internal Server Error &ndash; We have a problem with our server. Try again later.</td>
+</tr>
+<tr>
+<td>503</td>
+<td>Service Unavailable &ndash; We&rsquo;re temporarially offline for maintenance. Please try again later.</td>
+</tr>
+</tbody></table>
+
+      </div>
+      <div class="dark-box">
+        <div id="lang-selector">
+                <a href="#" data-language-name="shell">shell</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
