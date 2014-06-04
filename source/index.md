@@ -217,7 +217,7 @@ Get a module (i.e. image, deployment or project).
 
 `GET https://slipstream.sixsq.com/module/[<module>[/<version>]]`
 
-### Body Parameters
+### Url Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -244,7 +244,7 @@ The PUT request will create a new resource with the same &lt;module> name but a 
 
 The **Location** attribute in the response header provides the full url of the updated resource, with the incremented version.
 
-### Body Parameters
+### Url Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -287,7 +287,7 @@ The DELETE request will delete the specified resource if fully qualified (i.e. i
 
 `DELETE https://slipstream.sixsq.com/module/<module>/<version>`
 
-### Body Parameters
+### Url Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -313,7 +313,7 @@ Content-Length: 0
 ## Module history (versions)
 
 List all the history (i.e. all the versions) of the module. Since each PUT creates a new version
-of the module, this request allows users to list these. 
+of the module, this request allows users to list these.
 
 ### HTTP Request
 
@@ -323,7 +323,7 @@ of the module, this request allows users to list these.
 Notice the trailing '/' in the URL
 </aside>
 
-### Body Parameters
+### Url Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -393,7 +393,7 @@ Get a specific run.
 
 `GET https://slipstream.sixsq.com/run/<run>`
 
-### Body Parameters
+### Url Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -606,7 +606,7 @@ you can use the special *new* resource.
 
 `GET https://slipstream.sixsq.com/<type>/new[?category=Image]`
 
-### Body Parameters
+### Query Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
