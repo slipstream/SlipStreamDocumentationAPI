@@ -450,6 +450,127 @@ Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identif
 Content-Length: 0
 ```
 
+## Create a mutable Run
+
+Create a new mutable run from a predefined deployment.
+
+The **Location** attribute in the response header provides the full url of the newly created run.
+
+### HTTP Request
+
+`POST https://slipstream.sixsq.com/run/`
+
+### Body Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+refqname  | true     | Reference module from which to create a run. Must be an *Image* or *Deployment* category - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+mutable  | true     | Define that the run is mutable - i.e., providing a possibility to add and remove node instances.
+
+
+```shell
+curl https://slipstream.sixsq.com/run -d refqname=module/examples/a-deployment -d mutable=true -u test:tesTtesT -X POST -H "Content-Type: text/plain" -D -
+```
+
+> The above command returns a header structured like this:
+
+```http
+HTTP/1.1 201 Created
+Date: Tue, 13 May 2014 11:29:56 GMT
+Accept-Ranges: bytes
+Location: https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e
+Server: Restlet-Framework/2.1m4
+Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1400023769837&com.sixsq.signature=eck79w5qyslb16ke31vfof2b9o6729mcsjgnsqc143nsgqkuepmkgqnaakv544x7nankz4875p0uyg8unl8d5m4dl60wzr6pcpn; Path=/
+Content-Length: 0
+```
+
+## Add node instances on a mutable Run
+
+Add node instances on a mutable Run.
+
+### HTTP Request
+
+`POST https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+
+### Body Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+n         | false    | Defines a number of node instances to be added. If omitted, one node instance is added.
+
+```shell
+curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d n=2 -u test:tesTtesT -X POST -H "Content-Type: text/plain" -D -
+```
+
+> The above command requests addition of two instances of the node type centos_node, returns 201 and the list of the created node instances in the body
+
+```http
+HTTP/1.1 201 Created
+Content-type: text/plain; charset=UTF-8
+Content-length: 27
+Server: Restlet-Framework/2.2.1
+Accept-ranges: bytes
+Vary: Accept-Charset, Accept-Encoding, Accept-Language, Accept
+Date: Wed, 25 Jun 2014 21:49:19 GMT
+Set-cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1403776159248&com.sixsq.signature=k82fu5qecds8f4grtvxjxkv698sdr3bw6wtieqrsanjnqjqg9eb6imoq217ww0stu9q23gi8y8y4rcovn7sse1ah65881j7k3hw; Path=/
+
+centos_node.2,centos_node.3
+```
+
+## Remove node instances from Run
+
+Remove node instances from Run.
+
+### HTTP Request
+
+`DELETE https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+
+### Body Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+ids       | true     | Defines the comma separated list of indices of the node instances to be removed.
+
+```shell
+curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d ids=1,2 -u test:tesTtesT -X DELETE -D -
+```
+
+> The above command requests deletion of two instances with indices 1 and 2 of the node type centos_node and returns 204 on success.
+
+```http
+HTTP/1.1 204 No Content
+Content-length: 0
+Server: Restlet-Framework/2.2.1
+Accept-ranges: bytes
+Date: Tue, 24 Jun 2014 14:09:01 GMT
+Set-cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1403662141504&com.sixsq.signature=atvt4x3mc5p0b8komk26olefqeu392m9m63sb44t7k0t86rk2lw0n15o27al7ijm4opqhavh84fmqiti5xnewpldh3skm0rsuwq; Path=/
+```
+
+## Get instance names of a node in Run
+
+Get instance names of a node in Run.
+
+
+```shell
+curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u test:tesTtesT "Content-Type: text/plain" -D -
+```
+
+> The above command requests a list of the instance names of the node centos_node.  On success, the return code is 200 and the body contains the comma separated list of the instance names.
+
+```
+HTTP/1.1 200 OK
+Content-type: text/plain; charset=UTF-8
+Content-length: 65
+Server: Restlet-Framework/2.2.1
+Accept-ranges: bytes
+Vary: Accept-Charset, Accept-Encoding, Accept-Language, Accept
+Date: Wed, 25 Jun 2014 21:57:21 GMT
+Set-cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1403776630991&com.sixsq.signature=-gkbwu2gknk54fcfbg5di4484bna1tttgn4na0za9fe4apgnkgjhcmc5b4mlqp5yzmnwkyf8meegow8iri4q2cz89a5pm3i7m5d7; Path=/
+
+centos_node.1,centos_node.2,centos_node.3
+```
+
+
 # Virtual machines
 
 List status of all VMs, as known by the cloud providers.
