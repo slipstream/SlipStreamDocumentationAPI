@@ -244,7 +244,7 @@ The PUT request will create a new resource with the same &lt;module> name but a 
 
 The **Location** attribute in the response header provides the full url of the updated resource, with the incremented version.
 
-### Url Parameters
+### Body Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -287,7 +287,7 @@ The DELETE request will delete the specified resource if fully qualified (i.e. i
 
 `DELETE https://slipstream.sixsq.com/module/<module>/<version>`
 
-### Url Parameters
+### Body Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
