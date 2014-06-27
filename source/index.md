@@ -412,13 +412,21 @@ curl https://slipstream.sixsq.com/run/<run> -u <user>:<password>
 
 ## Create a Run
 
-Create a new run.
+Create a new immutable (standard) run.
+
+<aside class="notice">
+Immutable runs cannot be changed once deployed. If you require to scale up or down the run, then request a *mutable* run (see below).
+</aside>
+
+<aside class="notice">
+This mutable/immutable feature only applies to deployment type run (aka *Orchestration* type).
+</aside>
 
 The **Location** attribute in the response header provides the full url of the updated resource, with the incremented version.
 
 ### HTTP Request
 
-`POST https://slipstream.sixsq.com/run/`
+`POST https://slipstream.sixsq.com/run`
 
 ### Body Parameters
 
@@ -435,7 +443,7 @@ Run            | Simple run: single VM deployment.
 
 
 ```shell
-curl https://slipstream.sixsq.com/run -d refqname=module/examples/an-image -d type=Run -u test:tesTtesT -X POST -H "Content-Type: text/plain" -D -
+curl https://slipstream.sixsq.com/run -d refqname=module/examples/an-image -d type=Run -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
 ```
 
 > The above command returns a header structured like this:
@@ -458,7 +466,7 @@ The **Location** attribute in the response header provides the full url of the n
 
 ### HTTP Request
 
-`POST https://slipstream.sixsq.com/run/`
+`POST https://slipstream.sixsq.com/run`
 
 ### Body Parameters
 
@@ -467,9 +475,17 @@ Parameter | Required | Description
 refqname  | true     | Reference module from which to create a run. Must be an *Image* or *Deployment* category - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
 mutable  | true     | Define that the run is mutable - i.e., providing a possibility to add and remove node instances.
 
+Run Type       | Description
+-------------- | --------
+Orchestration  | Deployment: only applies to deployment category.  This is the only valid type value for deployment, thus does not have to be provided.
+
+<aside class="notice">
+Only *Orchestration* type run can be created as mutable.
+</aside>
+
 
 ```shell
-curl https://slipstream.sixsq.com/run -d refqname=module/examples/a-deployment -d mutable=true -u test:tesTtesT -X POST -H "Content-Type: text/plain" -D -
+curl https://slipstream.sixsq.com/run -d refqname=module/examples/a-deployment -d mutable=true -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
 ```
 
 > The above command returns a header structured like this:
@@ -499,7 +515,7 @@ Parameter | Required | Description
 n         | false    | Defines a number of node instances to be added. If omitted, one node instance is added.
 
 ```shell
-curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d n=2 -u test:tesTtesT -X POST -H "Content-Type: text/plain" -D -
+curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d n=2 -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
 ```
 
 > The above command requests addition of two instances of the node type centos_node, returns 201 and the list of the created node instances in the body
@@ -532,7 +548,7 @@ Parameter | Required | Description
 ids       | true     | Defines the comma separated list of indices of the node instances to be removed.
 
 ```shell
-curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d ids=1,2 -u test:tesTtesT -X DELETE -D -
+curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d ids=1,2 -u <user>:<password> -X DELETE -D -
 ```
 
 > The above command requests deletion of two instances with indices 1 and 2 of the node type centos_node and returns 204 on success.
@@ -550,14 +566,17 @@ Set-cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identif
 
 Get instance names of a node in Run.
 
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
 
 ```shell
-curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u test:tesTtesT "Content-Type: text/plain" -D -
+curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u <user>:<password> "Content-Type: text/plain" -D -
 ```
 
 > The above command requests a list of the instance names of the node centos_node.  On success, the return code is 200 and the body contains the comma separated list of the instance names.
 
-```
+```http
 HTTP/1.1 200 OK
 Content-type: text/plain; charset=UTF-8
 Content-length: 65
