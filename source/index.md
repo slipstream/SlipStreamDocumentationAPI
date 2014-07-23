@@ -612,32 +612,6 @@ curl https://slipstream.sixsq.com/vms --user <user>:<password>
 </vms>
 ```
 
-# Statistics
-
-List status of current runs, including consumption metrics such as core/cpu, ram and disk.
-
-### HTTP Request
-
-`GET https://slipstream.sixsq.com/stats[?user=<username>]`
-
-Parameter | Required | Description
---------- | -------- | -----------
-username  | false     | Only applicable to privileged user. Filters the stats result for this user.
-
-```shell
-curl https://slipstream.sixsq.com/stats --user <user>:<password>
-```
-
-> The above command returns a body structured like this:
-
-```xml
-<vms>
-   <vm instance_id="6e08a7d4-c59f-4d52-bf55-f863dd5ad69b" run_id="f0ef787a-984d-4acd-94cd-ecc2a85ed6d5" index="0" node="machine" name="module/examples/images/centos-6/248" image_id="examples/images/centos-6" user_id="meb" type="Run" cloud="cloudsigma-ch1" cpu="1" ram="1" disk="1" created_at="2014-05-13 18:58:40.56 CEST" state="Detached" vmstate="running"/>
-   <vm run_id="4b15a127-44a5-4912-ba09-34608f967b03" index="0" node="machine" name="module/examples/images/centos-6/248" image_id="examples/images/centos-6" user_id="meb" type="Run" cloud="atos-es1" cpu="0" ram="0" disk="1" created_at="2014-05-13 18:54:08.740 CEST" state="Aborting" vmstate="Unknown"/>
-   <vm instance_id="535991c9-a7d1-4e79-a56a-1831137d60e5" run_id="4e8d2d74-b5f9-4092-923a-0635c2eee077" index="0" node="machine" name="module/examples/images/centos-6/248" image_id="examples/images/centos-6" user_id="meb" type="Run" cloud="cloudsigma-ch1" cpu="1" ram="1" disk="1" created_at="2014-05-09 10:00:45.272 CEST" state="Detached" vmstate="Unknown"/>
-</vms>
-```
-
 # User
 
 The user resource provides user management.
