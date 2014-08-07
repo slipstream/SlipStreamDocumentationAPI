@@ -265,7 +265,7 @@ Remember, image, deployment and project are type attributes of the module resour
 
 <p><code class="prettyprint">GET https://slipstream.sixsq.com/module/[&lt;module&gt;[/&lt;version&gt;]]</code></p>
 
-<h3 id="body-parameters">Body Parameters</h3>
+<h3 id="url-parameters">Url Parameters</h3>
 
 <table><thead>
 <tr>
@@ -397,7 +397,7 @@ This PUT request is not idem potent - i.e. calling it several times will create 
 <h2 id="module-history-(versions)">Module history (versions)</h2>
 
 <p>List all the history (i.e. all the versions) of the module. Since each PUT creates a new version
-of the module, this request allows users to list these. </p>
+of the module, this request allows users to list these.</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
@@ -407,7 +407,7 @@ of the module, this request allows users to list these. </p>
 Notice the trailing &lsquo;/&rsquo; in the URL
 </aside></p>
 
-<h3 id="body-parameters">Body Parameters</h3>
+<h3 id="url-parameters">Url Parameters</h3>
 
 <table><thead>
 <tr>
@@ -481,7 +481,7 @@ on the state of the run.</p>
 
 <p><code class="prettyprint">GET https://slipstream.sixsq.com/run/&lt;run&gt;</code></p>
 
-<h3 id="body-parameters">Body Parameters</h3>
+<h3 id="url-parameters">Url Parameters</h3>
 
 <table><thead>
 <tr>
@@ -735,7 +735,7 @@ you can use the special <em>new</em> resource.</p>
 
 <p><code class="prettyprint">GET https://slipstream.sixsq.com/&lt;type&gt;/new[?category=Image]</code></p>
 
-<h3 id="body-parameters">Body Parameters</h3>
+<h3 id="query-parameters">Query Parameters</h3>
 
 <table><thead>
 <tr>
