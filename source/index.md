@@ -11,7 +11,7 @@ toc_footers:
 
 ---
 
-# SlipStream v2.2 API Reference
+# SlipStream v2.3 API Reference
 
 ## Introduction
 
