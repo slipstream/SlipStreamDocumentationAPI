@@ -352,7 +352,7 @@ curl https://slipstream.sixsq.com/module/<module>/ -u <user>:<password>
 </versionList>
 ```
 
-# Run
+  # Run
 
 The *run* resource represents an execution in the cloud - i.e. running VMs.
 SlipStream supports 3 types of runs:
@@ -377,11 +377,10 @@ curl https://slipstream.sixsq.com/run -u <user>:<password>
 ```
 
 ```xml
-<runs>
-   <item resourceUri="run/4f187379-cdb9-470d-9656-b6fac6dc33d8" uuid="4f187379-cdb9-470d-9656-b6fac6dc33d8" moduleResourceUri="module/examples/tutorials/service-testing/system/471"
-status="Done" startTime="2014-05-10 15:22:56.882 UTC" cloudServiceName="exoscale-ch-gva" username="meb" type="Orchestration" tags=""/>
-   <item resourceUri="run/fa3b9652-9dac-49e2-9573-b761777c8238" uuid="fa3b9652-9dac-49e2-9573-b761777c8238" moduleResourceUri="module/examples/tutorials/service-testing/system/471"
-status="Done" startTime="2014-05-10 15:13:29.352 UTC" cloudServiceName="exoscale-ch-gva" username="meb" type="Orchestration" tags=""/>
+<runs offset="0" limit="20" count="20" totalCount="93">
+   <item resourceUri="run/fed1dd04-aa05-4a92-abb8-ed279f1f4dd4" uuid="fed1dd04-aa05-4a92-abb8-ed279f1f4dd4" moduleResourceUri="module/SlipStream/deploy-slipstream-dpl/745" status="Done" abort="" startTime="2015-03-17 13:34:51.440 UTC" cloudServiceNames="exoscale-ch-gva" username="sixsq_dev" type="Orchestration" tags=""/>
+   <item resourceUri="run/1ab29b6a-f08c-45ae-9cf4-336a0415f46c" uuid="1ab29b6a-f08c-45ae-9cf4-336a0415f46c" moduleResourceUri="module/SlipStream/deploy-slipstream-dpl/742" status="Cancelled" abort="Failed running &apos;execute&apos; target on &apos;slipstream.1&apos;" startTime="2015-03-17 10:52:05.331 UTC" cloudServiceNames="exoscale-ch-gva" username="sixsq_dev" type="Orchestration" tags=""/>
+   ...
 </runs>
 ```
 
@@ -710,6 +709,247 @@ Parameter | Required | Description
 --------- | -------- | -----------
 user | true | The user to retrieve
 
+# Event
+
+From [CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
+
+"
+An resource that represents the occurrence of an event within the managed infrastructure. Some
+examples of Events may be:
+
+* Machine X has been rebooted by guest OS.
+* Machine X is not responding to platform services.
+* A new vCPU has been added to machine X following defined elasticity rules.
+"
+
+This resource can be created for example to log for a given run the following events:
+
+* State transition
+* Termination (manual)
+* First abort call (with reason)
+* Scaling up or down
+
+<aside class="notice">
+An event can **not** be updated, only deleted.
+</aside>
+
+
+## List all Events
+
+Lists all events.
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/event`
+
+```shell
+curl https://slipstream.sixsq.com/event -u <user>:<password> -D -
+```
+
+> The above command returns json structured like this:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 2284
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:15:48 GMT
+
+{
+  "events" : [ {
+    "content" : {
+      "resource" : {
+        "href" : "Run/45614147-aed1-4a24-889d-6365b0b1f2cd"
+      },
+      "state" : "Started"
+    },
+    "updated" : "2015-03-19T09:39:38.238Z",
+    "type" : "state",
+    "created" : "2015-03-19T09:39:38.238Z",
+    "id" : "Event/0d78db78-1b98-4bd1-ba14-bf378da68a66",
+    "severity" : "medium",
+    "acl" : {
+      "owner" : {
+        "type" : "USER",
+        "principal" : "joe"
+      },
+      "rules" : [ {
+        "type" : "ROLE",
+        "principal" : "ANON",
+        "right" : "ALL"
+      } ]
+    },
+    "operations" : [ {
+      "rel" : "http://sixsq.com/slipstream/1/Action/delete",
+      "href" : "Event/0d78db78-1b98-4bd1-ba14-bf378da68a66"
+    } ],
+    "resourceURI" : "http://sixsq.com/slipstream/1/Event",
+    "timestamp" : "2015-01-10T08:20:00.0Z"
+  } ],
+  "operations" : [ {
+    "rel" : "http://sixsq.com/slipstream/1/Action/add",
+    "href" : "Event"
+  } ],
+  "acl" : {
+    "rules" : [ {
+      "type" : "ROLE",
+      "right" : "ALL",
+      "principal" : "ANON"
+    } ],
+    "owner" : {
+      "type" : "ROLE",
+      "principal" : "ADMIN"
+    }
+  },
+  "resourceURI" : "http://sixsq.com/slipstream/1/EventCollection",
+  "id" : "Event",
+  "count" : 1
+}
+```
+
+## Create an Event
+
+Create an event that contains information (mainly timestamp and state) related to a target resource.
+
+### HTTP Request
+
+`POST https://slipstream.sixsq.com/event`
+
+### Body Parameters
+
+Parameter   | Required  | Description
+------------| --------  | -----------
+timestamp   | true      | The timestamp (GMT time) of the event (not to be confused with created and updated timestamps of the resource representing the event)
+content     | true      | Structure containing the resource reference (i.e the **target** of this event) and its state
+type        | true      | Accepted values: `state` and `alarm`
+severity    | true      | Accepted values: `critical`, `high`, `medium` and `low`
+
+```shell
+curl https://slipstream.sixsq.com/event -d "{ \"acl\": {\"owner\": {\"type\": \"USER\", \"principal\": \"joe\"},    \"rules\": [{\"type\": \"ROLE\", \"prinipal\": \"ANON\", \"right\": \"ALL\"}]},    \"id\": \"123\",    \"created\" :  \"2015-01-16T08:20:00.0Z\",    \"updated\" : \"2015-01-16T08:20:00.0Z\",    \"resourceURI\" : \"http://slipstream.sixsq.com/ssclj/1/Event\",    \"timestamp\": \"2015-01-10T08:20:00.0Z\",    \"content\" :  { \"resource\":  {\"href\": \"Run/45614147-aed1-4a24-889d-6365b0b1f2cd\"},    \"state\" : \"Started\" } ,    \"type\": \"state\",    \"severity\": \"medium\"}" -X POST -H "Content-Type: application/json" -u <user>:<password> -D -
+```
+
+> The above command returns a json structured like this:
+
+```http
+HTTP/1.1 201 Created
+Location: Event/257cf1bd-1397-4296-8124-bb2213425b6e
+Content-Type: application/json
+Content-Length: 152
+Server: http-kit
+Date: Thu, 19 Mar 2015 12:47:38 GMT
+
+{
+  "status" : 201,
+  "message" : "created Event/257cf1bd-1397-4296-8124-bb2213425b6e",
+  "resource-id" : "Event/257cf1bd-1397-4296-8124-bb2213425b6e"
+}
+```
+
+> In case of error (e.g invalid value for `severity`), the following json is returned (note that the message details the origin of the problem):
+
+```http
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
+Content-Length: 232
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:48:11 GMT
+
+{
+  "status" : 400,
+  "message" : "resource does not satisfy defined schema: {:acl {:rules [{:prinicpal disallowed-key, :principal missing-required-key}]}, :severity (not (#{\"low\" \"high\" \"medium\" \"critical\"} \"urgent\"))}"
+}
+```
+
+## Get an Event
+
+Get a specific event.
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/event/<event-uuid>`
+
+```shell
+curl https://slipstream.sixsq.com/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u <user>:<password> -D -
+```
+
+> The above command returns a json structured like this:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 869
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:17:06 GMT
+
+{
+  "content" : {
+    "resource" : {
+      "href" : "Run/45614147-aed1-4a24-889d-6365b0b1f2cd"
+    },
+    "state" : "Started"
+  },
+  "updated" : "2015-03-19T12:46:16.766Z",
+  "type" : "state",
+  "created" : "2015-03-19T12:46:16.766Z",
+  "id" : "Event/4605ee06-ccda-48f5-a481-23c6ab296b0d",
+  "severity" : "medium",
+  "acl" : {
+    "owner" : {
+      "type" : "USER",
+      "principal" : "joe"
+    },
+    "rules" : [ {
+      "type" : "ROLE",
+      "principal" : "ANON",
+      "right" : "ALL"
+    } ]
+  },
+  "operations" : [ {
+    "rel" : "http://sixsq.com/slipstream/1/Action/delete",
+    "href" : "Event/4605ee06-ccda-48f5-a481-23c6ab296b0d"
+  } ],
+  "resourceURI" : "http://sixsq.com/slipstream/1/Event",
+  "timestamp" : "2015-01-10T08:20:00.0Z"
+}
+```
+
+## Delete an Event
+
+Delete a specific (the event-uuid is known) event.
+
+### HTTP Request
+
+`DELETE https://slipstream.sixsq.com/event/<event-uuid>`
+
+```shell
+curl -X DELETE  https://slipstream.sixsq.com/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u <user>:<password> -D -
+```
+
+> The above command returns a json structured like this:
+
+```http
+HTTP/1.1 204 No Content
+Content-Type: application/json
+Content-Length: 152
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:26:27 GMT
+```
+
+> When providing an invalid event-uuid, here is the response:
+
+```http
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+Content-Length: 102
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:35:57 GMT
+
+{
+  "status" : 404,
+  "message" : "Event/wrong-uuid not found",
+  "resource-id" : "Event/wrong-uuid"
+}
+```
 
 # The *new* resource
 
@@ -836,6 +1076,9 @@ Error Code | Meaning
 404 | Not Found -- The requested resource doesn't exist
 405 | Method Not Allowed -- You tried to access a resource with an invalid method
 406 | Not Acceptable -- You requested a format that is not supported
+409 | The request could not be processed because of conflict in the request, such as an edit conflict in the case of multiple updates.
+413 | The request is larger than the server is willing or able to process.
 418 | I'm a teapot -- The all time classic :-)
+429 | Too Many Requests -- The user has sent too many requests in a given amount of time.
 500 | Internal Server Error -- We have a problem with our server. Try again later.
 503 | Service Unavailable -- We're temporarially offline for maintenance. Please try again later.
