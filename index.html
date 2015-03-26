@@ -7,7 +7,7 @@
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
 
     <!-- Use title if it's in the page YAML frontmatter -->
-    <title>SlipStream | API Doc</title>
+    <title>SlipStream | API Doc</title>     
 
     <link href="stylesheets/screen.css" rel="stylesheet" type="text/css" media="screen" />
     <link href="stylesheets/print.css" rel="stylesheet" type="text/css" media="print" />
@@ -58,7 +58,7 @@
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        <h1 id="slipstream-v2.3-api-reference">SlipStream v2.3 API Reference</h1>
+        <h1 id="slipstream-v2.5-api-reference">SlipStream v2.5 API Reference</h1>
 
 <h2 id="introduction">Introduction</h2>
 
@@ -73,13 +73,13 @@ any snags in the document in <a href="http://github.com/slipstream/SlipStreamDoc
 <blockquote>
 <p>Adding <code class="prettyprint">?media=xml</code>(for XML) at the end of the URL in the browser, you request the response to be returned in the specified content-type:</p>
 </blockquote>
-<pre class="highlight shell"><code>https://slipstream.sixsq.com?media<span class="o">=</span>xml
+<pre><code class="highlight shell">https://slipstream.sixsq.com?media<span class="o">=</span>xml
 </code></pre>
 
 <blockquote>
 <p>is equivalent to</p>
 </blockquote>
-<pre class="highlight shell"><code>https://slipstream.sixsq.com -H <span class="s2">"Content-Type: application/xml"</span>
+<pre><code class="highlight shell">https://slipstream.sixsq.com -H <span class="s2">"Content-Type: application/xml"</span>
 </code></pre>
 
 <p><aside class="notice">
@@ -106,15 +106,15 @@ cookie, use the <code class="prettyprint">/login</code> resource.</p>
 <h2 id="basic-authentication">Basic authentication</h2>
 
 <p>SlipStream supports basic authentication.  This can be tested using simple username/password pair.</p>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com?media<span class="o">=</span>xml -u &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com?media<span class="o">=</span>xml -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
 
 <blockquote>
 <p>or</p>
 </blockquote>
-<pre class="highlight shell"><code>curl https://&lt;user&gt;:&lt;password&gt;@slipstream.sixsq.com?media<span class="o">=</span>xml
+<pre><code class="highlight shell">curl https://&lt;user&gt;:&lt;password&gt;@slipstream.sixsq.com?media<span class="o">=</span>xml
 </code></pre>
-<pre class="highlight xml"><code><span class="nt">&lt;welcome&gt;</span>
+<pre><code class="highlight xml"><span class="nt">&lt;welcome&gt;</span>
    <span class="nt">&lt;modules&gt;</span>
       <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"module/Mebster/48"</span> <span class="na">category=</span><span class="s">"Project"</span> <span class="na">version=</span><span class="s">"48"</span> <span class="na">name=</span><span class="s">"Mebster"</span><span class="nt">&gt;</span>
          <span class="nt">&lt;authz</span> <span class="na">owner=</span><span class="s">"meb"</span> <span class="na">ownerGet=</span><span class="s">"true"</span> <span class="na">ownerPut=</span><span class="s">"true"</span> <span class="na">ownerPost=</span><span class="s">"false"</span> <span class="na">ownerDelete=</span><span class="s">"true"</span> <span class="na">ownerCreateChildren=</span><span class="s">"true"</span> <span class="na">groupGet=</span><span class="s">"false"</span> <span class="na">groupPut=</span><span class="s">"false"</span> <span class="na">groupPost=</span><span class="s">"false"</span> <span class="na">groupDelete=</span><span class="s">"false"</span> <span class="na">groupCreateChildren=</span><span class="s">"false"</span> <span class="na">publicGet=</span><span class="s">"false"</span> <span class="na">publicPut=</span><span class="s">"false"</span> <span class="na">publicPost=</span><span class="s">"false"</span> <span class="na">publicDelete=</span><span class="s">"false"</span> <span class="na">publicCreateChildren=</span><span class="s">"false"</span> <span class="na">inheritedGroupMembers=</span><span class="s">"true"</span><span class="nt">&gt;</span>
@@ -142,13 +142,13 @@ cookie, use the <code class="prettyprint">/login</code> resource.</p>
 </blockquote>
 
 <h2 id="generate-a-cookie">Generate a cookie</h2>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/login -d <span class="nv">username</span><span class="o">=</span>&lt;user&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;password&gt; -H <span class="s2">"Content-Type: application/xml"</span>
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/login -d <span class="nv">username</span><span class="o">=</span>&lt;user&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;password&gt; -H <span class="s2">"Content-Type: application/xml"</span>
 </code></pre>
 
 <blockquote>
 <p>The above command returns a header structured like this:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
 <span class="na">Server</span><span class="p">:</span> <span class="s">nginx/1.4.7</span>
 <span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 06 May 2014 18:46:12 GMT</span>
 <span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
@@ -209,13 +209,13 @@ Remember, image, deployment and project are type attributes of the module resour
 </aside></p>
 
 <h2 id="get-a-module">Get a module</h2>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/module/&lt;module&gt; --user &lt;user&gt;:&lt;password&gt; -H <span class="s2">"Content-Type: application/xml"</span>
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/&lt;module&gt; --user &lt;user&gt;:&lt;password&gt; -H <span class="s2">"Content-Type: application/xml"</span>
 </code></pre>
 
 <blockquote>
 <p>The above command returns a response body structured like this:</p>
 </blockquote>
-<pre class="highlight xml"><code><span class="nt">&lt;imageModule</span> <span class="na">category=</span><span class="s">"Image"</span> <span class="na">creation=</span><span class="s">"2013-12-02 17:00:37.421 UTC"</span> <span class="na">deleted=</span><span class="s">"false"</span> <span class="na">description=</span><span class="s">"Minimal installation of the Ubuntu 12.04 (LTS) operating system."</span> <span class="na">imageId=</span><span class="s">"8c7e60ae-3a30-4031-a3e6-29832d85d7cb"</span> <span class="na">isBase=</span><span class="s">"true"</span> <span class="na">isLatestVersion=</span><span class="s">"true"</span> <span class="na">lastModified=</span><span class="s">"2014-05-04 12:36:06.105 UTC"</span> <span class="na">loginUser=</span><span class="s">"ubuntu"</span> <span class="na">logoLink=</span><span class="s">"http://design.ubuntu.com/wp-content/uploads/ubuntu-logo14.png"</span> <span class="na">parentUri=</span><span class="s">"module/examples/images"</span> <span class="na">platform=</span><span class="s">"ubuntu"</span> <span class="na">shortName=</span><span class="s">"ubuntu-12.04"</span> <span class="na">version=</span><span class="s">"480"</span><span class="nt">&gt;</span>
+<pre><code class="highlight xml"><span class="nt">&lt;imageModule</span> <span class="na">category=</span><span class="s">"Image"</span> <span class="na">creation=</span><span class="s">"2013-12-02 17:00:37.421 UTC"</span> <span class="na">deleted=</span><span class="s">"false"</span> <span class="na">description=</span><span class="s">"Minimal installation of the Ubuntu 12.04 (LTS) operating system."</span> <span class="na">imageId=</span><span class="s">"8c7e60ae-3a30-4031-a3e6-29832d85d7cb"</span> <span class="na">isBase=</span><span class="s">"true"</span> <span class="na">isLatestVersion=</span><span class="s">"true"</span> <span class="na">lastModified=</span><span class="s">"2014-05-04 12:36:06.105 UTC"</span> <span class="na">loginUser=</span><span class="s">"ubuntu"</span> <span class="na">logoLink=</span><span class="s">"http://design.ubuntu.com/wp-content/uploads/ubuntu-logo14.png"</span> <span class="na">parentUri=</span><span class="s">"module/examples/images"</span> <span class="na">platform=</span><span class="s">"ubuntu"</span> <span class="na">shortName=</span><span class="s">"ubuntu-12.04"</span> <span class="na">version=</span><span class="s">"480"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;parameters&gt;</span>
         <span class="nt">&lt;entry&gt;</span>
             <span class="nt">&lt;string&gt;</span>extra.disk.volatile<span class="nt">&lt;/string&gt;</span>
@@ -289,7 +289,7 @@ Remember, image, deployment and project are type attributes of the module resour
 <p><aside class="notice">
 To list the root projects, simply omit the <em>&lt;MODULE&gt;</em> from the request.
 </aside></p>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/module/examples/foo -H <span class="s2">"Content-Type: application/xml"</span> --user &lt;user&gt;:&lt;password&gt; &gt; foo.xml
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/examples/foo -H <span class="s2">"Content-Type: application/xml"</span> --user &lt;user&gt;:&lt;password&gt; &gt; foo.xml
 </code></pre>
 
 <h2 id="update-a-module">Update a module</h2>
@@ -324,7 +324,7 @@ To list the root projects, simply omit the <em>&lt;MODULE&gt;</em> from the requ
 <td>Version of the module. If not provided, get the latest (most recent)</td>
 </tr>
 </tbody></table>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/module/&lt;module&gt; --user &lt;user&gt;:&lt;password&gt; --data @&lt;file&gt; -X PUT -H <span class="s2">"Content-Type: application/xml"</span>
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/&lt;module&gt; --user &lt;user&gt;:&lt;password&gt; --data @&lt;file&gt; -X PUT -H <span class="s2">"Content-Type: application/xml"</span>
 </code></pre>
 
 <blockquote>
@@ -332,7 +332,7 @@ To list the root projects, simply omit the <em>&lt;MODULE&gt;</em> from the requ
 
 <p>The above command returns a header structured like this:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
 <span class="na">Date</span><span class="p">:</span> <span class="s">Mon, 12 May 2014 15:16:49 GMT</span>
 <span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
 <span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com/module/examples/foo/1199</span>
@@ -379,13 +379,13 @@ This PUT request is not idem potent - i.e. calling it several times will create 
 <td>Version of the module. If not provided, delete the latest (most recent)</td>
 </tr>
 </tbody></table>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/module/&lt;module&gt; -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/&lt;module&gt; -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
 </code></pre>
 
 <blockquote>
 <p>The above command returns a header structured like this:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">No Content</span>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">No Content</span>
 <span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 13 May 2014 03:08:15 GMT</span>
 <span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
 <span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com/module/examples/toto/11</span>
@@ -422,9 +422,9 @@ Notice the trailing &lsquo;/&rsquo; in the URL
 <td>Unique identifier of the module - e.g. <em>examples/images/ubuntu-12.04</em>.</td>
 </tr>
 </tbody></table>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/module/&lt;module&gt;/ -u &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/&lt;module&gt;/ -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
-<pre class="highlight xml"><code><span class="nt">&lt;versionList&gt;</span>
+<pre><code class="highlight xml"><span class="nt">&lt;versionList&gt;</span>
    <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"module/examples/an-image/12"</span> <span class="na">lastModified=</span><span class="s">"2014-05-13 04:53:47.339 CEST"</span> <span class="na">version=</span><span class="s">"12"</span> <span class="na">category=</span><span class="s">"Image"</span> <span class="na">name=</span><span class="s">"an-image"</span><span class="nt">&gt;</span>
       <span class="nt">&lt;authz</span> <span class="na">owner=</span><span class="s">"test"</span> <span class="na">ownerGet=</span><span class="s">"true"</span> <span class="na">ownerPut=</span><span class="s">"true"</span> <span class="na">ownerPost=</span><span class="s">"true"</span> <span class="na">ownerDelete=</span><span class="s">"true"</span> <span class="na">ownerCreateChildren=</span><span class="s">"true"</span> <span class="na">groupGet=</span><span class="s">"false"</span> <span class="na">groupPut=</span><span class="s">"false"</span> <span class="na">groupPost=</span><span class="s">"false"</span> <span class="na">groupDelete=</span><span class="s">"false"</span> <span class="na">groupCreateChildren=</span><span class="s">"false"</span> <span class="na">publicGet=</span><span class="s">"false"</span> <span class="na">publicPut=</span><span class="s">"false"</span> <span class="na">publicPost=</span><span class="s">"false"</span> <span class="na">publicDelete=</span><span class="s">"false"</span> <span class="na">publicCreateChildren=</span><span class="s">"false"</span> <span class="na">inheritedGroupMembers=</span><span class="s">"true"</span><span class="nt">&gt;</span>
          <span class="nt">&lt;groupMembers</span> <span class="nt">/&gt;</span>
@@ -442,7 +442,7 @@ Notice the trailing &lsquo;/&rsquo; in the URL
 <span class="nt">&lt;/versionList&gt;</span>
 </code></pre>
 
-<h1 id="run">Run</h1>
+<p># Run</p>
 
 <p>The <em>run</em> resource represents an execution in the cloud - i.e. running VMs.
 SlipStream supports 3 types of runs:</p>
@@ -463,13 +463,12 @@ on the state of the run.</p>
 <h3 id="http-request">HTTP Request</h3>
 
 <p><code class="prettyprint">GET https://slipstream.sixsq.com/run</code></p>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/run -u &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
-<pre class="highlight xml"><code><span class="nt">&lt;runs&gt;</span>
-   <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"run/4f187379-cdb9-470d-9656-b6fac6dc33d8"</span> <span class="na">uuid=</span><span class="s">"4f187379-cdb9-470d-9656-b6fac6dc33d8"</span> <span class="na">moduleResourceUri=</span><span class="s">"module/examples/tutorials/service-testing/system/471"</span>
-<span class="na">status=</span><span class="s">"Done"</span> <span class="na">startTime=</span><span class="s">"2014-05-10 15:22:56.882 UTC"</span> <span class="na">cloudServiceName=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">username=</span><span class="s">"meb"</span> <span class="na">type=</span><span class="s">"Orchestration"</span> <span class="na">tags=</span><span class="s">""</span><span class="nt">/&gt;</span>
-   <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"run/fa3b9652-9dac-49e2-9573-b761777c8238"</span> <span class="na">uuid=</span><span class="s">"fa3b9652-9dac-49e2-9573-b761777c8238"</span> <span class="na">moduleResourceUri=</span><span class="s">"module/examples/tutorials/service-testing/system/471"</span>
-<span class="na">status=</span><span class="s">"Done"</span> <span class="na">startTime=</span><span class="s">"2014-05-10 15:13:29.352 UTC"</span> <span class="na">cloudServiceName=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">username=</span><span class="s">"meb"</span> <span class="na">type=</span><span class="s">"Orchestration"</span> <span class="na">tags=</span><span class="s">""</span><span class="nt">/&gt;</span>
+<pre><code class="highlight xml"><span class="nt">&lt;runs</span> <span class="na">offset=</span><span class="s">"0"</span> <span class="na">limit=</span><span class="s">"20"</span> <span class="na">count=</span><span class="s">"20"</span> <span class="na">totalCount=</span><span class="s">"93"</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"run/fed1dd04-aa05-4a92-abb8-ed279f1f4dd4"</span> <span class="na">uuid=</span><span class="s">"fed1dd04-aa05-4a92-abb8-ed279f1f4dd4"</span> <span class="na">moduleResourceUri=</span><span class="s">"module/SlipStream/deploy-slipstream-dpl/745"</span> <span class="na">status=</span><span class="s">"Done"</span> <span class="na">abort=</span><span class="s">""</span> <span class="na">startTime=</span><span class="s">"2015-03-17 13:34:51.440 UTC"</span> <span class="na">cloudServiceNames=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">username=</span><span class="s">"sixsq_dev"</span> <span class="na">type=</span><span class="s">"Orchestration"</span> <span class="na">tags=</span><span class="s">""</span><span class="nt">/&gt;</span>
+   <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"run/1ab29b6a-f08c-45ae-9cf4-336a0415f46c"</span> <span class="na">uuid=</span><span class="s">"1ab29b6a-f08c-45ae-9cf4-336a0415f46c"</span> <span class="na">moduleResourceUri=</span><span class="s">"module/SlipStream/deploy-slipstream-dpl/742"</span> <span class="na">status=</span><span class="s">"Cancelled"</span> <span class="na">abort=</span><span class="s">"Failed running &amp;apos;execute&amp;apos; target on &amp;apos;slipstream.1&amp;apos;"</span> <span class="na">startTime=</span><span class="s">"2015-03-17 10:52:05.331 UTC"</span> <span class="na">cloudServiceNames=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">username=</span><span class="s">"sixsq_dev"</span> <span class="na">type=</span><span class="s">"Orchestration"</span> <span class="na">tags=</span><span class="s">""</span><span class="nt">/&gt;</span>
+   ...
 <span class="nt">&lt;/runs&gt;</span>
 </code></pre>
 
@@ -496,9 +495,9 @@ on the state of the run.</p>
 <td>Run unique identifier - e.g. <em>fa3b9652-9dac-49e2-9573-b761777c8238</em>.</td>
 </tr>
 </tbody></table>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/run/&lt;run&gt; -u &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run/&lt;run&gt; -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
-<pre class="highlight xml"><code><span class="nt">&lt;runs&gt;</span>
+<pre><code class="highlight xml"><span class="nt">&lt;runs&gt;</span>
    <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"run/4f187379-cdb9-470d-9656-b6fac6dc33d8"</span> <span class="na">uuid=</span><span class="s">"4f187379-cdb9-470d-9656-b6fac6dc33d8"</span> <span class="na">moduleResourceUri=</span><span class="s">"module/examples/tutorials/service-testing/system/471"</span> <span class="na">status=</span><span class="s">"Done"</span> <span class="na">startTime=</span><span class="s">"2014-05-10 15:22:56.882 UTC"</span> <span class="na">cloudServiceName=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">username=</span><span class="s">"meb"</span> <span class="na">type=</span><span class="s">"Orchestration"</span> <span class="na">tags=</span><span class="s">""</span><span class="nt">/&gt;</span>
    <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"run/fa3b9652-9dac-49e2-9573-b761777c8238"</span> <span class="na">uuid=</span><span class="s">"fa3b9652-9dac-49e2-9573-b761777c8238"</span> <span class="na">moduleResourceUri=</span><span class="s">"module/examples/tutorials/service-testing/system/471"</span> <span class="na">status=</span><span class="s">"Done"</span> <span class="na">startTime=</span><span class="s">"2014-05-10 15:13:29.352 UTC"</span> <span class="na">cloudServiceName=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">username=</span><span class="s">"meb"</span> <span class="na">type=</span><span class="s">"Orchestration"</span> <span class="na">tags=</span><span class="s">""</span><span class="nt">/&gt;</span>
 <span class="nt">&lt;/runs&gt;</span>
@@ -562,13 +561,13 @@ This mutable/immutable feature only applies to deployment type run (aka <em>Orch
 <td>Simple run: single VM deployment.</td>
 </tr>
 </tbody></table>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/run -d <span class="nv">refqname</span><span class="o">=</span>module/examples/an-image -d <span class="nb">type</span><span class="o">=</span>Run -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run -d <span class="nv">refqname</span><span class="o">=</span>module/examples/an-image -d <span class="nb">type</span><span class="o">=</span>Run -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
 <blockquote>
 <p>The above command returns a header structured like this:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
 <span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 13 May 2014 11:29:56 GMT</span>
 <span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
 <span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e</span>
@@ -623,13 +622,13 @@ This mutable/immutable feature only applies to deployment type run (aka <em>Orch
 <p><aside class="notice">
 Only <em>Orchestration</em> type run can be created as mutable.
 </aside></p>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/run -d <span class="nv">refqname</span><span class="o">=</span>module/examples/a-deployment -d <span class="nv">mutable</span><span class="o">=</span><span class="nb">true</span> -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run -d <span class="nv">refqname</span><span class="o">=</span>module/examples/a-deployment -d <span class="nv">mutable</span><span class="o">=</span><span class="nb">true</span> -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
 <blockquote>
 <p>The above command returns a header structured like this:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
 <span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 13 May 2014 11:29:56 GMT</span>
 <span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
 <span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e</span>
@@ -661,13 +660,13 @@ Only <em>Orchestration</em> type run can be created as mutable.
 <td>Defines a number of node instances to be added. If omitted, one node instance is added.</td>
 </tr>
 </tbody></table>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d <span class="nv">n</span><span class="o">=</span>2 -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d <span class="nv">n</span><span class="o">=</span>2 -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
 <blockquote>
 <p>The above command requests addition of two instances of the node type centos_node, returns 201 and the list of the created node instances in the body</p>
 </blockquote>
-<pre class="highlight http"><code><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
 <span class="na">Content-type</span><span class="p">:</span> <span class="s">text/plain; charset=UTF-8</span>
 <span class="na">Content-length</span><span class="p">:</span> <span class="s">27</span>
 <span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.2.1</span>
@@ -702,13 +701,13 @@ centos_node.2,centos_node.3
 <td>Defines the comma separated list of indices of the node instances to be removed.</td>
 </tr>
 </tbody></table>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d <span class="nv">ids</span><span class="o">=</span>1,2 -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d <span class="nv">ids</span><span class="o">=</span>1,2 -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
 </code></pre>
 
 <blockquote>
 <p>The above command requests deletion of two instances with indices 1 and 2 of the node type centos_node and returns 204 on success.</p>
 </blockquote>
-<pre class="highlight http"><code><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">No Content</span>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">No Content</span>
 <span class="na">Content-length</span><span class="p">:</span> <span class="s">0</span>
 <span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.2.1</span>
 <span class="na">Accept-ranges</span><span class="p">:</span> <span class="s">bytes</span>
@@ -723,13 +722,13 @@ centos_node.2,centos_node.3
 <h3 id="http-request">HTTP Request</h3>
 
 <p><code class="prettyprint">GET https://slipstream.sixsq.com/run/&lt;run-uuid&gt;/&lt;node-name&gt;</code></p>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u &lt;user&gt;:&lt;password&gt; <span class="s2">"Content-Type: text/plain"</span> -D -
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u &lt;user&gt;:&lt;password&gt; <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
 <blockquote>
 <p>The above command requests a list of the instance names of the node centos_node.  On success, the return code is 200 and the body contains the comma separated list of the instance names.</p>
 </blockquote>
-<pre class="highlight http"><code><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
 <span class="na">Content-type</span><span class="p">:</span> <span class="s">text/plain; charset=UTF-8</span>
 <span class="na">Content-length</span><span class="p">:</span> <span class="s">65</span>
 <span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.2.1</span>
@@ -748,13 +747,13 @@ centos_node.1,centos_node.2,centos_node.3
 <h3 id="http-request">HTTP Request</h3>
 
 <p><code class="prettyprint">GET https://slipstream.sixsq.com/vms</code></p>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/vms --user &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/vms --user &lt;user&gt;:&lt;password&gt;
 </code></pre>
 
 <blockquote>
 <p>The above command returns a body structured like this:</p>
 </blockquote>
-<pre class="highlight xml"><code><span class="nt">&lt;vms&gt;</span>
+<pre><code class="highlight xml"><span class="nt">&lt;vms&gt;</span>
    <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"ec2-eu-west"</span> <span class="na">user=</span><span class="s">"meb"</span> <span class="na">instanceId=</span><span class="s">"i-bbeb1dfb"</span> <span class="na">state=</span><span class="s">"Detached"</span> <span class="na">measurement=</span><span class="s">"2014-05-13 11:56:03.166 UTC"</span> <span class="na">runUuid=</span><span class="s">"Running"</span><span class="nt">/&gt;</span>
    <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"ec2-eu-west"</span> <span class="na">user=</span><span class="s">"meb"</span> <span class="na">instanceId=</span><span class="s">"i-7a3de138"</span> <span class="na">state=</span><span class="s">"Detached"</span> <span class="na">measurement=</span><span class="s">"2014-05-13 11:56:03.189 UTC"</span> <span class="na">runUuid=</span><span class="s">"Running"</span><span class="nt">/&gt;</span>
    <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"ec2-eu-west"</span> <span class="na">user=</span><span class="s">"meb"</span> <span class="na">instanceId=</span><span class="s">"i-a803dfea"</span> <span class="na">state=</span><span class="s">"terminated"</span> <span class="na">measurement=</span><span class="s">"2014-05-13 11:56:03.209 UTC"</span> <span class="na">runUuid=</span><span class="s">"Unknown"</span><span class="nt">/&gt;</span>
@@ -770,13 +769,13 @@ centos_node.1,centos_node.2,centos_node.3
 <p><aside class="notice">This resource is restricted to privileged users.</aside></p>
 
 <p>List all users.</p>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/user --user &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/user --user &lt;user&gt;:&lt;password&gt;
 </code></pre>
 
 <blockquote>
 <p>The above command returns XML structured like this:</p>
 </blockquote>
-<pre class="highlight xml"><code><span class="nt">&lt;list&gt;</span>
+<pre><code class="highlight xml"><span class="nt">&lt;list&gt;</span>
 <span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">"sixsq"</span> <span class="na">resourceUri=</span><span class="s">"user/sixsq"</span> <span class="na">firstName=</span><span class="s">"SixSq"</span> <span class="na">lastName=</span><span class="s">"Administrator"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2014-04-02 14:22:05.86 CEST"</span> <span class="na">online=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
 <span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">"super"</span> <span class="na">resourceUri=</span><span class="s">"user/super"</span> <span class="na">firstName=</span><span class="s">"Super"</span> <span class="na">lastName=</span><span class="s">"User"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2014-05-06 21:12:42.520 CEST"</span> <span class="na">online=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
 <span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">"test"</span> <span class="na">resourceUri=</span><span class="s">"user/test"</span> <span class="na">firstName=</span><span class="s">"Test"</span> <span class="na">lastName=</span><span class="s">"User"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2014-05-06 20:44:19.233 CEST"</span> <span class="na">online=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
@@ -788,13 +787,13 @@ centos_node.1,centos_node.2,centos_node.3
 <p><code class="prettyprint">GET https://slipstream.sixsq.com/user</code></p>
 
 <h2 id="get-a-specific-user">Get a specific user</h2>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/user/&lt;user&gt; --user &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/user/&lt;user&gt; --user &lt;user&gt;:&lt;password&gt;
 </code></pre>
 
 <blockquote>
 <p>The above command returns xml structured like this:</p>
 </blockquote>
-<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<pre><code class="highlight xml"><span class="cp">&lt;?xml version="1.0"?&gt;</span>
 <span class="nt">&lt;user</span> <span class="na">deleted=</span><span class="s">"false"</span> <span class="na">resourceUri=</span><span class="s">"user/test"</span> <span class="na">name=</span><span class="s">"test"</span> <span class="na">email=</span><span class="s">"test@sixsq.com"</span> <span class="na">firstName=</span><span class="s">"Test"</span> <span class="na">lastName=</span><span class="s">"User"</span> <span class="na">organization=</span><span class="s">"SixSq"</span> <span class="na">issuper=</span><span class="s">"false"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2014-05-07 20:16:44.580 CEST"</span> <span class="na">creation=</span><span class="s">"2014-05-07 20:15:28.664 CEST"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;parameters&gt;</span>
         <span class="nt">&lt;entry&gt;</span>
@@ -864,6 +863,265 @@ centos_node.1,centos_node.2,centos_node.3
 </tr>
 </tbody></table>
 
+<h1 id="event">Event</h1>
+
+<p>From <a href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13</a></p>
+
+<p>&ldquo;
+An resource that represents the occurrence of an event within the managed infrastructure. Some
+examples of Events may be:</p>
+
+<ul>
+<li>Machine X has been rebooted by guest OS.</li>
+<li>Machine X is not responding to platform services.</li>
+<li>A new vCPU has been added to machine X following defined elasticity rules.
+&rdquo;</li>
+</ul>
+
+<p>This resource can be created for example to log for a given run the following events:</p>
+
+<ul>
+<li>State transition</li>
+<li>Termination (manual)</li>
+<li>First abort call (with reason)</li>
+<li>Scaling up or down</li>
+</ul>
+
+<p><aside class="notice">
+An event can <strong>not</strong> be updated, only deleted.
+</aside></p>
+
+<h2 id="list-all-events">List all Events</h2>
+
+<p>Lists all events.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/event/</code></p>
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/event/ -u &lt;user&gt;:&lt;password&gt; -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns json structured like this:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">2284</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:15:48 GMT</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"events"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"content"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"resource"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Run/45614147-aed1-4a24-889d-6365b0b1f2cd"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"state"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Started"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"updated"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-19T09:39:38.238Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"state"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"created"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-19T09:39:38.238Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/0d78db78-1b98-4bd1-ba14-bf378da68a66"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"severity"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"medium"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"joe"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ANON"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
+      </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/delete"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/0d78db78-1b98-4bd1-ba14-bf378da68a66"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+    </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Event"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-01-10T08:20:00.0Z"</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/add"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event"</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ANON"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+    </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/EventCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<h2 id="create-an-event">Create an Event</h2>
+
+<p>Create an event that contains information (mainly timestamp and state) related to a target resource.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">POST https://slipstream.sixsq.com/event</code></p>
+
+<h3 id="body-parameters">Body Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>timestamp</td>
+<td>true</td>
+<td>The timestamp (GMT time) of the event (not to be confused with created and updated timestamps of the resource representing the event)</td>
+</tr>
+<tr>
+<td>content</td>
+<td>true</td>
+<td>Structure containing the resource reference (i.e the <strong>target</strong> of this event) and its state</td>
+</tr>
+<tr>
+<td>type</td>
+<td>true</td>
+<td>Accepted values: <code class="prettyprint">state</code> and <code class="prettyprint">alarm</code></td>
+</tr>
+<tr>
+<td>severity</td>
+<td>true</td>
+<td>Accepted values: <code class="prettyprint">critical</code>, <code class="prettyprint">high</code>, <code class="prettyprint">medium</code> and <code class="prettyprint">low</code></td>
+</tr>
+</tbody></table>
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/event -d <span class="s2">"{ </span><span class="se">\"</span><span class="s2">acl</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">owner</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">USER</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">principal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">joe</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">rules</span><span class="se">\"</span><span class="s2">: [{</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ROLE</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">prinipal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ANON</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">right</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ALL</span><span class="se">\"</span><span class="s2">}]},    </span><span class="se">\"</span><span class="s2">id</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">123</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">created</span><span class="se">\"</span><span class="s2"> :  </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">updated</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">resourceURI</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">http://slipstream.sixsq.com/ssclj/1/Event</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">timestamp</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">2015-01-10T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">content</span><span class="se">\"</span><span class="s2"> :  { </span><span class="se">\"</span><span class="s2">resource</span><span class="se">\"</span><span class="s2">:  {</span><span class="se">\"</span><span class="s2">href</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Run/45614147-aed1-4a24-889d-6365b0b1f2cd</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">Started</span><span class="se">\"</span><span class="s2"> } ,    </span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">severity</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">medium</span><span class="se">\"</span><span class="s2">}"</span> -X POST -H <span class="s2">"Content-Type: application/json"</span> -u &lt;user&gt;:&lt;password&gt; -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns a json structured like this:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">Event/257cf1bd-1397-4296-8124-bb2213425b6e</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">152</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 12:47:38 GMT</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">201</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"created Event/257cf1bd-1397-4296-8124-bb2213425b6e"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"resource-id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/257cf1bd-1397-4296-8124-bb2213425b6e"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<blockquote>
+<p>In case of error (e.g invalid value for <code class="prettyprint">severity</code>), the following json is returned (note that the message details the origin of the problem):</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">400</span> <span class="ne">Bad Request</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">232</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:48:11 GMT</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"resource does not satisfy defined schema: {:acl {:rules [{:prinicpal disallowed-key, :principal missing-required-key}]}, :severity (not (#{\"low\" \"high\" \"medium\" \"critical\"} \"urgent\"))}"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<h2 id="get-an-event">Get an Event</h2>
+
+<p>Get a specific event.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/event/&lt;event-uuid&gt;</code></p>
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u &lt;user&gt;:&lt;password&gt; -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns a json structured like this:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">869</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:17:06 GMT</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"content"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"resource"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Run/45614147-aed1-4a24-889d-6365b0b1f2cd"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"state"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Started"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"updated"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-19T12:46:16.766Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"state"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"created"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-19T12:46:16.766Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/4605ee06-ccda-48f5-a481-23c6ab296b0d"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"severity"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"medium"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"joe"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ANON"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/delete"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/4605ee06-ccda-48f5-a481-23c6ab296b0d"</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Event"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-01-10T08:20:00.0Z"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<h2 id="delete-an-event">Delete an Event</h2>
+
+<p>Delete a specific (the event-uuid is known) event.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">DELETE https://slipstream.sixsq.com/event/&lt;event-uuid&gt;</code></p>
+<pre><code class="highlight shell">curl -X DELETE  https://slipstream.sixsq.com/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u &lt;user&gt;:&lt;password&gt; -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns a json structured like this:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">No Content</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">152</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:26:27 GMT</span>
+</code></pre>
+
+<blockquote>
+<p>When providing an invalid event-uuid, here is the response:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">404</span> <span class="ne">Not Found</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">102</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:35:57 GMT</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">404</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/wrong-uuid not found"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"resource-id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/wrong-uuid"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
 <h1 id="the-new-resource">The <em>new</em> resource</h1>
 
 <p>To retrieve example resource structures, especially for resource types that don&rsquo;t yet exist,
@@ -893,13 +1151,13 @@ you can use the special <em>new</em> resource.</p>
 <td>Only required for <em>module</em> &lt;type&gt;. Can be: <em>project</em> (default), <em>image</em> or <em>deployment</em>.</td>
 </tr>
 </tbody></table>
-<pre class="highlight shell"><code>curl https://slipstream.sixsq.com/module/examples/new?category<span class="o">=</span>Image login -d <span class="nv">username</span><span class="o">=</span>&lt;USER&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;PASSWORD&gt;
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/examples/new?category<span class="o">=</span>Image login -d <span class="nv">username</span><span class="o">=</span>&lt;USER&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;PASSWORD&gt;
 </code></pre>
 
 <blockquote>
 <p>The above command returns a response body structured like this:</p>
 </blockquote>
-<pre class="highlight xml"><code><span class="nt">&lt;imageModule</span> <span class="na">category=</span><span class="s">"Image"</span> <span class="na">creation=</span><span class="s">"2014-05-12 09:59:36.354 UTC"</span> <span class="na">deleted=</span><span class="s">"false"</span> <span class="na">isBase=</span><span class="s">"false"</span> <span class="na">isLatestVersion=</span><span class="s">"false"</span> <span class="na">loginUser=</span><span class="s">""</span> <span class="na">parentUri=</span><span class="s">"module/Mebster"</span> <span class="na">platform=</span><span class="s">""</span> <span class="na">shortName=</span><span class="s">"new"</span> <span class="na">version=</span><span class="s">"-1"</span><span class="nt">&gt;</span>
+<pre><code class="highlight xml"><span class="nt">&lt;imageModule</span> <span class="na">category=</span><span class="s">"Image"</span> <span class="na">creation=</span><span class="s">"2014-05-12 09:59:36.354 UTC"</span> <span class="na">deleted=</span><span class="s">"false"</span> <span class="na">isBase=</span><span class="s">"false"</span> <span class="na">isLatestVersion=</span><span class="s">"false"</span> <span class="na">loginUser=</span><span class="s">""</span> <span class="na">parentUri=</span><span class="s">"module/Mebster"</span> <span class="na">platform=</span><span class="s">""</span> <span class="na">shortName=</span><span class="s">"new"</span> <span class="na">version=</span><span class="s">"-1"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;parameters&gt;</span>
         <span class="nt">&lt;entry&gt;</span>
             <span class="nt">&lt;string&gt;</span>instanceid<span class="nt">&lt;/string&gt;</span>
@@ -1020,8 +1278,20 @@ This also means that <em>new</em> is a reserved word and modules and users canno
 <td>Not Acceptable &ndash; You requested a format that is not supported</td>
 </tr>
 <tr>
+<td>409</td>
+<td>The request could not be processed because of conflict in the request, such as an edit conflict in the case of multiple updates.</td>
+</tr>
+<tr>
+<td>413</td>
+<td>The request is larger than the server is willing or able to process.</td>
+</tr>
+<tr>
 <td>418</td>
 <td>I&rsquo;m a teapot &ndash; The all time classic :-)</td>
+</tr>
+<tr>
+<td>429</td>
+<td>Too Many Requests &ndash; The user has sent too many requests in a given amount of time.</td>
 </tr>
 <tr>
 <td>500</td>
