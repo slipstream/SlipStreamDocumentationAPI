@@ -595,12 +595,6 @@ centos_node.1,centos_node.2,centos_node.3
 
 # Virtual machines
 
-List status of all VMs, as known by the cloud providers.
-
-### HTTP Request
-
-`GET https://slipstream.sixsq.com/vms`
-
 ```shell
 curl https://slipstream.sixsq.com/vms --user <user>:<password>
 ```
@@ -608,12 +602,105 @@ curl https://slipstream.sixsq.com/vms --user <user>:<password>
 > The above command returns a body structured like this:
 
 ```xml
-<vms>
-   <vm cloud="ec2-eu-west" user="meb" instanceId="i-bbeb1dfb" state="Detached" measurement="2014-05-13 11:56:03.166 UTC" runUuid="Running"/>
-   <vm cloud="ec2-eu-west" user="meb" instanceId="i-7a3de138" state="Detached" measurement="2014-05-13 11:56:03.189 UTC" runUuid="Running"/>
-   <vm cloud="ec2-eu-west" user="meb" instanceId="i-a803dfea" state="terminated" measurement="2014-05-13 11:56:03.209 UTC" runUuid="Unknown"/>
+<vms offset="0" limit="20" count="4" totalCount="4" user="super">
+   <vm cloud="Exoscale"
+      user="test"
+      instanceId="96101801-b636-4752-9b04-74ec9a9abbc9"
+      state="Booting"
+      measurement="2015-04-01 14:34:22.273 CEST"/>
+   <vm cloud="Exoscale"
+      user="test"
+      instanceId="bbb07949-ab64-4556-88fd-f9aed872e9d1"
+      state="Running"
+      measurement="2015-04-01 14:34:22.273 CEST"
+      runUuid="ce3dfa8b-5a13-473b-bdd1-6e40ab71294b"
+      runOwner="test"
+      ip="185.19.29.126"
+      name="testclient.1"
+      nodeName="testclient"
+      nodeInstanceId="1"/>
+   <vm cloud="Exoscale"
+      user="test"
+      instanceId="ec05f8f2-1f05-48bc-aa33-b99f60b2209b"
+      state="Running"
+      measurement="2015-04-01 14:33:31.905 CEST"
+      runUuid="ce3dfa8b-5a13-473b-bdd1-6e40ab71294b"
+      runOwner="test"
+      ip="185.19.29.122"
+      name="orchestrator-Exoscale"/>
+   <vm cloud="Amazon-EC2"
+      user="test"
+      instanceId="a2ca20d8-9506-42b9-80a3-ce15579591ab"
+      state="Running"
+      measurement="2015-04-01 14:33:21.426 CEST"
+      runUuid="857fc1d4-6206-4d88-8a1c-81d83a117e86"
+      runOwner="test"
+      ip="185.19.29.123"
+      name="machine"/>
 </vms>
 ```
+
+List status of all virtual machines (VMs), as known by the cloud providers.
+
+<aside class="notice">
+A privileged user sees by default VMs of all users.
+</aside>
+
+<aside class="notice">
+VMs are sorted by `measurment`
+</aside>
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/vms`
+
+### Body Parameters
+
+<aside class="notice">
+None of these parameters are mandatory.
+</aside>
+
+### Body Parameters
+
+Parameter | Default value | Possible values | Description
+--------- | ------------- | --------------- |----------------------------
+cloud     |               | *one cloud*     | Show only the specified Cloud
+limit     | 20            | [1 - 500]       | Set the maximum number of VMs per page.
+offset    | 0             | [0 - inf]       | Offset to navigate through pages.
+runUuid   |               | *one run uuid*  | Show only VMs associated with the specified run uuid
+runOwner  |               | *one username*  | Show only VMs associated with Runs owned by a specific user
+user      |               | *one username*  | Show VMs the specified user can see
+
+### `<vms>` Attributes
+
+Attribute  | Always present | Description
+---------- | -------------- | -----------------------------------------------------
+cloud      | no             | The Cloud specified in the request if any
+limit      | no             | The limit specified in the request if any
+offset     | no             | The offset specified in the request if any
+count      | yes            | The number of `<vm>` elements returned
+totalCount | yes            | The total number of `<vm>` elements for this request
+runUuid    | no             | The Run uuid specified in the request if any
+runOwner   | no             | The Run owner (username) specified in the request if any
+user       | no             | The user for which VMs are displayed. Doesn't exist if VMs for all users are displayed
+
+
+### `<vm>` Attributes
+
+Attribute      | Always present | Description
+-------------- | -------------- | -----------------------------------------------------
+cloud          | yes            | The Cloud on which the VM is running
+user           | yes            | The user from which the VM was retrived
+instanceId     | yes            | The id of the VM on the Cloud
+state          | yes            | The state of the VM as provided by the Cloud
+measurement    | yes            | The time when the VM was seen for the first time
+runUuid        | no             | The uuid of the Run from which the VM is part of
+runOwner       | no             | The owner of the Run from which the VM is part of
+ip             | no             | The IP address of the VM
+name           | no             | The name of the VM in his Run.
+nodeName       | no             | The name of the node from which the VM is part of in his Run.
+nodeInstanceId | no             | The id of the node instance of the VM in his Run.
+
 
 # User
 
