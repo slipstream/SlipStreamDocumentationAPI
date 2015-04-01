@@ -58,7 +58,7 @@
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        <h1 id="slipstream-v2.5-api-reference">SlipStream v2.5 API Reference</h1>
+        <h1 id="slipstream-v2.6-api-reference">SlipStream v2.6 API Reference</h1>
 
 <h2 id="introduction">Introduction</h2>
 
@@ -769,16 +769,14 @@ centos_node.1,centos_node.2,centos_node.3
 <p><aside class="notice">This resource is restricted to privileged users.</aside></p>
 
 <p>List all users.</p>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/user --user &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/users --user &lt;user&gt;:&lt;password&gt;
 </code></pre>
 
 <blockquote>
 <p>The above command returns XML structured like this:</p>
 </blockquote>
 <pre><code class="highlight xml"><span class="nt">&lt;list&gt;</span>
-<span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">"sixsq"</span> <span class="na">resourceUri=</span><span class="s">"user/sixsq"</span> <span class="na">firstName=</span><span class="s">"SixSq"</span> <span class="na">lastName=</span><span class="s">"Administrator"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2014-04-02 14:22:05.86 CEST"</span> <span class="na">online=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
-<span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">"super"</span> <span class="na">resourceUri=</span><span class="s">"user/super"</span> <span class="na">firstName=</span><span class="s">"Super"</span> <span class="na">lastName=</span><span class="s">"User"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2014-05-06 21:12:42.520 CEST"</span> <span class="na">online=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
-<span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">"test"</span> <span class="na">resourceUri=</span><span class="s">"user/test"</span> <span class="na">firstName=</span><span class="s">"Test"</span> <span class="na">lastName=</span><span class="s">"User"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2014-05-06 20:44:19.233 CEST"</span> <span class="na">online=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">"super"</span>  <span class="na">resourceUri=</span><span class="s">"user/super"</span>  <span class="na">firstName=</span><span class="s">"Super"</span>  <span class="na">lastName=</span><span class="s">"User"</span>  <span class="na">email=</span><span class="s">"super@sixsq.com"</span>  <span class="na">state=</span><span class="s">"ACTIVE"</span>  <span class="na">activeSince=</span><span class="s">"2015-03-11 14:00:57.656 CET"</span>  <span class="na">lastOnline=</span><span class="s">"2015-04-01 14:58:57.466 CEST"</span>  <span class="na">lastExecute=</span><span class="s">"2015-03-12 18:03:13.853 CET"</span>  <span class="na">organization=</span><span class="s">"SixSq"</span>  <span class="na">issuper=</span><span class="s">"true"</span>  <span class="na">online=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
 <span class="nt">&lt;/list&gt;</span>
 </code></pre>
 
@@ -794,50 +792,71 @@ centos_node.1,centos_node.2,centos_node.3
 <p>The above command returns xml structured like this:</p>
 </blockquote>
 <pre><code class="highlight xml"><span class="cp">&lt;?xml version="1.0"?&gt;</span>
-<span class="nt">&lt;user</span> <span class="na">deleted=</span><span class="s">"false"</span> <span class="na">resourceUri=</span><span class="s">"user/test"</span> <span class="na">name=</span><span class="s">"test"</span> <span class="na">email=</span><span class="s">"test@sixsq.com"</span> <span class="na">firstName=</span><span class="s">"Test"</span> <span class="na">lastName=</span><span class="s">"User"</span> <span class="na">organization=</span><span class="s">"SixSq"</span> <span class="na">issuper=</span><span class="s">"false"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2014-05-07 20:16:44.580 CEST"</span> <span class="na">creation=</span><span class="s">"2014-05-07 20:15:28.664 CEST"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;parameters&gt;</span>
-        <span class="nt">&lt;entry&gt;</span>
-            <span class="nt">&lt;string&gt;</span><span class="cp">&lt;![CDATA[ General.On Error Run Forever ]]&gt;</span><span class="nt">&lt;/string&gt;</span>
-            <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.On Error Run Forever"</span> <span class="na">description=</span><span class="s">"If an error occurs, keep the execution running for investigation."</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Boolean"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"30"</span> <span class="na">order=</span><span class="s">"30"</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[ false ]]&gt;</span><span class="nt">&lt;/value&gt;</span>
-            <span class="nt">&lt;/parameter&gt;</span>
-        <span class="nt">&lt;/entry&gt;</span>
-        <span class="nt">&lt;entry&gt;</span>
-            <span class="nt">&lt;string&gt;</span><span class="cp">&lt;![CDATA[ General.Verbosity Level ]]&gt;</span><span class="nt">&lt;/string&gt;</span>
-            <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.Verbosity Level"</span> <span class="na">description=</span><span class="s">"Level of verbosity. 0 - Actions, 1 - Steps, 2 - Details data, 3 - Debugging."</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Enum"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"99"</span> <span class="na">order=</span><span class="s">"99"</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"4"</span><span class="nt">&gt;</span>
-                    <span class="nt">&lt;string&gt;</span>0<span class="nt">&lt;/string&gt;</span>
-                    <span class="nt">&lt;string&gt;</span>1<span class="nt">&lt;/string&gt;</span>
-                    <span class="nt">&lt;string&gt;</span>2<span class="nt">&lt;/string&gt;</span>
-                    <span class="nt">&lt;string&gt;</span>3<span class="nt">&lt;/string&gt;</span>
-                <span class="nt">&lt;/enumValues&gt;</span>
-                <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[ 0 ]]&gt;</span><span class="nt">&lt;/value&gt;</span>
-            <span class="nt">&lt;/parameter&gt;</span>
-        <span class="nt">&lt;/entry&gt;</span>
-        <span class="nt">&lt;entry&gt;</span>
-            <span class="nt">&lt;string&gt;</span><span class="cp">&lt;![CDATA[ General.Timeout ]]&gt;</span><span class="nt">&lt;/string&gt;</span>
-            <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.Timeout"</span> <span class="na">description=</span><span class="s">"Minutes - When this timeout is reached, the execution is forcefully terminated."</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"String"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"90"</span> <span class="na">order=</span><span class="s">"90"</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[ 30 ]]&gt;</span><span class="nt">&lt;/value&gt;</span>
-            <span class="nt">&lt;/parameter&gt;</span>
-        <span class="nt">&lt;/entry&gt;</span>
-        <span class="nt">&lt;entry&gt;</span>
-            <span class="nt">&lt;string&gt;</span><span class="cp">&lt;![CDATA[ General.On Success Run Forever ]]&gt;</span><span class="nt">&lt;/string&gt;</span>
-            <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.On Success Run Forever"</span> <span class="na">description=</span><span class="s">"If no errors occur, keep the execution running. Useful for deployment or long tests."</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Boolean"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"20"</span> <span class="na">order=</span><span class="s">"20"</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[ true ]]&gt;</span><span class="nt">&lt;/value&gt;</span>
-            <span class="nt">&lt;/parameter&gt;</span>
-        <span class="nt">&lt;/entry&gt;</span>
-        <span class="nt">&lt;entry&gt;</span>
-            <span class="nt">&lt;string&gt;</span><span class="cp">&lt;![CDATA[ General.default.cloud.service ]]&gt;</span><span class="nt">&lt;/string&gt;</span>
-            <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.default.cloud.service"</span> <span class="na">description=</span><span class="s">"Select which cloud you want to use."</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Enum"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"10"</span> <span class="na">order=</span><span class="s">"10"</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"0"</span><span class="nt">/&gt;</span>
-                <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[ ]]&gt;</span><span class="nt">&lt;/value&gt;</span>
-            <span class="nt">&lt;/parameter&gt;</span>
-        <span class="nt">&lt;/entry&gt;</span>
-        <span class="nt">&lt;entry&gt;</span>
-            <span class="nt">&lt;string&gt;</span><span class="cp">&lt;![CDATA[ General.ssh.public.key ]]&gt;</span><span class="nt">&lt;/string&gt;</span>
-            <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.ssh.public.key"</span> <span class="na">description=</span><span class="s">"SSH Public Key(s) (keys must be separated by new line) Warning: Some clouds may take into account only the first key."</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"RestrictedText"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"40"</span> <span class="na">order=</span><span class="s">"40"</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/entry&gt;</span>
-    <span class="nt">&lt;/parameters&gt;</span>
+<span class="nt">&lt;user</span> <span class="na">deleted=</span><span class="s">"false"</span> <span class="na">resourceUri=</span><span class="s">"user/super"</span> <span class="na">name=</span><span class="s">"super"</span> <span class="na">email=</span><span class="s">"super@sixsq.com"</span> <span class="na">firstName=</span><span class="s">"Super"</span> <span class="na">lastName=</span><span class="s">"User"</span> <span class="na">organization=</span><span class="s">"SixSq"</span> <span class="na">issuper=</span><span class="s">"true"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2015-04-01 17:48:21.661 CEST"</span> <span class="na">lastExecute=</span><span class="s">"2015-04-01 17:19:46.364 CEST"</span> <span class="na">activeSince=</span><span class="s">"2015-03-24 18:07:21.757 CET"</span> <span class="na">creation=</span><span class="s">"2015-03-24 18:07:21.746 CET"</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;parameters</span> <span class="na">class=</span><span class="s">"org.hibernate.collection.internal.PersistentMap"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;entry&gt;</span>
+         <span class="nt">&lt;string&gt;</span>General.Verbosity Level<span class="nt">&lt;/string&gt;</span>
+         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.Verbosity Level"</span> <span class="na">description=</span><span class="s">"Level of verbosity"</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Enum"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"30"</span> <span class="na">order=</span><span class="s">"30"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;instructions&gt;</span><span class="cp">&lt;![CDATA[0 - Actions,  1 - Steps,  2 - Details data,  3 - Debugging]]&gt;</span><span class="nt">&lt;/instructions&gt;</span>
+            <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+               <span class="nt">&lt;string&gt;</span>0<span class="nt">&lt;/string&gt;</span>
+               <span class="nt">&lt;string&gt;</span>1<span class="nt">&lt;/string&gt;</span>
+               <span class="nt">&lt;string&gt;</span>2<span class="nt">&lt;/string&gt;</span>
+               <span class="nt">&lt;string&gt;</span>3<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;/enumValues&gt;</span>
+            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[0]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+         <span class="nt">&lt;/parameter&gt;</span>
+      <span class="nt">&lt;/entry&gt;</span>
+      <span class="nt">&lt;entry&gt;</span>
+         <span class="nt">&lt;string&gt;</span>test-cloud.username<span class="nt">&lt;/string&gt;</span>
+         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"test-cloud.username"</span> <span class="na">description=</span><span class="s">"Account username"</span> <span class="na">category=</span><span class="s">"test-cloud"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"RestrictedString"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"10"</span> <span class="na">order=</span><span class="s">"10"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+         <span class="nt">&lt;/parameter&gt;</span>
+      <span class="nt">&lt;/entry&gt;</span>
+      <span class="nt">&lt;entry&gt;</span>
+         <span class="nt">&lt;string&gt;</span>General.ssh.public.key<span class="nt">&lt;/string&gt;</span>
+         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.ssh.public.key"</span> <span class="na">description=</span><span class="s">"SSH Public Key(s) (one per line)"</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"RestrictedText"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"50"</span> <span class="na">order=</span><span class="s">"50"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;instructions&gt;</span><span class="cp">&lt;![CDATA[Warning: Some clouds may take into account only the first key until SlipStream bootstraps the machine.]]&gt;</span><span class="nt">&lt;/instructions&gt;</span>
+            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[adasdasd]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+         <span class="nt">&lt;/parameter&gt;</span>
+      <span class="nt">&lt;/entry&gt;</span>
+      <span class="nt">&lt;entry&gt;</span>
+         <span class="nt">&lt;string&gt;</span>test-cloud.password<span class="nt">&lt;/string&gt;</span>
+         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"test-cloud.password"</span> <span class="na">description=</span><span class="s">"Account password"</span> <span class="na">category=</span><span class="s">"test-cloud"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Password"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"20"</span> <span class="na">order=</span><span class="s">"20"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+         <span class="nt">&lt;/parameter&gt;</span>
+      <span class="nt">&lt;/entry&gt;</span>
+      <span class="nt">&lt;entry&gt;</span>
+         <span class="nt">&lt;string&gt;</span>General.keep-running<span class="nt">&lt;/string&gt;</span>
+         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.keep-running"</span> <span class="na">description=</span><span class="s">"Keep running after deployment"</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Enum"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"15"</span> <span class="na">order=</span><span class="s">"15"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;instructions&gt;</span><span class="cp">&lt;![CDATA[Here you can define if and when SlipStream should leave the application running after performing the deployment. &lt;br/&gt;&lt;code&gt;On success&lt;/code&gt; is useful for production deployments or long tests. &lt;/br&gt;&lt;code&gt;On Error&lt;/code&gt; might be useful so that resources are consumed only when debugging is needed. &lt;br/&gt;&lt;code&gt;Never&lt;/code&gt; ensures that SlipStream automatically terminates the application after performing the deployment. &lt;br/&gt;Note: This parameter doesn't apply to &lt;code&gt;mutable deployment&lt;/code&gt; Runs and to &lt;code&gt;build image&lt;/code&gt; Runs.]]&gt;</span><span class="nt">&lt;/instructions&gt;</span>
+            <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+               <span class="nt">&lt;string&gt;</span>always<span class="nt">&lt;/string&gt;</span>
+               <span class="nt">&lt;string&gt;</span>on-success<span class="nt">&lt;/string&gt;</span>
+               <span class="nt">&lt;string&gt;</span>on-error<span class="nt">&lt;/string&gt;</span>
+               <span class="nt">&lt;string&gt;</span>never<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;/enumValues&gt;</span>
+            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[on-success]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+         <span class="nt">&lt;/parameter&gt;</span>
+      <span class="nt">&lt;/entry&gt;</span>
+      <span class="nt">&lt;entry&gt;</span>
+         <span class="nt">&lt;string&gt;</span>General.default.cloud.service<span class="nt">&lt;/string&gt;</span>
+         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.default.cloud.service"</span> <span class="na">description=</span><span class="s">"Default Cloud"</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Enum"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"10"</span> <span class="na">order=</span><span class="s">"10"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;instructions&gt;</span><span class="cp">&lt;![CDATA[Select the cloud that you want to use as the default.]]&gt;</span><span class="nt">&lt;/instructions&gt;</span>
+            <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+               <span class="nt">&lt;string&gt;</span>test-cloud<span class="nt">&lt;/string&gt;</span>
+            <span class="nt">&lt;/enumValues&gt;</span>
+            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[test-cloud]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+         <span class="nt">&lt;/parameter&gt;</span>
+      <span class="nt">&lt;/entry&gt;</span>
+      <span class="nt">&lt;entry&gt;</span>
+         <span class="nt">&lt;string&gt;</span>General.Timeout<span class="nt">&lt;/string&gt;</span>
+         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.Timeout"</span> <span class="na">description=</span><span class="s">"Execution timeout (in minutes)"</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"String"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"40"</span> <span class="na">order=</span><span class="s">"40"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;instructions&gt;</span><span class="cp">&lt;![CDATA[If the execution stays in a transitional state for more than the value of this timeout, the execution is forcefully terminated.]]&gt;</span><span class="nt">&lt;/instructions&gt;</span>
+            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[30]]&gt;</span><span class="nt">&lt;/value&gt;</span>
+         <span class="nt">&lt;/parameter&gt;</span>
+      <span class="nt">&lt;/entry&gt;</span>
+   <span class="nt">&lt;/parameters&gt;</span>
 <span class="nt">&lt;/user&gt;</span>
 </code></pre>
 
@@ -859,7 +878,7 @@ centos_node.1,centos_node.2,centos_node.3
 <tr>
 <td>user</td>
 <td>true</td>
-<td>The user to retrieve</td>
+<td>User name to retrieve</td>
 </tr>
 </tbody></table>
 
@@ -893,7 +912,7 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <h2 id="list-all-events">List all Events</h2>
 
-<p>Lists all events.</p>
+<p>Lists all events accessible by the authenticated user. A user has the right to see an event if she is the owner, or is a super user.</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
