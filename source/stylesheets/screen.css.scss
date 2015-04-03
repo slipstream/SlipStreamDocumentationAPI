@@ -51,10 +51,10 @@ html, body {
 @mixin embossed-bg {
   @include background(
     linear-gradient(top,
-                    rgba(#000, 0.2),
+                    rgba(#000, 0.1),
                     rgba(#000, 0) 8px),
     linear-gradient(bottom,
-                    rgba(#000, 0.2),
+                    rgba(#000, 0.1),
                     rgba(#000, 0) 8px),
     linear-gradient(top,
                     rgba($nav-embossed-border-top, 1),
@@ -92,6 +92,8 @@ html, body {
   // This is the logo at the top of the ToC
   &>img {
     display: block;
+    width: 200px;
+    padding: 10px;
   }
 
   &>.search {
@@ -180,12 +182,25 @@ html, body {
     @include transition-duration(230ms);
   }
 
+  .tocify-item {
+    border-top: 1px solid rgba(0,0,0,0);
+  }
+
   // This is the currently selected ToC entry
   .tocify-focus {
-    @include box-shadow(0px 1px 0px $nav-active-shadow);
+    //@include box-shadow(0px 1px 0px $nav-active-shadow);
     background-color: $nav-active-bg;
     color: $nav-active-text;
+    border-top: 1px solid rgb(180, 0, 0);
+    outline: 1px solid rgb(106, 0, 0);
   }
+  
+  .tocify-hover {
+    background-color: $nav-active-bg;
+    //border-top: 1px solid rgb(180, 0, 0);
+    //outline: 1px solid rgb(106, 0, 0);
+    //text-decoration: underline;
+}
 
   // Subheaders are the submenus that slide open
   // in the table of contents.
@@ -193,9 +208,23 @@ html, body {
     display: none; // tocify will override this when needed
     background-color: $nav-subitem-bg;
     font-weight: 500;
+    
+    border-bottom: 1px solid rgb(213, 0, 0);
+    border-left: 1px solid rgb(100, 0, 0);
+    border-top: 1px solid rgb(106, 0, 0);
+    padding: 4px 0;
+    
     .tocify-item>a {
       padding-left: $nav-padding + $nav-indent;
       font-size: 12px;
+    }
+    
+    .tocify-focus, .tocify-hover {
+      background-color: rgb(160, 0, 0);
+    }
+    
+    .tocify-focus>a {
+      //text-decoration: underline;
     }
 
     // for embossed look:
