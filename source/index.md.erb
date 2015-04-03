@@ -229,7 +229,7 @@ module | true | Unique identifier of the module - e.g. *examples/images/ubuntu-1
 version | false | Version of the module to update. If not provided, get the latest (most recent)
 
 <aside class="notice">
-To list the root projects, simply omit the *&lt;MODULE>* from the request.
+To list the root projects, simply omit the <em>&lt;MODULE></em> from the request.
 </aside>
 
 ```shell
@@ -418,11 +418,11 @@ curl https://slipstream.sixsq.com/run/<run> -u <user>:<password>
 Create a new immutable (standard) run.
 
 <aside class="notice">
-Immutable runs cannot be changed once deployed. If you require to scale up or down the run, then request a *mutable* run (see below).
+Immutable runs cannot be changed once deployed. If you require to scale up or down the run, then request a <em>mutable</em> run (see below).
 </aside>
 
 <aside class="notice">
-This mutable/immutable feature only applies to deployment type run (aka *Orchestration* type).
+This mutable/immutable feature only applies to deployment type run (aka <em>Orchestration</em> type).
 </aside>
 
 The **Location** attribute in the response header provides the full url of the updated resource, with the incremented version.
@@ -483,7 +483,7 @@ Run Type       | Description
 Orchestration  | Deployment: only applies to deployment category.  This is the only valid type value for deployment, thus does not have to be provided.
 
 <aside class="notice">
-Only *Orchestration* type run can be created as mutable.
+Only <em>Orchestration</em> type run can be created as mutable.
 </aside>
 
 
@@ -1167,7 +1167,7 @@ On the root module resource (i.e. /module), only project category can be request
 </aside>
 
 <aside class="notice">
-This also means that *new* is a reserved word and modules and users cannot be called new.
+This also means that <em>new</em> is a reserved word and modules and users cannot be called new.
 </aside>
 
 
