@@ -11,7 +11,11 @@ toc_footers:
 
 ---
 
-# SlipStream v2.3 API Reference
+<% 
+  VERSION='v2.6'
+%>
+
+# SlipStream <%= VERSION %> API Reference
 
 ## Introduction
 
@@ -352,7 +356,7 @@ curl https://slipstream.sixsq.com/module/<module>/ -u <user>:<password>
 </versionList>
 ```
 
-# Run
+  # Run
 
 The *run* resource represents an execution in the cloud - i.e. running VMs.
 SlipStream supports 3 types of runs:
@@ -377,11 +381,10 @@ curl https://slipstream.sixsq.com/run -u <user>:<password>
 ```
 
 ```xml
-<runs>
-   <item resourceUri="run/4f187379-cdb9-470d-9656-b6fac6dc33d8" uuid="4f187379-cdb9-470d-9656-b6fac6dc33d8" moduleResourceUri="module/examples/tutorials/service-testing/system/471"
-status="Done" startTime="2014-05-10 15:22:56.882 UTC" cloudServiceName="exoscale-ch-gva" username="meb" type="Orchestration" tags=""/>
-   <item resourceUri="run/fa3b9652-9dac-49e2-9573-b761777c8238" uuid="fa3b9652-9dac-49e2-9573-b761777c8238" moduleResourceUri="module/examples/tutorials/service-testing/system/471"
-status="Done" startTime="2014-05-10 15:13:29.352 UTC" cloudServiceName="exoscale-ch-gva" username="meb" type="Orchestration" tags=""/>
+<runs offset="0" limit="20" count="20" totalCount="93">
+   <item resourceUri="run/fed1dd04-aa05-4a92-abb8-ed279f1f4dd4" uuid="fed1dd04-aa05-4a92-abb8-ed279f1f4dd4" moduleResourceUri="module/SlipStream/deploy-slipstream-dpl/745" status="Done" abort="" startTime="2015-03-17 13:34:51.440 UTC" cloudServiceNames="exoscale-ch-gva" username="sixsq_dev" type="Orchestration" tags=""/>
+   <item resourceUri="run/1ab29b6a-f08c-45ae-9cf4-336a0415f46c" uuid="1ab29b6a-f08c-45ae-9cf4-336a0415f46c" moduleResourceUri="module/SlipStream/deploy-slipstream-dpl/742" status="Cancelled" abort="Failed running &apos;execute&apos; target on &apos;slipstream.1&apos;" startTime="2015-03-17 10:52:05.331 UTC" cloudServiceNames="exoscale-ch-gva" username="sixsq_dev" type="Orchestration" tags=""/>
+   ...
 </runs>
 ```
 
@@ -592,12 +595,6 @@ centos_node.1,centos_node.2,centos_node.3
 
 # Virtual machines
 
-List status of all VMs, as known by the cloud providers.
-
-### HTTP Request
-
-`GET https://slipstream.sixsq.com/vms`
-
 ```shell
 curl https://slipstream.sixsq.com/vms --user <user>:<password>
 ```
@@ -605,12 +602,105 @@ curl https://slipstream.sixsq.com/vms --user <user>:<password>
 > The above command returns a body structured like this:
 
 ```xml
-<vms>
-   <vm cloud="ec2-eu-west" user="meb" instanceId="i-bbeb1dfb" state="Detached" measurement="2014-05-13 11:56:03.166 UTC" runUuid="Running"/>
-   <vm cloud="ec2-eu-west" user="meb" instanceId="i-7a3de138" state="Detached" measurement="2014-05-13 11:56:03.189 UTC" runUuid="Running"/>
-   <vm cloud="ec2-eu-west" user="meb" instanceId="i-a803dfea" state="terminated" measurement="2014-05-13 11:56:03.209 UTC" runUuid="Unknown"/>
+<vms offset="0" limit="20" count="4" totalCount="4" user="super">
+   <vm cloud="Exoscale"
+      user="test"
+      instanceId="96101801-b636-4752-9b04-74ec9a9abbc9"
+      state="Booting"
+      measurement="2015-04-01 14:34:22.273 CEST"/>
+   <vm cloud="Exoscale"
+      user="test"
+      instanceId="bbb07949-ab64-4556-88fd-f9aed872e9d1"
+      state="Running"
+      measurement="2015-04-01 14:34:22.273 CEST"
+      runUuid="ce3dfa8b-5a13-473b-bdd1-6e40ab71294b"
+      runOwner="test"
+      ip="185.19.29.126"
+      name="testclient.1"
+      nodeName="testclient"
+      nodeInstanceId="1"/>
+   <vm cloud="Exoscale"
+      user="test"
+      instanceId="ec05f8f2-1f05-48bc-aa33-b99f60b2209b"
+      state="Running"
+      measurement="2015-04-01 14:33:31.905 CEST"
+      runUuid="ce3dfa8b-5a13-473b-bdd1-6e40ab71294b"
+      runOwner="test"
+      ip="185.19.29.122"
+      name="orchestrator-Exoscale"/>
+   <vm cloud="Amazon-EC2"
+      user="test"
+      instanceId="a2ca20d8-9506-42b9-80a3-ce15579591ab"
+      state="Running"
+      measurement="2015-04-01 14:33:21.426 CEST"
+      runUuid="857fc1d4-6206-4d88-8a1c-81d83a117e86"
+      runOwner="test"
+      ip="185.19.29.123"
+      name="machine"/>
 </vms>
 ```
+
+List status of all virtual machines (VMs), as known by the cloud providers.
+
+<aside class="notice">
+A privileged user sees by default VMs of all users.
+</aside>
+
+<aside class="notice">
+VMs are sorted by <code class="prettyprint">measurment</code>
+</aside>
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/vms`
+
+### Body Parameters
+
+<aside class="notice">
+None of these parameters are mandatory.
+</aside>
+
+### Body Parameters
+
+Parameter | Default value | Possible values | Description
+--------- | ------------- | --------------- |----------------------------
+cloud     |               | *one cloud*     | Show only the specified Cloud
+limit     | 20            | [1 - 500]       | Set the maximum number of VMs per page.
+offset    | 0             | [0 - inf]       | Offset to navigate through pages.
+runUuid   |               | *one run uuid*  | Show only VMs associated with the specified run uuid
+runOwner  |               | *one username*  | Show only VMs associated with Runs owned by a specific user
+user      |               | *one username*  | Show VMs the specified user can see
+
+### `<vms>` Attributes
+
+Attribute  | Always present | Description
+---------- | -------------- | -----------------------------------------------------
+cloud      | no             | The Cloud specified in the request if any
+limit      | no             | The limit specified in the request if any
+offset     | no             | The offset specified in the request if any
+count      | yes            | The number of `<vm>` elements returned
+totalCount | yes            | The total number of `<vm>` elements for this request
+runUuid    | no             | The Run uuid specified in the request if any
+runOwner   | no             | The Run owner (username) specified in the request if any
+user       | no             | The user for which VMs are displayed. Doesn't exist if VMs for all users are displayed
+
+
+### `<vm>` Attributes
+
+Attribute      | Always present | Description
+-------------- | -------------- | -----------------------------------------------------
+cloud          | yes            | The Cloud on which the VM is running
+user           | yes            | The user from which the VM was retrived
+instanceId     | yes            | The id of the VM on the Cloud
+state          | yes            | The state of the VM as provided by the Cloud
+measurement    | yes            | The time when the VM was seen for the first time
+runUuid        | no             | The uuid of the Run from which the VM is part of
+runOwner       | no             | The owner of the Run from which the VM is part of
+ip             | no             | The IP address of the VM
+name           | no             | The name of the VM in his Run.
+nodeName       | no             | The name of the node from which the VM is part of in his Run.
+nodeInstanceId | no             | The id of the node instance of the VM in his Run.
+
 
 # User
 
@@ -630,9 +720,7 @@ curl https://slipstream.sixsq.com/user --user <user>:<password>
 
 ```xml
 <list>
-<item name="sixsq" resourceUri="user/sixsq" firstName="SixSq" lastName="Administrator" state="ACTIVE" lastOnline="2014-04-02 14:22:05.86 CEST" online="false"/>
-<item name="super" resourceUri="user/super" firstName="Super" lastName="User" state="ACTIVE" lastOnline="2014-05-06 21:12:42.520 CEST" online="true"/>
-<item name="test" resourceUri="user/test" firstName="Test" lastName="User" state="ACTIVE" lastOnline="2014-05-06 20:44:19.233 CEST" online="false"/>
+<item name="super"  resourceUri="user/super"  firstName="Super"  lastName="User"  email="super@sixsq.com"  state="ACTIVE"  activeSince="2015-03-11 14:00:57.656 CET"  lastOnline="2015-04-01 14:58:57.466 CEST"  lastExecute="2015-03-12 18:03:13.853 CET"  organization="SixSq"  issuper="true"  online="true" />
 </list>
 ```
 
@@ -651,50 +739,71 @@ curl https://slipstream.sixsq.com/user/<user> --user <user>:<password>
 
 ```xml
 <?xml version="1.0"?>
-<user deleted="false" resourceUri="user/test" name="test" email="test@sixsq.com" firstName="Test" lastName="User" organization="SixSq" issuper="false" state="ACTIVE" lastOnline="2014-05-07 20:16:44.580 CEST" creation="2014-05-07 20:15:28.664 CEST">
-	<parameters>
-		<entry>
-			<string><![CDATA[ General.On Error Run Forever ]]></string>
-			<parameter name="General.On Error Run Forever" description="If an error occurs, keep the execution running for investigation." category="General" mandatory="true" type="Boolean" readonly="false" order_="30" order="30">
-				<value><![CDATA[ false ]]></value>
-			</parameter>
-		</entry>
-		<entry>
-			<string><![CDATA[ General.Verbosity Level ]]></string>
-			<parameter name="General.Verbosity Level" description="Level of verbosity. 0 - Actions, 1 - Steps, 2 - Details data, 3 - Debugging." category="General" mandatory="true" type="Enum" readonly="false" order_="99" order="99">
-				<enumValues length="4">
-					<string>0</string>
-					<string>1</string>
-					<string>2</string>
-					<string>3</string>
-				</enumValues>
-				<value><![CDATA[ 0 ]]></value>
-			</parameter>
-		</entry>
-		<entry>
-			<string><![CDATA[ General.Timeout ]]></string>
-			<parameter name="General.Timeout" description="Minutes - When this timeout is reached, the execution is forcefully terminated." category="General" mandatory="true" type="String" readonly="false" order_="90" order="90">
-				<value><![CDATA[ 30 ]]></value>
-			</parameter>
-		</entry>
-		<entry>
-			<string><![CDATA[ General.On Success Run Forever ]]></string>
-			<parameter name="General.On Success Run Forever" description="If no errors occur, keep the execution running. Useful for deployment or long tests." category="General" mandatory="true" type="Boolean" readonly="false" order_="20" order="20">
-				<value><![CDATA[ true ]]></value>
-			</parameter>
-		</entry>
-		<entry>
-			<string><![CDATA[ General.default.cloud.service ]]></string>
-			<parameter name="General.default.cloud.service" description="Select which cloud you want to use." category="General" mandatory="true" type="Enum" readonly="false" order_="10" order="10">
-				<enumValues length="0"/>
-				<value><![CDATA[ ]]></value>
-			</parameter>
-		</entry>
-		<entry>
-			<string><![CDATA[ General.ssh.public.key ]]></string>
-			<parameter name="General.ssh.public.key" description="SSH Public Key(s) (keys must be separated by new line) Warning: Some clouds may take into account only the first key." category="General" mandatory="true" type="RestrictedText" readonly="false" order_="40" order="40"/>
-		</entry>
-	</parameters>
+<user deleted="false" resourceUri="user/super" name="super" email="super@sixsq.com" firstName="Super" lastName="User" organization="SixSq" issuper="true" state="ACTIVE" lastOnline="2015-04-01 17:48:21.661 CEST" lastExecute="2015-04-01 17:19:46.364 CEST" activeSince="2015-03-24 18:07:21.757 CET" creation="2015-03-24 18:07:21.746 CET">
+   <parameters class="org.hibernate.collection.internal.PersistentMap">
+      <entry>
+         <string>General.Verbosity Level</string>
+         <parameter name="General.Verbosity Level" description="Level of verbosity" category="General" mandatory="true" type="Enum" readonly="false" order_="30" order="30">
+            <instructions><![CDATA[0 - Actions,  1 - Steps,  2 - Details data,  3 - Debugging]]></instructions>
+            <enumValues length="4">
+               <string>0</string>
+               <string>1</string>
+               <string>2</string>
+               <string>3</string>
+            </enumValues>
+            <value><![CDATA[0]]></value>
+         </parameter>
+      </entry>
+      <entry>
+         <string>test-cloud.username</string>
+         <parameter name="test-cloud.username" description="Account username" category="test-cloud" mandatory="true" type="RestrictedString" readonly="false" order_="10" order="10">
+            <value><![CDATA[]]></value>
+         </parameter>
+      </entry>
+      <entry>
+         <string>General.ssh.public.key</string>
+         <parameter name="General.ssh.public.key" description="SSH Public Key(s) (one per line)" category="General" mandatory="true" type="RestrictedText" readonly="false" order_="50" order="50">
+            <instructions><![CDATA[Warning: Some clouds may take into account only the first key until SlipStream bootstraps the machine.]]></instructions>
+            <value><![CDATA[adasdasd]]></value>
+         </parameter>
+      </entry>
+      <entry>
+         <string>test-cloud.password</string>
+         <parameter name="test-cloud.password" description="Account password" category="test-cloud" mandatory="true" type="Password" readonly="false" order_="20" order="20">
+            <value><![CDATA[]]></value>
+         </parameter>
+      </entry>
+      <entry>
+         <string>General.keep-running</string>
+         <parameter name="General.keep-running" description="Keep running after deployment" category="General" mandatory="true" type="Enum" readonly="false" order_="15" order="15">
+            <instructions><![CDATA[Here you can define if and when SlipStream should leave the application running after performing the deployment. <br/><code>On success</code> is useful for production deployments or long tests. </br><code>On Error</code> might be useful so that resources are consumed only when debugging is needed. <br/><code>Never</code> ensures that SlipStream automatically terminates the application after performing the deployment. <br/>Note: This parameter doesn't apply to <code>mutable deployment</code> Runs and to <code>build image</code> Runs.]]></instructions>
+            <enumValues length="4">
+               <string>always</string>
+               <string>on-success</string>
+               <string>on-error</string>
+               <string>never</string>
+            </enumValues>
+            <value><![CDATA[on-success]]></value>
+         </parameter>
+      </entry>
+      <entry>
+         <string>General.default.cloud.service</string>
+         <parameter name="General.default.cloud.service" description="Default Cloud" category="General" mandatory="true" type="Enum" readonly="false" order_="10" order="10">
+            <instructions><![CDATA[Select the cloud that you want to use as the default.]]></instructions>
+            <enumValues length="1">
+               <string>test-cloud</string>
+            </enumValues>
+            <value><![CDATA[test-cloud]]></value>
+         </parameter>
+      </entry>
+      <entry>
+         <string>General.Timeout</string>
+         <parameter name="General.Timeout" description="Execution timeout (in minutes)" category="General" mandatory="true" type="String" readonly="false" order_="40" order="40">
+            <instructions><![CDATA[If the execution stays in a transitional state for more than the value of this timeout, the execution is forcefully terminated.]]></instructions>
+            <value><![CDATA[30]]></value>
+         </parameter>
+      </entry>
+   </parameters>
 </user>
 ```
 
@@ -708,8 +817,249 @@ This resource retrieves a specific user.
 
 Parameter | Required | Description
 --------- | -------- | -----------
-user | true | The user to retrieve
+user | true | User name to retrieve
 
+# Event
+
+From [CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
+
+"
+An resource that represents the occurrence of an event within the managed infrastructure. Some
+examples of Events may be:
+
+* Machine X has been rebooted by guest OS.
+* Machine X is not responding to platform services.
+* A new vCPU has been added to machine X following defined elasticity rules.
+"
+
+This resource can be created for example to log for a given run the following events:
+
+* State transition
+* Termination (manual)
+* First abort call (with reason)
+* Scaling up or down
+
+<aside class="notice">
+An event can <strong>not</strong> be updated, only deleted.
+</aside>
+
+
+## List all Events
+
+Lists all events accessible by the authenticated user. A user has the right to see an event if she is the owner, or is a super user.
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/event/`
+
+```shell
+curl https://slipstream.sixsq.com/event/ -u <user>:<password> -D -
+```
+
+> The above command returns json structured like this:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 2284
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:15:48 GMT
+
+{
+  "events" : [ {
+    "content" : {
+      "resource" : {
+        "href" : "Run/45614147-aed1-4a24-889d-6365b0b1f2cd"
+      },
+      "state" : "Started"
+    },
+    "updated" : "2015-03-19T09:39:38.238Z",
+    "type" : "state",
+    "created" : "2015-03-19T09:39:38.238Z",
+    "id" : "Event/0d78db78-1b98-4bd1-ba14-bf378da68a66",
+    "severity" : "medium",
+    "acl" : {
+      "owner" : {
+        "type" : "USER",
+        "principal" : "joe"
+      },
+      "rules" : [ {
+        "type" : "ROLE",
+        "principal" : "ANON",
+        "right" : "ALL"
+      } ]
+    },
+    "operations" : [ {
+      "rel" : "http://sixsq.com/slipstream/1/Action/delete",
+      "href" : "Event/0d78db78-1b98-4bd1-ba14-bf378da68a66"
+    } ],
+    "resourceURI" : "http://sixsq.com/slipstream/1/Event",
+    "timestamp" : "2015-01-10T08:20:00.0Z"
+  } ],
+  "operations" : [ {
+    "rel" : "http://sixsq.com/slipstream/1/Action/add",
+    "href" : "Event"
+  } ],
+  "acl" : {
+    "rules" : [ {
+      "type" : "ROLE",
+      "right" : "ALL",
+      "principal" : "ANON"
+    } ],
+    "owner" : {
+      "type" : "ROLE",
+      "principal" : "ADMIN"
+    }
+  },
+  "resourceURI" : "http://sixsq.com/slipstream/1/EventCollection",
+  "id" : "Event",
+  "count" : 1
+}
+```
+
+## Create an Event
+
+Create an event that contains information (mainly timestamp and state) related to a target resource.
+
+### HTTP Request
+
+`POST https://slipstream.sixsq.com/event`
+
+### Body Parameters
+
+Parameter   | Required  | Description
+------------| --------  | -----------
+timestamp   | true      | The timestamp (GMT time) of the event (not to be confused with created and updated timestamps of the resource representing the event)
+content     | true      | Structure containing the resource reference (i.e the **target** of this event) and its state
+type        | true      | Accepted values: `state` and `alarm`
+severity    | true      | Accepted values: `critical`, `high`, `medium` and `low`
+
+```shell
+curl https://slipstream.sixsq.com/event -d "{ \"acl\": {\"owner\": {\"type\": \"USER\", \"principal\": \"joe\"},    \"rules\": [{\"type\": \"ROLE\", \"prinipal\": \"ANON\", \"right\": \"ALL\"}]},    \"id\": \"123\",    \"created\" :  \"2015-01-16T08:20:00.0Z\",    \"updated\" : \"2015-01-16T08:20:00.0Z\",    \"resourceURI\" : \"http://slipstream.sixsq.com/ssclj/1/Event\",    \"timestamp\": \"2015-01-10T08:20:00.0Z\",    \"content\" :  { \"resource\":  {\"href\": \"Run/45614147-aed1-4a24-889d-6365b0b1f2cd\"},    \"state\" : \"Started\" } ,    \"type\": \"state\",    \"severity\": \"medium\"}" -X POST -H "Content-Type: application/json" -u <user>:<password> -D -
+```
+
+> The above command returns a json structured like this:
+
+```http
+HTTP/1.1 201 Created
+Location: Event/257cf1bd-1397-4296-8124-bb2213425b6e
+Content-Type: application/json
+Content-Length: 152
+Server: http-kit
+Date: Thu, 19 Mar 2015 12:47:38 GMT
+
+{
+  "status" : 201,
+  "message" : "created Event/257cf1bd-1397-4296-8124-bb2213425b6e",
+  "resource-id" : "Event/257cf1bd-1397-4296-8124-bb2213425b6e"
+}
+```
+
+> In case of error (e.g invalid value for `severity`), the following json is returned (note that the message details the origin of the problem):
+
+```http
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
+Content-Length: 232
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:48:11 GMT
+
+{
+  "status" : 400,
+  "message" : "resource does not satisfy defined schema: {:acl {:rules [{:prinicpal disallowed-key, :principal missing-required-key}]}, :severity (not (#{\"low\" \"high\" \"medium\" \"critical\"} \"urgent\"))}"
+}
+```
+
+## Get an Event
+
+Get a specific event.
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/event/<event-uuid>`
+
+```shell
+curl https://slipstream.sixsq.com/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u <user>:<password> -D -
+```
+
+> The above command returns a json structured like this:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 869
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:17:06 GMT
+
+{
+  "content" : {
+    "resource" : {
+      "href" : "Run/45614147-aed1-4a24-889d-6365b0b1f2cd"
+    },
+    "state" : "Started"
+  },
+  "updated" : "2015-03-19T12:46:16.766Z",
+  "type" : "state",
+  "created" : "2015-03-19T12:46:16.766Z",
+  "id" : "Event/4605ee06-ccda-48f5-a481-23c6ab296b0d",
+  "severity" : "medium",
+  "acl" : {
+    "owner" : {
+      "type" : "USER",
+      "principal" : "joe"
+    },
+    "rules" : [ {
+      "type" : "ROLE",
+      "principal" : "ANON",
+      "right" : "ALL"
+    } ]
+  },
+  "operations" : [ {
+    "rel" : "http://sixsq.com/slipstream/1/Action/delete",
+    "href" : "Event/4605ee06-ccda-48f5-a481-23c6ab296b0d"
+  } ],
+  "resourceURI" : "http://sixsq.com/slipstream/1/Event",
+  "timestamp" : "2015-01-10T08:20:00.0Z"
+}
+```
+
+## Delete an Event
+
+Delete a specific (the event-uuid is known) event.
+
+### HTTP Request
+
+`DELETE https://slipstream.sixsq.com/event/<event-uuid>`
+
+```shell
+curl -X DELETE  https://slipstream.sixsq.com/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u <user>:<password> -D -
+```
+
+> The above command returns a json structured like this:
+
+```http
+HTTP/1.1 204 No Content
+Content-Type: application/json
+Content-Length: 152
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:26:27 GMT
+```
+
+> When providing an invalid event-uuid, here is the response:
+
+```http
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+Content-Length: 102
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:35:57 GMT
+
+{
+  "status" : 404,
+  "message" : "Event/wrong-uuid not found",
+  "resource-id" : "Event/wrong-uuid"
+}
+```
 
 # The *new* resource
 
@@ -836,6 +1186,9 @@ Error Code | Meaning
 404 | Not Found -- The requested resource doesn't exist
 405 | Method Not Allowed -- You tried to access a resource with an invalid method
 406 | Not Acceptable -- You requested a format that is not supported
+409 | The request could not be processed because of conflict in the request, such as an edit conflict in the case of multiple updates.
+413 | The request is larger than the server is willing or able to process.
 418 | I'm a teapot -- The all time classic :-)
+429 | Too Many Requests -- The user has sent too many requests in a given amount of time.
 500 | Internal Server Error -- We have a problem with our server. Try again later.
 503 | Service Unavailable -- We're temporarially offline for maintenance. Please try again later.
