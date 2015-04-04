@@ -661,8 +661,6 @@ VMs are sorted by <code class="prettyprint">measurment</code>
 None of these parameters are mandatory.
 </aside>
 
-### Body Parameters
-
 Parameter | Default value | Possible values | Description
 --------- | ------------- | --------------- |----------------------------
 cloud     |               | *one cloud*     | Show only the specified Cloud
@@ -671,6 +669,10 @@ offset    | 0             | [0 - inf]       | Offset to navigate through pages.
 runUuid   |               | *one run uuid*  | Show only VMs associated with the specified run uuid
 runOwner  |               | *one username*  | Show only VMs associated with Runs owned by a specific user
 user      |               | *one username*  | Show VMs the specified user can see
+
+<aside class="warning">
+The <code class="prettyprint">user</code> parameter is reserved to privileged users.
+</aside>
 
 ### `<vms>` Attributes
 
@@ -709,7 +711,9 @@ The user resource provides user management.
 
 ## Get All Users
 
-<aside class="notice">This resource is restricted to privileged users.</aside>
+<aside class="warning">
+This resource is restricted to privileged users.
+</aside>
 
 List all users.
 
@@ -824,14 +828,17 @@ user | true | User name to retrieve
 
 From [CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
 
-"
-An resource that represents the occurrence of an event within the managed infrastructure. Some
-examples of Events may be:
+<aside class="notice">
+An resource that represents the occurrence of an event within the managed infrastructure. 
+<br/><br/>
+Some examples of Events may be:
 
-* Machine X has been rebooted by guest OS.
-* Machine X is not responding to platform services.
-* A new vCPU has been added to machine X following defined elasticity rules.
-"
+<ul>
+<li>Machine X has been rebooted by guest OS</li>
+<li>Machine X is not responding to platform services.</li>
+<li>A new vCPU has been added to machine X following defined elasticity rules.</li>
+</ul>
+</aside>
 
 This resource can be created for example to log for a given run the following events:
 
@@ -840,7 +847,7 @@ This resource can be created for example to log for a given run the following ev
 * First abort call (with reason)
 * Scaling up or down
 
-<aside class="notice">
+<aside class="warning">
 An event can <strong>not</strong> be updated, only deleted.
 </aside>
 
