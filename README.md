@@ -1,7 +1,7 @@
 SlipStream REST API
 =====
 
-Find [here](http://slipstream.github.io/SlipStreamDocumentationAPI/) the SlipStream API documentation.
+Find [here](http://ssapi.sixsq.com) the SlipStream API documentation.
 
 The API is built using [Slate](https://github.com/tripit/slate). To build and run localy the web redered API, do the following:
 
