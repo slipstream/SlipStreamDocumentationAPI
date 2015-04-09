@@ -220,7 +220,7 @@ Get a module (i.e. image, deployment or project).
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/module/[<module>[/<version>]]`
+`GET https://slipstream.sixsq.com/module/<module>[/<version>]`
 
 ### Url Parameters
 
@@ -245,11 +245,11 @@ The PUT request will create a new resource with the same &lt;module> name but a 
 
 ### HTTP Request
 
-`PUT https://slipstream.sixsq.com/module/<module>/<version>`
+`PUT https://slipstream.sixsq.com/module/<module>[/<version>]`
 
 The **Location** attribute in the response header provides the full url of the updated resource, with the incremented version.
 
-### Body Parameters
+### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -290,9 +290,9 @@ The DELETE request will delete the specified resource if fully qualified (i.e. i
 
 ### HTTP Request
 
-`DELETE https://slipstream.sixsq.com/module/<module>/<version>`
+`DELETE https://slipstream.sixsq.com/module/<module>[/<version>]`
 
-### Body Parameters
+### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -328,7 +328,7 @@ of the module, this request allows users to list these.
 Notice the trailing '/' in the URL
 </aside>
 
-### Url Parameters
+### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -395,13 +395,13 @@ Get a specific run.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/run/<run>`
+`GET https://slipstream.sixsq.com/run/<run-uuid>`
 
 ### Url Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
-run       | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
 
 ```shell
 curl https://slipstream.sixsq.com/run/<run> -u <user>:<password>
@@ -436,8 +436,8 @@ The **Location** attribute in the response header provides the full url of the u
 
 Parameter | Required | Description
 --------- | -------- | -----------
-refqname  | true     | Reference module from which to create a run. Must be an *Image* or *Deployment* category - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
-type      | depends  | Type of run. This is only required when running an image, since we can either deploy a VM (i.e. simple run) or create a new image (i.e. build). See below for type definition.
+refqname  | true     | Reference module from which to create a run. Must be an *Image* or *Deployment* category - e.g. *module/SlipStream/deploy-slipstream-dpl*.
+type      | depends  | Type of run. This is only required when running an image, since we can either deploy a VM (i.e. simple run) or create a new image (i.e. build). See below for *run type* definition.
 
 Run Type       | Description
 -------------- | --------
@@ -476,12 +476,8 @@ The **Location** attribute in the response header provides the full url of the n
 
 Parameter | Required | Description
 --------- | -------- | -----------
-refqname  | true     | Reference module from which to create a run. Must be an *Image* or *Deployment* category - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+refqname  | true     | Reference module from which to create a run. Must be a *Deployment* category - e.g. *module/SlipStream/deploy-slipstream-dpl*.
 mutable  | true     | Define that the run is mutable - i.e., providing a possibility to add and remove node instances.
-
-Run Type       | Description
--------------- | --------
-Orchestration  | Deployment: only applies to deployment category.  This is the only valid type value for deployment, thus does not have to be provided.
 
 <aside class="notice">
 Only <em>Orchestration</em> type run can be created as mutable.
@@ -504,13 +500,20 @@ Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identif
 Content-Length: 0
 ```
 
-## Add node instances on a mutable Run
+## Add node instances to a mutable Run
 
 Add node instances on a mutable Run.
 
 ### HTTP Request
 
 `POST https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+
+### Url Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+node-name | true     | Node name - e.g. *centos_node*.
 
 ### Body Parameters
 
@@ -537,13 +540,20 @@ Set-cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identif
 centos_node.2,centos_node.3
 ```
 
-## Remove node instances from Run
+## Remove node instances from a Run
 
-Remove node instances from Run.
+Remove node instances from a Run.
 
 ### HTTP Request
 
 `DELETE https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+
+### Url Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+node-name | true     | Node name - e.g. *centos_node*.
 
 ### Body Parameters
 
@@ -573,6 +583,13 @@ Get instance names of a node in Run.
 ### HTTP Request
 
 `GET https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+
+### Url Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+node-name | true     | Node name - e.g. *centos_node*.
 
 ```shell
 curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u <user>:<password> "Content-Type: text/plain" -D -
@@ -655,7 +672,7 @@ VMs are sorted by <code class="prettyprint">measurment</code>
 
 `GET https://slipstream.sixsq.com/vms`
 
-### Body Parameters
+### Query Parameters
 
 <aside class="notice">
 None of these parameters are mandatory.
@@ -1076,14 +1093,19 @@ you can use the special *new* resource.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/<type>/new[?category=Image]`
+`GET https://slipstream.sixsq.com/<type>/new[?category=<category>]`
 
-### Query Parameters
+### Url Parameter
 
 Parameter | Required | Description
 --------- | -------- | -----------
 type | true | Type of resource to retrieve (e.g. module, user)
-category | false | Only required for *module* &lt;type>. Can be: *project* (default), *image* or *deployment*.
+
+### Query Parameter
+
+Parameter | Required | Description
+--------- | -------- | -----------
+category | false | Only required for *module* &lt;type>. Can be: *Project* (default), *Image* or *Deployment*.
 
 ```shell
 curl https://slipstream.sixsq.com/module/examples/new?category=Image login -d username=<USER> -d password=<PASSWORD>
