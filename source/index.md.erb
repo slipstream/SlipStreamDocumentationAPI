@@ -28,23 +28,21 @@ This API focuses on the REST service offered and has been documented in Bash. Yo
 This API documentation page was created with [Slate](http://github.com/tripit/slate). Feel free to report
 any snags in the document in [GitHub](http://github.com/slipstream/SlipStreamDocumentationAPI).
 
+<aside class="notice">
+You can get a serialised version of most SlipStream resources directly in the browser.
+</aside>
+
 > Adding `?media=xml`(for XML) at the end of the URL in the browser, you request the response to be returned in the specified content-type:
 
 ```shell
-https://slipstream.sixsq.com?media=xml
+curl https://slipstream.sixsq.com?media=xml
 ```
 
 > is equivalent to
 
 ```shell
-https://slipstream.sixsq.com -H "Content-Type: application/xml"
+curl https://slipstream.sixsq.com -H "Content-Type: application/xml"
 ```
-
-
-<aside class="notice">
-You can get a serialised version of most SlipStream resources directly in the browser.
-</aside>
-
 
 ## Resource Oriented Architecture (ROA)
 
@@ -57,16 +55,14 @@ deployment and project can be uniquely identified via a unique URI.
 
 # Authentication
 
-With the exception of the documentation and the login pages, all resources require authentication.
+With the exception of the login page, all resources require authentication.
 
-SlipStream currently supports both `Basic Authentication` and `Cookies`. To generate a time limited
-cookie, use the `/login` resource.
+SlipStream currently supports both `Basic Authentication` and `Cookies`. 
+To generate a time limited cookie, use the `/login` resource.
 
 # Login
 
 ## Basic authentication
-
-SlipStream supports basic authentication.  This can be tested using simple username/password pair.
 
 ```shell
 curl https://slipstream.sixsq.com?media=xml -u <user>:<password>
@@ -103,7 +99,7 @@ curl https://<user>:<password>@slipstream.sixsq.com?media=xml
 
 > The above command returns a header structured like this:
 
-
+SlipStream supports basic authentication.  This can be tested using simple username/password pair.
 
 ## Generate a cookie
 
@@ -146,7 +142,7 @@ Remember — with the exception of this resource and the documentation, all reso
 
 # Module
 
-(Extracted from the tutorial documentation)
+(Extracted from the [tutorial documentation](http://ssdocs.sixsq.com/documentation/advanced_tutorial/key_concepts.html))
 
 Metadata about your images and deployments are organized into projects in SlipStream. Each project consists of a number of modules. The modules may be Project, Machine Image or Deployment modules:
 
@@ -215,12 +211,15 @@ curl https://slipstream.sixsq.com/module/<module> --user <user>:<password> -H "C
 </imageModule>
 ```
 
+```shell
+curl https://slipstream.sixsq.com/module/examples/foo -H "Content-Type: application/xml" --user <user>:<password> > foo.xml
+```
 
 Get a module (i.e. image, deployment or project).
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/module/[<module>[/<version>]]`
+`GET https://slipstream.sixsq.com/module/<module>[/<version>]`
 
 ### Url Parameters
 
@@ -233,29 +232,7 @@ version | false | Version of the module to update. If not provided, get the late
 To list the root projects, simply omit the <em>&lt;MODULE></em> from the request.
 </aside>
 
-```shell
-curl https://slipstream.sixsq.com/module/examples/foo -H "Content-Type: application/xml" --user <user>:<password> > foo.xml
-```
-
 ## Update a module
-
-Update a module (i.e. image, deployment or project).
-
-The PUT request will create a new resource with the same &lt;module> name but a higher &lt;version>. The response includes the new fully qualified resource.
-
-### HTTP Request
-
-`PUT https://slipstream.sixsq.com/module/<module>/<version>`
-
-The **Location** attribute in the response header provides the full url of the updated resource, with the incremented version.
-
-### Body Parameters
-
-Parameter | Required | Description
---------- | -------- | -----------
-module | true | Unique identifier of the module - e.g. *examples/images/ubuntu-12.04*. If not provided, list the root modules.
-version | false | Version of the module. If not provided, get the latest (most recent)
-
 
 ```shell
 curl https://slipstream.sixsq.com/module/<module> --user <user>:<password> --data @<file> -X PUT -H "Content-Type: application/xml"
@@ -278,26 +255,28 @@ Content-Length: 0
 > To see the header, add *-D -* (with the trailing dash) to the curl command
 
 
+Update a module (i.e. image, deployment or project).
+
+The PUT request will create a new resource with the same &lt;module> name but a higher &lt;version>. The response includes the new fully qualified resource.
+
+### HTTP Request
+
+`PUT https://slipstream.sixsq.com/module/<module>[/<version>]`
+
+The **Location** attribute in the response header provides the full url of the updated resource, with the incremented version.
+
+### URL Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+module | true | Unique identifier of the module - e.g. *examples/images/ubuntu-12.04*. If not provided, list the root modules.
+version | false | Version of the module. If not provided, get the latest (most recent)
+
 <aside class="warning">
 This PUT request is not idem potent - i.e. calling it several times will create new resources.
 </aside>
 
 ## Delete a module
-
-Delete a module (i.e. image, deployment or project).
-
-The DELETE request will delete the specified resource if fully qualified (i.e. including the &lt;VERSION>) or the latest version otherwise.
-
-### HTTP Request
-
-`DELETE https://slipstream.sixsq.com/module/<module>/<version>`
-
-### Body Parameters
-
-Parameter | Required | Description
---------- | -------- | -----------
-module | true | Unique identifier of the module - e.g. *examples/images/ubuntu-12.04*.
-version | false | Version of the module. If not provided, delete the latest (most recent)
 
 ```shell
 curl https://slipstream.sixsq.com/module/<module> -u <user>:<password> -X DELETE -D -
@@ -315,24 +294,22 @@ Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identif
 Content-Length: 0
 ```
 
-## Module history (versions)
+Delete a module (i.e. image, deployment or project).
 
-List all the history (i.e. all the versions) of the module. Since each PUT creates a new version
-of the module, this request allows users to list these.
+The DELETE request will delete the specified resource if fully qualified (i.e. including the &lt;VERSION>) or the latest version otherwise.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/module/<module>/`
+`DELETE https://slipstream.sixsq.com/module/<module>[/<version>]`
 
-<aside class="notice">
-Notice the trailing '/' in the URL
-</aside>
-
-### Url Parameters
+### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
 module | true | Unique identifier of the module - e.g. *examples/images/ubuntu-12.04*.
+version | false | Version of the module. If not provided, delete the latest (most recent)
+
+## Module history (versions)
 
 ```shell
 curl https://slipstream.sixsq.com/module/<module>/ -u <user>:<password>
@@ -357,7 +334,24 @@ curl https://slipstream.sixsq.com/module/<module>/ -u <user>:<password>
 </versionList>
 ```
 
-  # Run
+List all the history (i.e. all the versions) of the module. Since each PUT creates a new version
+of the module, this request allows users to list these.
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/module/<module>/`
+
+<aside class="notice">
+Notice the trailing '/' in the URL
+</aside>
+
+### URL Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+module | true | Unique identifier of the module - e.g. *examples/images/ubuntu-12.04*.
+
+# Run
 
 The *run* resource represents an execution in the cloud - i.e. running VMs.
 SlipStream supports 3 types of runs:
@@ -371,12 +365,6 @@ on the state of the run.
 
 ## List all Runs
 
-List all runs of a user.
-
-### HTTP Request
-
-`GET https://slipstream.sixsq.com/run`
-
 ```shell
 curl https://slipstream.sixsq.com/run -u <user>:<password>
 ```
@@ -389,19 +377,13 @@ curl https://slipstream.sixsq.com/run -u <user>:<password>
 </runs>
 ```
 
-## Get a Run
-
-Get a specific run.
+List all runs of a user.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/run/<run>`
+`GET https://slipstream.sixsq.com/run`
 
-### Url Parameters
-
-Parameter | Required | Description
---------- | -------- | -----------
-run       | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+## Get a Run
 
 ```shell
 curl https://slipstream.sixsq.com/run/<run> -u <user>:<password>
@@ -414,7 +396,35 @@ curl https://slipstream.sixsq.com/run/<run> -u <user>:<password>
 </runs>
 ```
 
+Get a specific run.
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/run/<run-uuid>`
+
+### Url Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+
 ## Create a Run
+
+```shell
+curl https://slipstream.sixsq.com/run -d refqname=module/examples/an-image -d type=Run -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
+```
+
+> The above command returns a header structured like this:
+
+```http
+HTTP/1.1 201 Created
+Date: Tue, 13 May 2014 11:29:56 GMT
+Accept-Ranges: bytes
+Location: https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e
+Server: Restlet-Framework/2.1m4
+Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1400023769837&com.sixsq.signature=eck79w5qyslb16ke31vfof2b9o6729mcsjgnsqc143nsgqkuepmkgqnaakv544x7nankz4875p0uyg8unl8d5m4dl60wzr6pcpn; Path=/
+Content-Length: 0
+```
 
 Create a new immutable (standard) run.
 
@@ -436,8 +446,8 @@ The **Location** attribute in the response header provides the full url of the u
 
 Parameter | Required | Description
 --------- | -------- | -----------
-refqname  | true     | Reference module from which to create a run. Must be an *Image* or *Deployment* category - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
-type      | depends  | Type of run. This is only required when running an image, since we can either deploy a VM (i.e. simple run) or create a new image (i.e. build). See below for type definition.
+refqname  | true     | Reference module from which to create a run. Must be an *Image* or *Deployment* category - e.g. *module/SlipStream/deploy-slipstream-dpl*.
+type      | depends  | Type of run. This is only required when running an image, since we can either deploy a VM (i.e. simple run) or create a new image (i.e. build). See below for *run type* definition.
 
 Run Type       | Description
 -------------- | --------
@@ -445,48 +455,7 @@ Orchestration  | Deployment: only applies to deployment category.  This is the o
 Machine        | Build: build a new image on the targeted cloud and set the unique id back in the image definition.
 Run            | Simple run: single VM deployment.
 
-
-```shell
-curl https://slipstream.sixsq.com/run -d refqname=module/examples/an-image -d type=Run -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
-```
-
-> The above command returns a header structured like this:
-
-```http
-HTTP/1.1 201 Created
-Date: Tue, 13 May 2014 11:29:56 GMT
-Accept-Ranges: bytes
-Location: https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e
-Server: Restlet-Framework/2.1m4
-Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1400023769837&com.sixsq.signature=eck79w5qyslb16ke31vfof2b9o6729mcsjgnsqc143nsgqkuepmkgqnaakv544x7nankz4875p0uyg8unl8d5m4dl60wzr6pcpn; Path=/
-Content-Length: 0
-```
-
 ## Create a mutable Run
-
-Create a new mutable run from a predefined deployment.
-
-The **Location** attribute in the response header provides the full url of the newly created run.
-
-### HTTP Request
-
-`POST https://slipstream.sixsq.com/run`
-
-### Body Parameters
-
-Parameter | Required | Description
---------- | -------- | -----------
-refqname  | true     | Reference module from which to create a run. Must be an *Image* or *Deployment* category - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
-mutable  | true     | Define that the run is mutable - i.e., providing a possibility to add and remove node instances.
-
-Run Type       | Description
--------------- | --------
-Orchestration  | Deployment: only applies to deployment category.  This is the only valid type value for deployment, thus does not have to be provided.
-
-<aside class="notice">
-Only <em>Orchestration</em> type run can be created as mutable.
-</aside>
-
 
 ```shell
 curl https://slipstream.sixsq.com/run -d refqname=module/examples/a-deployment -d mutable=true -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
@@ -504,19 +473,26 @@ Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identif
 Content-Length: 0
 ```
 
-## Add node instances on a mutable Run
+Create a new mutable run from a predefined deployment.
 
-Add node instances on a mutable Run.
+The **Location** attribute in the response header provides the full url of the newly created run.
 
 ### HTTP Request
 
-`POST https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+`POST https://slipstream.sixsq.com/run`
 
 ### Body Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
-n         | false    | Defines a number of node instances to be added. If omitted, one node instance is added.
+refqname  | true     | Reference module from which to create a run. Must be a *Deployment* category - e.g. *module/SlipStream/deploy-slipstream-dpl*.
+mutable  | true     | Define that the run is mutable - i.e., providing a possibility to add and remove node instances.
+
+<aside class="notice">
+Only <em>Orchestration</em> type run can be created as mutable.
+</aside>
+
+## Add node instances to a mutable Run
 
 ```shell
 curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d n=2 -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
@@ -537,19 +513,26 @@ Set-cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identif
 centos_node.2,centos_node.3
 ```
 
-## Remove node instances from Run
-
-Remove node instances from Run.
+Add node instances on a mutable Run.
 
 ### HTTP Request
 
-`DELETE https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+`POST https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+
+### Url Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+node-name | true     | Node name - e.g. *centos_node*.
 
 ### Body Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
-ids       | true     | Defines the comma separated list of indices of the node instances to be removed.
+n         | false    | Defines a number of node instances to be added. If omitted, one node instance is added.
+
+## Remove node instances from a Run
 
 ```shell
 curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d ids=1,2 -u <user>:<password> -X DELETE -D -
@@ -566,13 +549,26 @@ Date: Tue, 24 Jun 2014 14:09:01 GMT
 Set-cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1403662141504&com.sixsq.signature=atvt4x3mc5p0b8komk26olefqeu392m9m63sb44t7k0t86rk2lw0n15o27al7ijm4opqhavh84fmqiti5xnewpldh3skm0rsuwq; Path=/
 ```
 
-## Get instance names of a node in Run
-
-Get instance names of a node in Run.
+Remove node instances from a Run.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+`DELETE https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+
+### Url Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+node-name | true     | Node name - e.g. *centos_node*.
+
+### Body Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+ids       | true     | Defines the comma separated list of indices of the node instances to be removed.
+
+## Get instance names of a node in Run
 
 ```shell
 curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u <user>:<password> "Content-Type: text/plain" -D -
@@ -592,6 +588,19 @@ Set-cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identif
 
 centos_node.1,centos_node.2,centos_node.3
 ```
+
+Get instance names of a node in Run.
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+
+### Url Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+node-name | true     | Node name - e.g. *centos_node*.
 
 
 # Virtual machines
@@ -655,7 +664,7 @@ VMs are sorted by <code class="prettyprint">measurment</code>
 
 `GET https://slipstream.sixsq.com/vms`
 
-### Body Parameters
+### Query Parameters
 
 <aside class="notice">
 None of these parameters are mandatory.
@@ -711,12 +720,6 @@ The user resource provides user management.
 
 ## Get All Users
 
-<aside class="warning">
-This resource is restricted to privileged users.
-</aside>
-
-List all users.
-
 ```shell
 curl https://slipstream.sixsq.com/user --user <user>:<password>
 ```
@@ -728,6 +731,12 @@ curl https://slipstream.sixsq.com/user --user <user>:<password>
 <item name="super"  resourceUri="user/super"  firstName="Super"  lastName="User"  email="super@sixsq.com"  state="ACTIVE"  activeSince="2015-03-11 14:00:57.656 CET"  lastOnline="2015-04-01 14:58:57.466 CEST"  lastExecute="2015-03-12 18:03:13.853 CET"  organization="SixSq"  issuper="true"  online="true" />
 </list>
 ```
+
+<aside class="warning">
+This resource is restricted to privileged users.
+</aside>
+
+List all users.
 
 ### HTTP Request
 
@@ -854,12 +863,6 @@ An event can <strong>not</strong> be updated, only deleted.
 
 ## List all Events
 
-Lists all events accessible by the authenticated user. A user has the right to see an event if she is the owner, or is a super user.
-
-### HTTP Request
-
-`GET https://slipstream.sixsq.com/event/`
-
 ```shell
 curl https://slipstream.sixsq.com/event/ -u <user>:<password> -D -
 ```
@@ -925,22 +928,13 @@ Date: Thu, 19 Mar 2015 13:15:48 GMT
 }
 ```
 
-## Create an Event
-
-Create an event that contains information (mainly timestamp and state) related to a target resource.
+Lists all events accessible by the authenticated user. A user has the right to see an event if she is the owner, or is a super user.
 
 ### HTTP Request
 
-`POST https://slipstream.sixsq.com/event`
+`GET https://slipstream.sixsq.com/event/`
 
-### Body Parameters
-
-Parameter   | Required  | Description
-------------| --------  | -----------
-timestamp   | true      | The timestamp (GMT time) of the event (not to be confused with created and updated timestamps of the resource representing the event)
-content     | true      | Structure containing the resource reference (i.e the **target** of this event) and its state
-type        | true      | Accepted values: `state` and `alarm`
-severity    | true      | Accepted values: `critical`, `high`, `medium` and `low`
+## Create an Event
 
 ```shell
 curl https://slipstream.sixsq.com/event -d "{ \"acl\": {\"owner\": {\"type\": \"USER\", \"principal\": \"joe\"},    \"rules\": [{\"type\": \"ROLE\", \"prinipal\": \"ANON\", \"right\": \"ALL\"}]},    \"id\": \"123\",    \"created\" :  \"2015-01-16T08:20:00.0Z\",    \"updated\" : \"2015-01-16T08:20:00.0Z\",    \"resourceURI\" : \"http://slipstream.sixsq.com/ssclj/1/Event\",    \"timestamp\": \"2015-01-10T08:20:00.0Z\",    \"content\" :  { \"resource\":  {\"href\": \"Run/45614147-aed1-4a24-889d-6365b0b1f2cd\"},    \"state\" : \"Started\" } ,    \"type\": \"state\",    \"severity\": \"medium\"}" -X POST -H "Content-Type: application/json" -u <user>:<password> -D -
@@ -978,13 +972,22 @@ Date: Thu, 19 Mar 2015 13:48:11 GMT
 }
 ```
 
-## Get an Event
-
-Get a specific event.
+Create an event that contains information (mainly timestamp and state) related to a target resource.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/event/<event-uuid>`
+`POST https://slipstream.sixsq.com/event`
+
+### Body Parameters
+
+Parameter   | Required  | Description
+------------| --------  | -----------
+timestamp   | true      | The timestamp (GMT time) of the event (not to be confused with created and updated timestamps of the resource representing the event)
+content     | true      | Structure containing the resource reference (i.e the **target** of this event) and its state
+type        | true      | Accepted values: `state` and `alarm`
+severity    | true      | Accepted values: `critical`, `high`, `medium` and `low`
+
+## Get an Event
 
 ```shell
 curl https://slipstream.sixsq.com/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u <user>:<password> -D -
@@ -1031,13 +1034,13 @@ Date: Thu, 19 Mar 2015 13:17:06 GMT
 }
 ```
 
-## Delete an Event
-
-Delete a specific (the event-uuid is known) event.
+Get a specific event.
 
 ### HTTP Request
 
-`DELETE https://slipstream.sixsq.com/event/<event-uuid>`
+`GET https://slipstream.sixsq.com/event/<event-uuid>`
+
+## Delete an Event
 
 ```shell
 curl -X DELETE  https://slipstream.sixsq.com/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u <user>:<password> -D -
@@ -1069,21 +1072,13 @@ Date: Thu, 19 Mar 2015 13:35:57 GMT
 }
 ```
 
-# The *new* resource
-
-To retrieve example resource structures, especially for resource types that don't yet exist,
-you can use the special *new* resource.
+Delete a specific (the event-uuid is known) event.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/<type>/new[?category=Image]`
+`DELETE https://slipstream.sixsq.com/event/<event-uuid>`
 
-### Query Parameters
-
-Parameter | Required | Description
---------- | -------- | -----------
-type | true | Type of resource to retrieve (e.g. module, user)
-category | false | Only required for *module* &lt;type>. Can be: *project* (default), *image* or *deployment*.
+# The *new* resource
 
 ```shell
 curl https://slipstream.sixsq.com/module/examples/new?category=Image login -d username=<USER> -d password=<PASSWORD>
@@ -1169,6 +1164,25 @@ curl https://slipstream.sixsq.com/module/examples/new?category=Image login -d us
 	<cloudImageIdentifiers />
 </imageModule>
 ```
+
+To retrieve example resource structures, especially for resource types that don't yet exist,
+you can use the special *new* resource.
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/<type>/new[?category=<category>]`
+
+### Url Parameter
+
+Parameter | Required | Description
+--------- | -------- | -----------
+type | true | Type of resource to retrieve (e.g. module, user)
+
+### Query Parameter
+
+Parameter | Required | Description
+--------- | -------- | -----------
+category | false | Only required for *module* &lt;type>. Can be: *Project* (default), *Image* or *Deployment*.
 
 <aside class="notice">
 On the root module resource (i.e. /module), only project category can be requested.
