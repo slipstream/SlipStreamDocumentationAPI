@@ -40,6 +40,7 @@
             <li><a href='http://github.com/slipstream/SlipStreamServer'>SlipStream code is hosted on GitHub</a></li>
             <li><a href='http://github.com/tripit/slate'>Documentation Powered by Slate</a></li>
             <li><a href='http://sixsq.com'>SlipStream is developed by SixSq</a></li>
+            <li><a href='http://ssdocs.sixsq.com'>Primary SlipStream Documentation</a></li>
         </ul>
     </div>
     <div class="page-wrapper">
@@ -790,7 +791,8 @@ centos_node.1,centos_node.2,centos_node.3
       <span class="na">user=</span><span class="s">"test"</span>
       <span class="na">instanceId=</span><span class="s">"96101801-b636-4752-9b04-74ec9a9abbc9"</span>
       <span class="na">state=</span><span class="s">"Booting"</span>
-      <span class="na">measurement=</span><span class="s">"2015-04-01 14:34:22.273 CEST"</span><span class="nt">/&gt;</span>
+      <span class="na">measurement=</span><span class="s">"2015-04-01 14:34:22.273 CEST"</span>
+      <span class="na">isUsable=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
    <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"Exoscale"</span>
       <span class="na">user=</span><span class="s">"test"</span>
       <span class="na">instanceId=</span><span class="s">"bbb07949-ab64-4556-88fd-f9aed872e9d1"</span>
@@ -801,7 +803,8 @@ centos_node.1,centos_node.2,centos_node.3
       <span class="na">ip=</span><span class="s">"185.19.29.126"</span>
       <span class="na">name=</span><span class="s">"testclient.1"</span>
       <span class="na">nodeName=</span><span class="s">"testclient"</span>
-      <span class="na">nodeInstanceId=</span><span class="s">"1"</span><span class="nt">/&gt;</span>
+      <span class="na">nodeInstanceId=</span><span class="s">"1"</span>
+      <span class="na">isUsable=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
    <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"Exoscale"</span>
       <span class="na">user=</span><span class="s">"test"</span>
       <span class="na">instanceId=</span><span class="s">"ec05f8f2-1f05-48bc-aa33-b99f60b2209b"</span>
@@ -810,7 +813,8 @@ centos_node.1,centos_node.2,centos_node.3
       <span class="na">runUuid=</span><span class="s">"ce3dfa8b-5a13-473b-bdd1-6e40ab71294b"</span>
       <span class="na">runOwner=</span><span class="s">"test"</span>
       <span class="na">ip=</span><span class="s">"185.19.29.122"</span>
-      <span class="na">name=</span><span class="s">"orchestrator-Exoscale"</span><span class="nt">/&gt;</span>
+      <span class="na">name=</span><span class="s">"orchestrator-Exoscale"</span>
+      <span class="na">isUsable=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
    <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"Amazon-EC2"</span>
       <span class="na">user=</span><span class="s">"test"</span>
       <span class="na">instanceId=</span><span class="s">"a2ca20d8-9506-42b9-80a3-ce15579591ab"</span>
@@ -819,7 +823,8 @@ centos_node.1,centos_node.2,centos_node.3
       <span class="na">runUuid=</span><span class="s">"857fc1d4-6206-4d88-8a1c-81d83a117e86"</span>
       <span class="na">runOwner=</span><span class="s">"test"</span>
       <span class="na">ip=</span><span class="s">"185.19.29.123"</span>
-      <span class="na">name=</span><span class="s">"machine"</span><span class="nt">/&gt;</span>
+      <span class="na">name=</span><span class="s">"machine"</span>
+      <span class="na">isUsable=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
 <span class="nt">&lt;/vms&gt;</span>
 </code></pre>
 
@@ -1007,6 +1012,11 @@ The <code class="prettyprint">user</code> parameter is reserved to privileged us
 <td>nodeInstanceId</td>
 <td>no</td>
 <td>The id of the node instance of the VM in his Run.</td>
+</tr>
+<tr>
+<td>isUsable</td>
+<td>no</td>
+<td>Indicate if the VM is in a state where it can be used.</td>
 </tr>
 </tbody></table>
 
