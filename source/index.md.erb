@@ -618,7 +618,8 @@ curl https://slipstream.sixsq.com/vms --user <user>:<password>
       user="test"
       instanceId="96101801-b636-4752-9b04-74ec9a9abbc9"
       state="Booting"
-      measurement="2015-04-01 14:34:22.273 CEST"/>
+      measurement="2015-04-01 14:34:22.273 CEST"
+      isUsable="false"/>
    <vm cloud="Exoscale"
       user="test"
       instanceId="bbb07949-ab64-4556-88fd-f9aed872e9d1"
@@ -629,7 +630,8 @@ curl https://slipstream.sixsq.com/vms --user <user>:<password>
       ip="185.19.29.126"
       name="testclient.1"
       nodeName="testclient"
-      nodeInstanceId="1"/>
+      nodeInstanceId="1"
+      isUsable="true"/>
    <vm cloud="Exoscale"
       user="test"
       instanceId="ec05f8f2-1f05-48bc-aa33-b99f60b2209b"
@@ -638,7 +640,8 @@ curl https://slipstream.sixsq.com/vms --user <user>:<password>
       runUuid="ce3dfa8b-5a13-473b-bdd1-6e40ab71294b"
       runOwner="test"
       ip="185.19.29.122"
-      name="orchestrator-Exoscale"/>
+      name="orchestrator-Exoscale"
+      isUsable="true"/>
    <vm cloud="Amazon-EC2"
       user="test"
       instanceId="a2ca20d8-9506-42b9-80a3-ce15579591ab"
@@ -647,7 +650,8 @@ curl https://slipstream.sixsq.com/vms --user <user>:<password>
       runUuid="857fc1d4-6206-4d88-8a1c-81d83a117e86"
       runOwner="test"
       ip="185.19.29.123"
-      name="machine"/>
+      name="machine"
+      isUsable="true"/>
 </vms>
 ```
 
@@ -713,6 +717,7 @@ ip             | no             | The IP address of the VM
 name           | no             | The name of the VM in his Run.
 nodeName       | no             | The name of the node from which the VM is part of in his Run.
 nodeInstanceId | no             | The id of the node instance of the VM in his Run.
+isUsable       | no             | Indicate if the VM is in a state where it can be used.
 
 
 # User
