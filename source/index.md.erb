@@ -604,6 +604,95 @@ run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b76
 node-name | true     | Node name - e.g. *centos_node*.
 
 
+## Set a node instance (VM) runtime parameter
+
+```shell
+curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -d my_value -u <user>:<password> -X PUT
+```
+
+>The above command sets `my_value` on the runtime parameter `my_parameter` of
+the node instance `centos_node.1`. On success, the return code is 200. If the
+body of the request is not provided or set to an empty string, the parameter is 
+said to be `un set`. Please refer to the `"Get a node instance (VM) runtime parameter"`
+section for handling the cases of the parameters either being `not yet set` or `un set`.
+
+### HTTP Request
+
+`PUT https://slipstream.sixsq.com/run/<run-uuid>/<node-instance-name>:<parameter-name>`
+
+### Url Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+node-instance-name | true     | Node instance name - e.g. *centos_node.1*
+parameter-name | true     | Parameter name - e.g. *my_parameter*
+
+### Body Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+`value`   | no       | The actual value of the parameter to be set
+
+
+## Get a node instance (VM) runtime parameter
+
+```shell
+curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -u <user>:<password>
+```
+
+>On cussess, the above command returns the value of the runtime parameter
+`my_parameter` of the node instance `centos_node.1` (if the parameter and the
+node instance are present), and the value is returned as `Content-Type: text/plain;
+charset=UTF-8` (not XML).
+
+```http
+HTTP/1.1 200 OK
+Server: nginx/1.8.0
+Date: Wed, 06 May 2015 15:32:46 GMT
+Content-Type: text/plain; charset=UTF-8
+Content-Length: 4
+Connection: keep-alive
+Accept-Ranges: bytes
+Vary: Accept-Charset, Accept-Encoding, Accept-Language, Accept
+Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1430969566000&com.sixsq.signature=3nqx5dj24tw4bwocqem5jy5eel2g7ebszwtuj1vli9j316trq6023760pwdp6uzmi8bdtrzwc0addw1p0yff5ube4dntiydt5st; Path=/; Expires=Thu, 07 May 2015 03:32:46 GMT
+Strict-Transport-Security: max-age=31536000; includeSubdomains
+
+my_value
+```
+
+>For better handling of the error caseses the "Accept: application/xml" header should be used.
+In case either node instance or parameter does not exist, `404` error code is
+returned and the error message in the XML format looks like the following:
+
+```xml
+<error code="404" reason="Not Found" detail="Unknown key centos_node.1:my_parameter" specificationUri="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5">
+Unknown key centos_node.1:my_parameter
+</error>
+```
+
+>In case the parameter value is not yet set (i.e., it's an empty string), the
+server returns `412` - `Precondition Failed`:
+
+```xml
+<error code="412" reason="Precondition Failed" detail="key centos_node.1:my_parameter not yet set" specificationUri="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.13">
+key centos_node.1:my_parameter not yet set
+</error>
+```
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/run/<run-uuid>/<node-instance-name>:<parameter-name>`
+
+### Url Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
+node-instance-name | true     | Node instance name - e.g. *centos_node.1*
+parameter-name | true     | Parameter name - e.g. *my_parameter*
+
+
 # Virtual machines
 
 ```shell
