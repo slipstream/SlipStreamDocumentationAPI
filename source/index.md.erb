@@ -1173,6 +1173,62 @@ Delete a specific (the event-uuid is known) event.
 
 `DELETE https://slipstream.sixsq.com/event/<event-uuid>`
 
+
+# Usage
+
+Represents the summary of cloud usages for a given user and cloud. 
+
+## List all Usages
+
+The collection of usages (in reverse order) is returned filtered by the ACL provided. (only usages for given user and roles are returned)
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/usage`
+
+```shell
+curl https://slipstream.sixsq.com/usage -u <user>:<password> -D -
+```
+
+> The above command returns a json structured like this:
+
+```http
+HTTP/1.1 200 OK
+Server: nginx/1.6.2
+Date: Mon, 01 Jun 2015 12:44:02 GMT
+Content-Type: application/json
+Content-Length: 12471
+
+{
+  "usages" : [ {
+    "usage" : "{\"vm\":{\"unit_minutes\":129.64999999999998}}\n",
+    "end_timestamp" : "2015-06-01T00:00:00.000Z",
+    "start_timestamp" : "2015-05-31T00:00:00.000Z",
+    "cloud" : "ec2-eu-west",
+    "user" : "sixsq_dev",
+    "acl" : {
+      "owner" : {
+        "type" : "USER",
+        "principal" : "sixsq_dev"
+      },
+      "rules" : [ {
+        "type" : "USER",
+        "principal" : "sixsq_dev",
+        "right" : "ALL"
+      }, {
+        "type" : "ROLE",
+        "principal" : "ec2-eu-west",
+        "right" : "ALL"
+      } ]
+    },
+    "id" : "Usage/5509f64b-33f3-4fc3-8657-15c8a955c24b"
+  }], 
+  "resourceURI" : "http://sixsq.com/slipstream/1/UsageCollection",
+  "id" : "Usage",
+  "count" : 1
+}
+```
+
 # The *new* resource
 
 ```shell
