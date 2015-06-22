@@ -1174,14 +1174,14 @@ Delete a specific (the event-uuid is known) event.
 `DELETE https://slipstream.sixsq.com/event/<event-uuid>`
 
 
-# Usage
+# Usage Records
 
-Represents the summary of cloud usages for a given user and cloud, on a specific period.
+Represents the summary of cloud usage records for a given user and cloud, on a specific period.
 
-## List all Usages
+## List all Usage Records
 
-The collection of usages (in reverse order) is returned filtered with the provided authentication.
-(Only usages for the given user are returned.)
+The collection of usage records (in reverse order) is returned filtered with the provided authentication.
+(Only resources for the given user are returned.)
 
 ### HTTP Request
 
@@ -1271,7 +1271,7 @@ Date: Mon, 22 Jun 2015 08:49:33 GMT
 }
 ```
 
-## Filtering Usages
+## Filtering Usage Records
 From [CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
 
 <aside class="notice">
@@ -1284,7 +1284,7 @@ section. The $filter parameter shall be of the form:
 
 ### Filtering on string comparison
 
-To retrieve the usages for a given cloud, the CIMI filter can be written
+To retrieve the usage records for a given cloud, the CIMI filter can be written
 
 `$filter=cloud='cloud-name'`
 
@@ -1294,7 +1294,7 @@ Note, however, that such a filter contains characters that must be **URL-encoded
 
 ### Filtering on date comparison (equality)
 
-To retrieve the usages for a specific date, the CIMI filter can be written
+To retrieve the usage records for a specific date, the CIMI filter can be written
 
 `?$filter=start_timestamp=2015-06-22`
 
@@ -1304,7 +1304,7 @@ Full URL with encoding:
 
 ### Filtering on date comparison (before or after)
 
-To retrieve the usages after a specific date, the CIMI filter can be written
+To retrieve the usage records after a specific date, the CIMI filter can be written
 
 `?$filter=start_timestamp>2015-06-22`
 
@@ -1312,7 +1312,7 @@ Full URL with encoding:
 
 `GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3E2015-06-22`
 
-To filter usages before a specific date, use **<** (URL-encoded as **%3C**) instead.
+To filter usage records before a specific date, use **<** (URL-encoded as **%3C**) instead.
 
 ### Filtering with multiple conditions
 
@@ -1326,7 +1326,7 @@ Full URL with encoding:
 
 These are only some examples, consult the CIMI documentation for an exhaustive list of possibilities.
 
-## Paginating Usages
+## Paginating Usage Records
 From [CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.2 Subsetting Collections](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
 
 <aside class="notice">
@@ -1343,7 +1343,7 @@ positions of the entities within the Collection that are returned. The query par
 
 `GET https://slipstream.sixsq.com/usage?%24first=2&%24last=2`
 
-will return only the *second* usage.
+will return only the *second* usage record.
 
 # The *new* resource
 
