@@ -14,7 +14,7 @@ search: true
 ---
 
 <% 
-  VERSION='v2.6'
+  VERSION='v2.11'
 %>
 
 # SlipStream <%= VERSION %> API Reference
@@ -1176,11 +1176,12 @@ Delete a specific (the event-uuid is known) event.
 
 # Usage
 
-Represents the summary of cloud usages for a given user and cloud. 
+Represents the summary of cloud usages for a given user and cloud, on a specific period.
 
 ## List all Usages
 
-The collection of usages (in reverse order) is returned filtered by the ACL provided. (only usages for given user and roles are returned)
+The collection of usages (in reverse order) is returned filtered with the provided authentication.
+(Only usages for the given user are returned.)
 
 ### HTTP Request
 
@@ -1194,40 +1195,155 @@ curl https://slipstream.sixsq.com/usage -u <user>:<password> -D -
 
 ```http
 HTTP/1.1 200 OK
-Server: nginx/1.6.2
-Date: Mon, 01 Jun 2015 12:44:02 GMT
 Content-Type: application/json
-Content-Length: 12471
+Content-Length: 1511
+Server: http-kit
+Date: Mon, 22 Jun 2015 08:49:33 GMT
 
 {
   "usages" : [ {
-    "usage" : "{\"vm\":{\"unit_minutes\":129.64999999999998}}\n",
-    "end_timestamp" : "2015-06-01T00:00:00.000Z",
-    "start_timestamp" : "2015-05-31T00:00:00.000Z",
-    "cloud" : "ec2-eu-west",
-    "user" : "sixsq_dev",
+    "usage" : {
+      "DISK" : {
+        "unit_minutes" : 86400.0
+      }
+    },
+    "end_timestamp" : "2017-09-26T00:00:00.000Z",
+    "start_timestamp" : "2017-09-25T00:00:00.000Z",
+    "cloud" : "cloud-8",
+    "user" : "user-1",
     "acl" : {
       "owner" : {
         "type" : "USER",
-        "principal" : "sixsq_dev"
+        "principal" : "user-1"
       },
       "rules" : [ {
         "type" : "USER",
-        "principal" : "sixsq_dev",
+        "principal" : "user-1",
         "right" : "ALL"
       }, {
         "type" : "ROLE",
-        "principal" : "ec2-eu-west",
+        "principal" : "cloud-8",
         "right" : "ALL"
       } ]
     },
-    "id" : "Usage/5509f64b-33f3-4fc3-8657-15c8a955c24b"
-  }], 
+    "id" : "Usage/056169bf-ac20-47dd-a7f9-e6b835265a01"
+  }, {
+    "usage" : {
+      "vm" : {
+        "unit_minutes" : 1192.0
+      }
+    },
+    "end_timestamp" : "2017-09-26T00:00:00.000Z",
+    "start_timestamp" : "2017-09-25T00:00:00.000Z",
+    "cloud" : "cloud-5",
+    "user" : "user-1",
+    "acl" : {
+      "owner" : {
+        "type" : "USER",
+        "principal" : "user-1"
+      },
+      "rules" : [ {
+        "type" : "USER",
+        "principal" : "user-1",
+        "right" : "ALL"
+      }, {
+        "type" : "ROLE",
+        "principal" : "cloud-5",
+        "right" : "ALL"
+      } ]
+    },
+    "id" : "Usage/baf5ce10-9cee-4407-9860-61c2da0c0b13"
+  } ],
+  "acl" : {
+    "rules" : [ {
+      "type" : "ROLE",
+      "right" : "VIEW",
+      "principal" : "ANON"
+    } ],
+    "owner" : {
+      "type" : "ROLE",
+      "principal" : "ADMIN"
+    }
+  },
   "resourceURI" : "http://sixsq.com/slipstream/1/UsageCollection",
   "id" : "Usage",
-  "count" : 1
+  "count" : 2
 }
 ```
+
+## Filtering Usages
+From [CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
+
+<aside class="notice">
+If retrieving the representation of a Collection, Consumers may include the $filter query parameter to
+reduce the number of entries of the Collection that are returned based on the data within the entries of the
+Collection. Providers shall interpret and process the $filter query parameter as described in this
+section. The $filter parameter shall be of the form:
+?$filter=expression
+</aside>
+
+### Filtering on string comparison
+
+To retrieve the usages for a given cloud, the CIMI filter can be written
+
+`$filter=cloud='cloud-name'`
+
+Note, however, that such a filter contains characters that must be **URL-encoded**, and the HTTP request will look like this:
+
+`GET https://slipstream.sixsq.com/usage?%24filter=cloud%3D%27cloud-name%27`
+
+### Filtering on date comparison (equality)
+
+To retrieve the usages for a specific date, the CIMI filter can be written
+
+`?$filter=start_timestamp=2015-06-22`
+
+Full URL with encoding:
+
+`GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3D2015-06-22`
+
+### Filtering on date comparison (before or after)
+
+To retrieve the usages after a specific date, the CIMI filter can be written
+
+`?$filter=start_timestamp>2015-06-22`
+
+Full URL with encoding:
+
+`GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3E2015-06-22`
+
+To filter usages before a specific date, use **<** (URL-encoded as **%3C**) instead.
+
+### Filtering with multiple conditions
+
+You can join conditons with **and** (logical and), or **or** (logical or).
+
+`?$filter=start_timestamp>2015-06-22 and cloud='cloud-name'`
+
+Full URL with encoding:
+
+`GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27`
+
+These are only some examples, consult the CIMI documentation for an exhaustive list of possibilities.
+
+## Paginating Usages
+From [CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.2 Subsetting Collections](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
+
+<aside class="notice">
+If retrieving the representation of a Collection, Consumers may include query parameters to subset the
+number of entities of the Collection that are returned.
+...
+This specification defined two query parameters that, if used, shall indicate the first and last ordinal
+positions of the entities within the Collection that are returned. The query parameters shall be of the form:
+￼?$first=number 
+ ?$last=number
+</aside>
+
+### HTTP Request
+
+`GET https://slipstream.sixsq.com/usage?%24first=2&%24last=2`
+
+will return only the *second* usage.
 
 # The *new* resource
 
