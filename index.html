@@ -46,7 +46,7 @@
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        <h1 id="slipstream-v2.6-api-reference">SlipStream v2.6 API Reference</h1>
+        <h1 id="slipstream-v2.11-api-reference">SlipStream v2.11 API Reference</h1>
 
 <h2 id="introduction">Introduction</h2>
 
@@ -779,6 +779,137 @@ centos_node.1,centos_node.2,centos_node.3
 </tr>
 </tbody></table>
 
+<h2 id="set-a-node-instance-(vm)-runtime-parameter">Set a node instance (VM) runtime parameter</h2>
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -d my_value -u &lt;user&gt;:&lt;password&gt; -X PUT
+</code></pre>
+
+<blockquote>
+<p>The above command sets <code class="prettyprint">my_value</code> on the runtime parameter <code class="prettyprint">my_parameter</code> of
+the node instance <code class="prettyprint">centos_node.1</code>. On success, the return code is 200. If the
+body of the request is not provided or set to an empty string, the parameter is 
+said to be <code class="prettyprint">unset</code>. Please refer to the <code class="prettyprint">&quot;Get a node instance (VM) runtime parameter&quot;</code>
+section for handling the cases of the parameters either being <code class="prettyprint">not yet set</code> or <code class="prettyprint">unset</code>.</p>
+</blockquote>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">PUT https://slipstream.sixsq.com/run/&lt;run-uuid&gt;/&lt;node-instance-name&gt;:&lt;parameter-name&gt;</code></p>
+
+<h3 id="url-parameters">Url Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>run-uuid</td>
+<td>true</td>
+<td>Run unique identifier - e.g. <em>fa3b9652-9dac-49e2-9573-b761777c8238</em>.</td>
+</tr>
+<tr>
+<td>node-instance-name</td>
+<td>true</td>
+<td>Node instance name - e.g. <em>centos_node.1</em></td>
+</tr>
+<tr>
+<td>parameter-name</td>
+<td>true</td>
+<td>Parameter name - e.g. <em>my_parameter</em></td>
+</tr>
+</tbody></table>
+
+<h3 id="body-parameters">Body Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">value</code></td>
+<td>false</td>
+<td>The actual value of the parameter to be set</td>
+</tr>
+</tbody></table>
+
+<h2 id="get-a-node-instance-(vm)-runtime-parameter">Get a node instance (VM) runtime parameter</h2>
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -u &lt;user&gt;:&lt;password&gt;
+</code></pre>
+
+<blockquote>
+<p>On success, the above command returns the value of the runtime parameter
+<code class="prettyprint">my_parameter</code> of the node instance <code class="prettyprint">centos_node.1</code> (if the parameter and the
+node instance are present), and the value is returned as <code class="prettyprint">Content-Type: text/plain;
+charset=UTF-8</code> (not XML).</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">nginx/1.8.0</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Wed, 06 May 2015 15:32:46 GMT</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">text/plain; charset=UTF-8</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">4</span>
+<span class="na">Connection</span><span class="p">:</span> <span class="s">keep-alive</span>
+<span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
+<span class="na">Vary</span><span class="p">:</span> <span class="s">Accept-Charset, Accept-Encoding, Accept-Language, Accept</span>
+<span class="na">Set-Cookie</span><span class="p">:</span> <span class="s">com.sixsq.slipstream.cookie=com.sixsq.idtype=local&amp;com.sixsq.identifier=test&amp;com.sixsq.expirydate=1430969566000&amp;com.sixsq.signature=3nqx5dj24tw4bwocqem5jy5eel2g7ebszwtuj1vli9j316trq6023760pwdp6uzmi8bdtrzwc0addw1p0yff5ube4dntiydt5st; Path=/; Expires=Thu, 07 May 2015 03:32:46 GMT</span>
+<span class="na">Strict-Transport-Security</span><span class="p">:</span> <span class="s">max-age=31536000; includeSubdomains</span>
+
+my_value
+</code></pre>
+
+<blockquote>
+<p>For better handling of the error cases the &ldquo;Accept: application/xml&rdquo; header should be used.
+In case either node instance or parameter does not exist, <code class="prettyprint">404</code> error code is
+returned and the error message in the XML format looks like the following:</p>
+</blockquote>
+<pre><code class="highlight xml"><span class="nt">&lt;error</span> <span class="na">code=</span><span class="s">"404"</span> <span class="na">reason=</span><span class="s">"Not Found"</span> <span class="na">detail=</span><span class="s">"Unknown key centos_node.1:my_parameter"</span> <span class="na">specificationUri=</span><span class="s">"http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5"</span><span class="nt">&gt;</span>
+Unknown key centos_node.1:my_parameter
+<span class="nt">&lt;/error&gt;</span>
+</code></pre>
+
+<blockquote>
+<p>In case the parameter value is not yet set (i.e., it&rsquo;s an empty string), the
+server returns <code class="prettyprint">412</code> - <code class="prettyprint">Precondition Failed</code>:</p>
+</blockquote>
+<pre><code class="highlight xml"><span class="nt">&lt;error</span> <span class="na">code=</span><span class="s">"412"</span> <span class="na">reason=</span><span class="s">"Precondition Failed"</span> <span class="na">detail=</span><span class="s">"key centos_node.1:my_parameter not yet set"</span> <span class="na">specificationUri=</span><span class="s">"http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.13"</span><span class="nt">&gt;</span>
+key centos_node.1:my_parameter not yet set
+<span class="nt">&lt;/error&gt;</span>
+</code></pre>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/run/&lt;run-uuid&gt;/&lt;node-instance-name&gt;:&lt;parameter-name&gt;</code></p>
+
+<h3 id="url-parameters">Url Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>run-uuid</td>
+<td>true</td>
+<td>Run unique identifier - e.g. <em>fa3b9652-9dac-49e2-9573-b761777c8238</em>.</td>
+</tr>
+<tr>
+<td>node-instance-name</td>
+<td>true</td>
+<td>Node instance name - e.g. <em>centos_node.1</em></td>
+</tr>
+<tr>
+<td>parameter-name</td>
+<td>true</td>
+<td>Parameter name - e.g. <em>my_parameter</em></td>
+</tr>
+</tbody></table>
+
 <h1 id="virtual-machines">Virtual machines</h1>
 <pre><code class="highlight shell">curl https://slipstream.sixsq.com/vms --user &lt;user&gt;:&lt;password&gt;
 </code></pre>
@@ -1403,6 +1534,177 @@ An event can <strong>not</strong> be updated, only deleted.
 <h3 id="http-request">HTTP Request</h3>
 
 <p><code class="prettyprint">DELETE https://slipstream.sixsq.com/event/&lt;event-uuid&gt;</code></p>
+
+<h1 id="usage-records">Usage Records</h1>
+
+<p>Represents the summary of cloud usage records for a given user and cloud, on a specific period.</p>
+
+<h2 id="list-all-usage-records">List all Usage Records</h2>
+
+<p>The collection of usage records (in reverse order) is returned filtered with the provided authentication.
+(Only resources for the given user are returned.)</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/usage</code></p>
+<pre><code class="highlight shell">curl https://slipstream.sixsq.com/usage -u &lt;user&gt;:&lt;password&gt; -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns a json structured like this:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">1511</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Mon, 22 Jun 2015 08:49:33 GMT</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"usages"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"usage"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"DISK"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"unit_minutes"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mf">86400.0</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"end_timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-09-26T00:00:00.000Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"start_timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-09-25T00:00:00.000Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"cloud"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"cloud-8"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"user"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-1"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-1"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-1"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
+      </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"cloud-8"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
+      </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Usage/056169bf-ac20-47dd-a7f9-e6b835265a01"</span><span class="w">
+  </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"usage"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"vm"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"unit_minutes"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mf">1192.0</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"end_timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-09-26T00:00:00.000Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"start_timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-09-25T00:00:00.000Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"cloud"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"cloud-5"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"user"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-1"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-1"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-1"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
+      </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"cloud-5"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
+      </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Usage/baf5ce10-9cee-4407-9860-61c2da0c0b13"</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"VIEW"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ANON"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+    </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/UsageCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Usage"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<h2 id="filtering-usage-records">Filtering Usage Records</h2>
+
+<p>From <a href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections</a></p>
+
+<aside class="notice">
+If retrieving the representation of a Collection, Consumers may include the $filter query parameter to
+reduce the number of entries of the Collection that are returned based on the data within the entries of the
+Collection. Providers shall interpret and process the $filter query parameter as described in this
+section. The $filter parameter shall be of the form:
+?$filter=expression
+</aside>
+
+<h3 id="filtering-on-string-comparison">Filtering on string comparison</h3>
+
+<p>To retrieve the usage records for a given cloud, the CIMI filter can be written</p>
+
+<p><code class="prettyprint">$filter=cloud=&#39;cloud-name&#39;</code></p>
+
+<p>Note, however, that such a filter contains characters that must be <strong>URL-encoded</strong>, and the HTTP request will look like this:</p>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/usage?%24filter=cloud%3D%27cloud-name%27</code></p>
+
+<h3 id="filtering-on-date-comparison-(equality)">Filtering on date comparison (equality)</h3>
+
+<p>To retrieve the usage records for a specific date, the CIMI filter can be written</p>
+
+<p><code class="prettyprint">?$filter=start_timestamp=2015-06-22</code></p>
+
+<p>Full URL with encoding:</p>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3D2015-06-22</code></p>
+
+<h3 id="filtering-on-date-comparison-(before-or-after)">Filtering on date comparison (before or after)</h3>
+
+<p>To retrieve the usage records after a specific date, the CIMI filter can be written</p>
+
+<p><code class="prettyprint">?$filter=start_timestamp&gt;2015-06-22</code></p>
+
+<p>Full URL with encoding:</p>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3E2015-06-22</code></p>
+
+<p>To filter usage records before a specific date, use <strong>&lt;</strong> (URL-encoded as <strong>%3C</strong>) instead.</p>
+
+<h3 id="filtering-with-multiple-conditions">Filtering with multiple conditions</h3>
+
+<p>You can join conditons with <strong>and</strong> (logical and), or <strong>or</strong> (logical or).</p>
+
+<p><code class="prettyprint">?$filter=start_timestamp&gt;2015-06-22 and cloud=&#39;cloud-name&#39;</code></p>
+
+<p>Full URL with encoding:</p>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27</code></p>
+
+<p>These are only some examples, consult the CIMI documentation for an exhaustive list of possibilities.</p>
+
+<h2 id="paginating-usage-records">Paginating Usage Records</h2>
+
+<p>From <a href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.2 Subsetting Collections</a></p>
+
+<aside class="notice">
+If retrieving the representation of a Collection, Consumers may include query parameters to subset the
+number of entities of the Collection that are returned.
+&hellip;
+This specification defined two query parameters that, if used, shall indicate the first and last ordinal
+positions of the entities within the Collection that are returned. The query parameters shall be of the form:
+￼?$first=number 
+ ?$last=number
+</aside>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://slipstream.sixsq.com/usage?%24first=2&amp;%24last=2</code></p>
+
+<p>will return only the <em>second</em> usage record.</p>
 
 <h1 id="the-new-resource">The <em>new</em> resource</h1>
 <pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/examples/new?category<span class="o">=</span>Image login -d <span class="nv">username</span><span class="o">=</span>&lt;USER&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;PASSWORD&gt;
