@@ -32,13 +32,13 @@ You can get a serialised version of most SlipStream resources directly in the br
 > Adding `?media=xml`(for XML) at the end of the URL in the browser, you request the response to be returned in the specified content-type:
 
 ```shell
-curl https://slipstream.sixsq.com?media=xml
+curl https://nuv.la?media=xml
 ```
 
 > is equivalent to
 
 ```shell
-curl https://slipstream.sixsq.com -H "Content-Type: application/xml"
+curl https://nuv.la -H "Content-Type: application/xml"
 ```
 
 ## Resource Oriented Architecture (ROA)
@@ -54,7 +54,7 @@ deployment and project can be uniquely identified via a unique URI.
 
 With the exception of the login page, all resources require authentication.
 
-SlipStream currently supports both `Basic Authentication` and `Cookies`. 
+SlipStream currently supports both `Basic Authentication` and `Cookies`.
 To generate a time limited cookie, use the `/login` resource.
 
 # Login
@@ -62,7 +62,7 @@ To generate a time limited cookie, use the `/login` resource.
 ## Basic authentication
 
 ```shell
-curl https://slipstream.sixsq.com?media=xml -u <user>:<password>
+curl https://nuv.la?media=xml -u <user>:<password>
 ```
 > or
 
@@ -101,7 +101,7 @@ SlipStream supports basic authentication.  This can be tested using simple usern
 ## Generate a cookie
 
 ```shell
-curl https://slipstream.sixsq.com/login -d username=<user> -d password=<password> -H "Content-Type: application/xml"
+curl https://nuv.la/login -d username=<user> -d password=<password> -H "Content-Type: application/xml"
 ```
 
 > The above command returns a header structured like this:
@@ -111,7 +111,7 @@ HTTP/1.1 200 OK
 Server: nginx/1.4.7
 Date: Tue, 06 May 2014 18:46:12 GMT
 Accept-Ranges: bytes
-Location: https://slipstream.sixsq.com
+Location: https://nuv.la
 Server: Restlet-Framework/2.1m4
 Set-Cookie: com.sixsq.slipstream.cookie=SOME_LONG_STRING; Path=/
 Content-Length: 0
@@ -122,7 +122,7 @@ to the `Set-Cookie` of the response header.
 
 ### HTTP Request
 
-`POST https://slipstream.sixsq.com/login`
+`POST https://nuv.la/login`
 
 ### Body Parameters
 
@@ -158,7 +158,7 @@ Remember, image, deployment and project are type attributes of the module resour
 ## Get a module
 
 ```shell
-curl https://slipstream.sixsq.com/module/<module> --user <user>:<password> -H "Content-Type: application/xml"
+curl https://nuv.la/module/<module> --user <user>:<password> -H "Content-Type: application/xml"
 ```
 
 > The above command returns a response body structured like this:
@@ -209,14 +209,14 @@ curl https://slipstream.sixsq.com/module/<module> --user <user>:<password> -H "C
 ```
 
 ```shell
-curl https://slipstream.sixsq.com/module/examples/foo -H "Content-Type: application/xml" --user <user>:<password> > foo.xml
+curl https://nuv.la/module/examples/foo -H "Content-Type: application/xml" --user <user>:<password> > foo.xml
 ```
 
 Get a module (i.e. image, deployment or project).
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/module/<module>[/<version>]`
+`GET https://nuv.la/module/<module>[/<version>]`
 
 ### Url Parameters
 
@@ -232,7 +232,7 @@ To list the root projects, simply omit the <em>&lt;MODULE></em> from the request
 ## Update a module
 
 ```shell
-curl https://slipstream.sixsq.com/module/<module> --user <user>:<password> --data @<file> -X PUT -H "Content-Type: application/xml"
+curl https://nuv.la/module/<module> --user <user>:<password> --data @<file> -X PUT -H "Content-Type: application/xml"
 ```
 
 > where &lt;file> is an xml file - e.g. the result of a previous GET on the same resource
@@ -243,7 +243,7 @@ curl https://slipstream.sixsq.com/module/<module> --user <user>:<password> --dat
 HTTP/1.1 200 OK
 Date: Mon, 12 May 2014 15:16:49 GMT
 Accept-Ranges: bytes
-Location: https://slipstream.sixsq.com/module/examples/foo/1199
+Location: https://nuv.la/module/examples/foo/1199
 Server: Restlet-Framework/2.1m4
 Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1399951006191&com.sixsq.signature=-cotcj9t5rzu3zx2uof96x8scptxh5mbraazmf63doem22tkvlq1519twaz7uxlvtyyxd0fxvygvrsn1hip09yvn7v11c9a74j21; Path=/
 Content-Length: 0
@@ -258,7 +258,7 @@ The PUT request will create a new resource with the same &lt;module> name but a 
 
 ### HTTP Request
 
-`PUT https://slipstream.sixsq.com/module/<module>[/<version>]`
+`PUT https://nuv.la/module/<module>[/<version>]`
 
 The **Location** attribute in the response header provides the full url of the updated resource, with the incremented version.
 
@@ -276,7 +276,7 @@ This PUT request is not idem potent - i.e. calling it several times will create 
 ## Delete a module
 
 ```shell
-curl https://slipstream.sixsq.com/module/<module> -u <user>:<password> -X DELETE -D -
+curl https://nuv.la/module/<module> -u <user>:<password> -X DELETE -D -
 ```
 
 > The above command returns a header structured like this:
@@ -285,7 +285,7 @@ curl https://slipstream.sixsq.com/module/<module> -u <user>:<password> -X DELETE
 HTTP/1.1 204 No Content
 Date: Tue, 13 May 2014 03:08:15 GMT
 Accept-Ranges: bytes
-Location: https://slipstream.sixsq.com/module/examples/toto/11
+Location: https://nuv.la/module/examples/toto/11
 Server: Restlet-Framework/2.1m4
 Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1399993694970&com.sixsq.signature=izoalqmos489wxw8z25k03nqtsdfyxyv2ak5adi1e0h73zdziq45y1eat66tcob5ybvh7oe5gbh8es1onj4f6orj2enrqu9w9j0; Path=/
 Content-Length: 0
@@ -297,7 +297,7 @@ The DELETE request will delete the specified resource if fully qualified (i.e. i
 
 ### HTTP Request
 
-`DELETE https://slipstream.sixsq.com/module/<module>[/<version>]`
+`DELETE https://nuv.la/module/<module>[/<version>]`
 
 ### URL Parameters
 
@@ -309,7 +309,7 @@ version | false | Version of the module. If not provided, delete the latest (mos
 ## Module history (versions)
 
 ```shell
-curl https://slipstream.sixsq.com/module/<module>/ -u <user>:<password>
+curl https://nuv.la/module/<module>/ -u <user>:<password>
 ```
 
 ```xml
@@ -336,7 +336,7 @@ of the module, this request allows users to list these.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/module/<module>/`
+`GET https://nuv.la/module/<module>/`
 
 <aside class="notice">
 Notice the trailing '/' in the URL
@@ -363,7 +363,7 @@ on the state of the run.
 ## List all Runs
 
 ```shell
-curl https://slipstream.sixsq.com/run -u <user>:<password>
+curl https://nuv.la/run -u <user>:<password>
 ```
 
 ```xml
@@ -378,12 +378,12 @@ List all runs of a user.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/run`
+`GET https://nuv.la/run`
 
 ## Get a Run
 
 ```shell
-curl https://slipstream.sixsq.com/run/<run> -u <user>:<password>
+curl https://nuv.la/run/<run> -u <user>:<password>
 ```
 
 ```xml
@@ -397,7 +397,7 @@ Get a specific run.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/run/<run-uuid>`
+`GET https://nuv.la/run/<run-uuid>`
 
 ### Url Parameters
 
@@ -408,7 +408,7 @@ run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b76
 ## Create a Run
 
 ```shell
-curl https://slipstream.sixsq.com/run -d refqname=module/examples/an-image -d type=Run -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
+curl https://nuv.la/run -d refqname=module/examples/an-image -d type=Run -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
 ```
 
 > The above command returns a header structured like this:
@@ -417,7 +417,7 @@ curl https://slipstream.sixsq.com/run -d refqname=module/examples/an-image -d ty
 HTTP/1.1 201 Created
 Date: Tue, 13 May 2014 11:29:56 GMT
 Accept-Ranges: bytes
-Location: https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e
+Location: https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e
 Server: Restlet-Framework/2.1m4
 Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1400023769837&com.sixsq.signature=eck79w5qyslb16ke31vfof2b9o6729mcsjgnsqc143nsgqkuepmkgqnaakv544x7nankz4875p0uyg8unl8d5m4dl60wzr6pcpn; Path=/
 Content-Length: 0
@@ -437,7 +437,7 @@ The **Location** attribute in the response header provides the full url of the u
 
 ### HTTP Request
 
-`POST https://slipstream.sixsq.com/run`
+`POST https://nuv.la/run`
 
 ### Body Parameters
 
@@ -455,7 +455,7 @@ Run            | Simple run: single VM deployment.
 ## Create a mutable Run
 
 ```shell
-curl https://slipstream.sixsq.com/run -d refqname=module/examples/a-deployment -d mutable=true -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
+curl https://nuv.la/run -d refqname=module/examples/a-deployment -d mutable=true -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
 ```
 
 > The above command returns a header structured like this:
@@ -464,7 +464,7 @@ curl https://slipstream.sixsq.com/run -d refqname=module/examples/a-deployment -
 HTTP/1.1 201 Created
 Date: Tue, 13 May 2014 11:29:56 GMT
 Accept-Ranges: bytes
-Location: https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e
+Location: https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e
 Server: Restlet-Framework/2.1m4
 Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1400023769837&com.sixsq.signature=eck79w5qyslb16ke31vfof2b9o6729mcsjgnsqc143nsgqkuepmkgqnaakv544x7nankz4875p0uyg8unl8d5m4dl60wzr6pcpn; Path=/
 Content-Length: 0
@@ -476,7 +476,7 @@ The **Location** attribute in the response header provides the full url of the n
 
 ### HTTP Request
 
-`POST https://slipstream.sixsq.com/run`
+`POST https://nuv.la/run`
 
 ### Body Parameters
 
@@ -492,7 +492,7 @@ Only <em>Orchestration</em> type run can be created as mutable.
 ## Add node instances to a mutable Run
 
 ```shell
-curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d n=2 -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
+curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d n=2 -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
 ```
 
 > The above command requests addition of two instances of the node type centos_node, returns 201 and the list of the created node instances in the body
@@ -514,7 +514,7 @@ Add node instances on a mutable Run.
 
 ### HTTP Request
 
-`POST https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+`POST https://nuv.la/run/<run-uuid>/<node-name>`
 
 ### Url Parameters
 
@@ -532,7 +532,7 @@ n         | false    | Defines a number of node instances to be added. If omitte
 ## Remove node instances from a Run
 
 ```shell
-curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d ids=1,2 -u <user>:<password> -X DELETE -D -
+curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d ids=1,2 -u <user>:<password> -X DELETE -D -
 ```
 
 > The above command requests deletion of two instances with indices 1 and 2 of the node type centos_node and returns 204 on success.
@@ -550,7 +550,7 @@ Remove node instances from a Run.
 
 ### HTTP Request
 
-`DELETE https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+`DELETE https://nuv.la/run/<run-uuid>/<node-name>`
 
 ### Url Parameters
 
@@ -568,7 +568,7 @@ ids       | true     | Defines the comma separated list of indices of the node i
 ## Get instance names of a node in Run
 
 ```shell
-curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u <user>:<password> "Content-Type: text/plain" -D -
+curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u <user>:<password> "Content-Type: text/plain" -D -
 ```
 
 > The above command requests a list of the instance names of the node centos_node.  On success, the return code is 200 and the body contains the comma separated list of the instance names.
@@ -590,7 +590,7 @@ Get instance names of a node in Run.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/run/<run-uuid>/<node-name>`
+`GET https://nuv.la/run/<run-uuid>/<node-name>`
 
 ### Url Parameters
 
@@ -603,18 +603,18 @@ node-name | true     | Node name - e.g. *centos_node*.
 ## Set a node instance (VM) runtime parameter
 
 ```shell
-curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -d my_value -u <user>:<password> -X PUT
+curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -d my_value -u <user>:<password> -X PUT
 ```
 
 >The above command sets `my_value` on the runtime parameter `my_parameter` of
 the node instance `centos_node.1`. On success, the return code is 200. If the
-body of the request is not provided or set to an empty string, the parameter is 
+body of the request is not provided or set to an empty string, the parameter is
 said to be `unset`. Please refer to the `"Get a node instance (VM) runtime parameter"`
 section for handling the cases of the parameters either being `not yet set` or `unset`.
 
 ### HTTP Request
 
-`PUT https://slipstream.sixsq.com/run/<run-uuid>/<node-instance-name>:<parameter-name>`
+`PUT https://nuv.la/run/<run-uuid>/<node-instance-name>:<parameter-name>`
 
 ### Url Parameters
 
@@ -634,7 +634,7 @@ Parameter | Required | Description
 ## Get a node instance (VM) runtime parameter
 
 ```shell
-curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -u <user>:<password>
+curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -u <user>:<password>
 ```
 
 >On success, the above command returns the value of the runtime parameter
@@ -678,7 +678,7 @@ key centos_node.1:my_parameter not yet set
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/run/<run-uuid>/<node-instance-name>:<parameter-name>`
+`GET https://nuv.la/run/<run-uuid>/<node-instance-name>:<parameter-name>`
 
 ### Url Parameters
 
@@ -692,7 +692,7 @@ parameter-name     | true     | Parameter name - e.g. *my_parameter*
 # Virtual machines
 
 ```shell
-curl https://slipstream.sixsq.com/vms --user <user>:<password>
+curl https://nuv.la/vms --user <user>:<password>
 ```
 
 > The above command returns a body structured like this:
@@ -752,7 +752,7 @@ VMs are sorted by <code class="prettyprint">measurment</code>
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/vms`
+`GET https://nuv.la/vms`
 
 ### Query Parameters
 
@@ -812,7 +812,7 @@ The user resource provides user management.
 ## Get All Users
 
 ```shell
-curl https://slipstream.sixsq.com/user --user <user>:<password>
+curl https://nuv.la/user --user <user>:<password>
 ```
 
 > The above command returns XML structured like this:
@@ -831,13 +831,13 @@ List all users.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/user`
+`GET https://nuv.la/user`
 
 
 ## Get a specific user
 
 ```shell
-curl https://slipstream.sixsq.com/user/<user> --user <user>:<password>
+curl https://nuv.la/user/<user> --user <user>:<password>
 ```
 
 > The above command returns xml structured like this:
@@ -916,7 +916,7 @@ This resource retrieves a specific user.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/user/<user>`
+`GET https://nuv.la/user/<user>`
 
 ### URL Parameters
 
@@ -929,7 +929,7 @@ user | true | User name to retrieve
 From [CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
 
 <aside class="notice">
-An resource that represents the occurrence of an event within the managed infrastructure. 
+An resource that represents the occurrence of an event within the managed infrastructure.
 <br/><br/>
 Some examples of Events may be:
 
@@ -955,7 +955,7 @@ An event can <strong>not</strong> be updated, only deleted.
 ## List all Events
 
 ```shell
-curl https://slipstream.sixsq.com/event/ -u <user>:<password> -D -
+curl https://nuv.la/event/ -u <user>:<password> -D -
 ```
 
 > The above command returns json structured like this:
@@ -1023,12 +1023,12 @@ Lists all events accessible by the authenticated user. A user has the right to s
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/event/`
+`GET https://nuv.la/event/`
 
 ## Create an Event
 
 ```shell
-curl https://slipstream.sixsq.com/event -d "{ \"acl\": {\"owner\": {\"type\": \"USER\", \"principal\": \"joe\"},    \"rules\": [{\"type\": \"ROLE\", \"prinipal\": \"ANON\", \"right\": \"ALL\"}]},    \"id\": \"123\",    \"created\" :  \"2015-01-16T08:20:00.0Z\",    \"updated\" : \"2015-01-16T08:20:00.0Z\",    \"resourceURI\" : \"http://slipstream.sixsq.com/ssclj/1/Event\",    \"timestamp\": \"2015-01-10T08:20:00.0Z\",    \"content\" :  { \"resource\":  {\"href\": \"Run/45614147-aed1-4a24-889d-6365b0b1f2cd\"},    \"state\" : \"Started\" } ,    \"type\": \"state\",    \"severity\": \"medium\"}" -X POST -H "Content-Type: application/json" -u <user>:<password> -D -
+curl https://nuv.la/event -d "{ \"acl\": {\"owner\": {\"type\": \"USER\", \"principal\": \"joe\"},    \"rules\": [{\"type\": \"ROLE\", \"prinipal\": \"ANON\", \"right\": \"ALL\"}]},    \"id\": \"123\",    \"created\" :  \"2015-01-16T08:20:00.0Z\",    \"updated\" : \"2015-01-16T08:20:00.0Z\",    \"resourceURI\" : \"http://slipstream.sixsq.com/ssclj/1/Event\",    \"timestamp\": \"2015-01-10T08:20:00.0Z\",    \"content\" :  { \"resource\":  {\"href\": \"Run/45614147-aed1-4a24-889d-6365b0b1f2cd\"},    \"state\" : \"Started\" } ,    \"type\": \"state\",    \"severity\": \"medium\"}" -X POST -H "Content-Type: application/json" -u <user>:<password> -D -
 ```
 
 > The above command returns a json structured like this:
@@ -1067,7 +1067,7 @@ Create an event that contains information (mainly timestamp and state) related t
 
 ### HTTP Request
 
-`POST https://slipstream.sixsq.com/event`
+`POST https://nuv.la/event`
 
 ### Body Parameters
 
@@ -1081,7 +1081,7 @@ severity    | true      | Accepted values: `critical`, `high`, `medium` and `low
 ## Get an Event
 
 ```shell
-curl https://slipstream.sixsq.com/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u <user>:<password> -D -
+curl https://nuv.la/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u <user>:<password> -D -
 ```
 
 > The above command returns a json structured like this:
@@ -1129,12 +1129,12 @@ Get a specific event.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/event/<event-uuid>`
+`GET https://nuv.la/event/<event-uuid>`
 
 ## Delete an Event
 
 ```shell
-curl -X DELETE  https://slipstream.sixsq.com/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u <user>:<password> -D -
+curl -X DELETE  https://nuv.la/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u <user>:<password> -D -
 ```
 
 > The above command returns a json structured like this:
@@ -1167,24 +1167,24 @@ Delete a specific (the event-uuid is known) event.
 
 ### HTTP Request
 
-`DELETE https://slipstream.sixsq.com/event/<event-uuid>`
+`DELETE https://nuv.la/event/<event-uuid>`
 
 
-# Usage Records
+# Usage
 
 Represents the summary of cloud usage records for a given user and cloud, on a specific period.
 
-## List all Usage Records
+## List all Usage
 
 The collection of usage records (in reverse order) is returned filtered with the provided authentication.
 (Only resources for the given user are returned.)
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/usage`
+`GET https://nuv.la/usage`
 
 ```shell
-curl https://slipstream.sixsq.com/usage -u <user>:<password> -D -
+curl https://nuv.la/usage -u <user>:<password> -D -
 ```
 
 > The above command returns a json structured like this:
@@ -1267,7 +1267,7 @@ Date: Mon, 22 Jun 2015 08:49:33 GMT
 }
 ```
 
-## Filtering Usage Records
+## Filtering Usage
 From [CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
 
 <aside class="notice">
@@ -1286,7 +1286,7 @@ To retrieve the usage records for a given cloud, the CIMI filter can be written
 
 Note, however, that such a filter contains characters that must be **URL-encoded**, and the HTTP request will look like this:
 
-`GET https://slipstream.sixsq.com/usage?%24filter=cloud%3D%27cloud-name%27`
+`GET https://nuv.la/usage?%24filter=cloud%3D%27cloud-name%27`
 
 ### Filtering on date comparison (equality)
 
@@ -1296,7 +1296,7 @@ To retrieve the usage records for a specific date, the CIMI filter can be writte
 
 Full URL with encoding:
 
-`GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3D2015-06-22`
+`GET https://nuv.la/usage?%24filter=start_timestamp%3D2015-06-22`
 
 ### Filtering on date comparison (before or after)
 
@@ -1306,7 +1306,7 @@ To retrieve the usage records after a specific date, the CIMI filter can be writ
 
 Full URL with encoding:
 
-`GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3E2015-06-22`
+`GET https://nuv.la/usage?%24filter=start_timestamp%3E2015-06-22`
 
 To filter usage records before a specific date, use **<** (URL-encoded as **%3C**) instead.
 
@@ -1318,11 +1318,11 @@ You can join conditons with **and** (logical and), or **or** (logical or).
 
 Full URL with encoding:
 
-`GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27`
+`GET https://nuv.la/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27`
 
 These are only some examples, consult the CIMI documentation for an exhaustive list of possibilities.
 
-## Paginating Usage Records
+## Paginating Usage
 From [CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.2 Subsetting Collections](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
 
 <aside class="notice">
@@ -1331,20 +1331,265 @@ number of entities of the Collection that are returned.
 ...
 This specification defined two query parameters that, if used, shall indicate the first and last ordinal
 positions of the entities within the Collection that are returned. The query parameters shall be of the form:
-￼?$first=number 
+￼?$first=number
  ?$last=number
 </aside>
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/usage?%24first=2&%24last=2`
+`GET https://nuv.la/usage?%24first=2&%24last=2`
 
 will return only the *second* usage record.
 
-# The *new* resource
+# Attribute
+
+This resource represents the meta-information of each attribute of a Service Catalog instance (see Service Catalog resource).
+
+## List Attribute resource
+
+This returns the collection of Attribute resources.
+
+### HTTP Request
+
+`GET https://nuv.la/api/attribute`
 
 ```shell
-curl https://slipstream.sixsq.com/module/examples/new?category=Image login -d username=<USER> -d password=<PASSWORD>
+curl https://nuv.la/api/attribute -u <user>:<password> -D -
+```
+
+> The above command returns a json structured like this (truncated for readability):
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Server: Aleph/0.4.0
+Connection: Keep-Alive
+Date: Tue, 09 Feb 2016 12:32:38 GMT
+content-length: 22221
+
+{
+  "acl" : {
+    "owner" : {
+      "principal" : "ADMIN",
+      "type" : "ROLE"
+    },
+    "rules" : [ {
+      "principal" : "USER",
+      "type" : "ROLE",
+      "right" : "MODIFY"
+    } ]
+  },
+  "resourceURI" : "http://sixsq.com/slipstream/1/AttributeCollection",
+  "id" : "attribute",
+  "operations" : [ {
+    "rel" : "http://sixsq.com/slipstream/1/Action/add",
+    "href" : "attribute"
+  } ],
+  "count" : 31,
+  "attribute" : [ {
+    "minor-version" : 0,
+    "updated" : "2016-02-09T12:11:27.735Z",
+    "major-version" : 1,
+    "type" : "String",
+    "created" : "2016-02-09T12:11:27.735Z",
+    "en" : {
+      "name" : "price.storage.per.hour",
+      "categories" : [ "Price" ],
+      "description" : "Nature: the price for use of a unit (e.g. 1 GB) of storage per hour; Value: the price in euros, e.g. \u20AC0.0005; Explanation: note that is possible that storage is either associated with a particular VM or as a generally-available resource"
+    },
+    "id" : "attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0",
+    "acl" : {
+      "owner" : {
+        "principal" : "ADMIN",
+        "type" : "ROLE"
+      }
+    },
+    "operations" : [ {
+      "rel" : "http://sixsq.com/slipstream/1/Action/edit",
+      "href" : "attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0"
+    }, {
+      "rel" : "http://sixsq.com/slipstream/1/Action/delete",
+      "href" : "attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0"
+    } ],
+    "resourceURI" : "http://sixsq.com/slipstream/1/Attribute",
+    "uri" : "http://schema.hnx.helix-nebula.eu/price.storage.per.hour",
+    "patch-version" : 0,
+    "normative" : true
+  },
+  ...
+```
+
+## Create an Attribute resource
+
+### HTTP REQUEST
+
+`POST https://nuv.la/api/attribute`
+
+### Body Parameters
+
+Parameter   | Required  | Description
+------------| --------  | -----------
+major-version   | true      | Major version number of the schema
+minor-version   | true      | Minor version number of the schema
+patch-version   | true      | Patch version number of the schema
+normative       | true      |
+type            | true      | Type of the data: String, ...
+uri             | true      | URI of this schema
+en.name         | true      | Name of this attribute
+en.categories   | true      | List of categories
+en.description  | true      | Description of this attribute
+
+```shell
+curl -X POST -H "Content-Type: application/json" https://nuv.la/api/attribute -d "{\"major-version\": 1, \"minor-version\": 0, \"patch-version\": 0, \"normative\": true, \"type\": \"String\", \"uri\": \"http://schema.hnx.helix-nebula.eu/hyper.price.per.hour\", \"en\": {\"name\": \"hyper.price.per.hour\",\"categories\": [\"Price\"],\"description\": \"Nature: the price for a Hyper type instance with 16 CPU and 128 GB RAM\"}}" -u <user>:<password> -D -
+```
+
+> The above command returns a json response:
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+Location: attribute/d77a553b-7332-48a0-b653-3b2b4b336049
+Server: Aleph/0.4.0
+Connection: Keep-Alive
+Date: Tue, 09 Feb 2016 12:55:09 GMT
+content-length: 160
+
+{
+  "status" : 201,
+  "message" : "created attribute/d77a553b-7332-48a0-b653-3b2b4b336049",
+  "resource-id" : "attribute/d77a553b-7332-48a0-b653-3b2b4b336049"
+}
+```
+
+## Delete an Attribute resource
+
+### HTTP REQUEST
+
+`DELETE https://nuv.la/api/attribute/<id>`
+
+```shell
+curl -X DELETE -H "Content-Type: application/json" https://nuv.la/api/attribute/d77a553b-7332-48a0-b653-3b2b4b336049 -u <user>:<password> -D -
+```
+
+> The above command returns a json response:
+
+```http
+HTTP/1.1 204 No Content
+Content-Type: application/json
+Server: Aleph/0.4.0
+Connection: Keep-Alive
+Date: Tue, 09 Feb 2016 13:03:31 GMT
+content-length: 160
+```
+
+# Service Catalog
+
+Provides detailed capability information for each available cloud.
+
+## Get the Service Catalog
+
+### HTTP REQUEST
+
+`GET https://nuv.la/api/service-info`
+
+```shell
+curl -X GET -H "Content-Type: application/json" https://nuv.la/api/service-info -u <user>:<password> -D -
+```
+
+> The above command returns a json response:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Server: Aleph/0.4.0
+Connection: Keep-Alive
+Date: Tue, 09 Feb 2016 18:04:39 GMT
+content-length: 20147
+
+{
+  "acl" : {
+    "owner" : {
+      "principal" : "ADMIN",
+      "type" : "ROLE"
+    },
+    "rules" : [ {
+      "principal" : "USER",
+      "type" : "ROLE",
+      "right" : "MODIFY"
+    } ]
+  },
+  "resourceURI" : "http://sixsq.com/slipstream/1/ServiceInfoCollection",
+  "id" : "service-info",
+  "operations" : [ {
+    "rel" : "http://sixsq.com/slipstream/1/Action/add",
+    "href" : "service-info"
+  } ],
+  "count" : 12,
+  "service-info" : [ {
+    "connector" : {
+      "href" : "t-systems-de1-indigo-1"
+    },
+    "http://schema.a.b.c/suppliers.catalog" : "",
+    "http://schema.a.b.c/single.vm.storage.volatile" : "",
+    "http://schema.a.b.c/single.vm.storage.persistent" : "",
+    "http://schema.a.b.c/single.vm.max.ram" : "",
+    "http://schema.a.b.c/overall.capacity.cpu" : "",
+    "http://schema.a.b.c/price.charging.period" : "",
+    "http://schema.a.b.c/price.ram.per.hour" : "",
+    "updated" : "2016-02-09T18:00:22.387Z",
+    "created" : "2016-02-09T18:00:22.387Z",
+    "http://schema.a.b.c/price.charging.unit" : "",
+    "http://schema.a.b.c/overall.capacity.storage" : "",
+    "http://schema.a.b.c/location" : "",
+    "id" : "service-info/023285da-7be4-4931-90f5-c50baadc58a4",
+    "http://schema.a.b.c/price.cpu.per.hour" : "",
+    "http://schema.a.b.c/single.vm.min.cpu" : "",
+    "acl" : {
+      "owner" : {
+        "principal" : "ADMIN",
+        "type" : "ROLE"
+      },
+      "rules" : [ {
+        "principal" : "USER",
+        "type" : "ROLE",
+        "right" : "VIEW"
+      } ]
+    },
+    "resourceURI" : "http://sixsq.com/slipstream/1/ServiceInfo",
+    "http://schema.a.b.c/price.io" : "",
+    "http://schema.a.b.c/overall.capacity.ram" : "",
+    "http://schema.a.b.c/single.vm.max.cpu" : "",
+    "http://schema.a.b.c/single.vm.min.ram" : "",
+    "http://schema.a.b.c/price.storage.per.hour" : ""
+  }
+  ...
+```
+
+## Create a Service Catalog
+
+### HTTP REQUEST
+
+`POST https://nuv.la/api/service-info`
+
+### Body Parameters
+
+Parameter   | Required  | Description
+------------| --------  | -----------
+connector.href        | true      | The cloud name
+uri of an attribute 1 | false     | Value of the attribute for this cloud
+uri of an attribute 2 | false     | Value of the attribute for this cloud
+... | false     | ...
+
+## Delete a Service Catalog
+
+### HTTP REQUEST
+
+`DELETE https://nuv.la/api/service-info`
+
+
+# The *new* resource
+```shell
+curl https://nuv.la/module/examples/new?category=Image login -d username=<USER> -d password=<PASSWORD>
 ```
 
 > The above command returns a response body structured like this:
@@ -1433,7 +1678,7 @@ you can use the special *new* resource.
 
 ### HTTP Request
 
-`GET https://slipstream.sixsq.com/<type>/new[?category=<category>]`
+`GET https://nuv.la/<type>/new[?category=<category>]`
 
 ### Url Parameter
 
