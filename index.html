@@ -57,7 +57,7 @@
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        <h1 id="slipstream-v2.11-api-reference">SlipStream v2.11 API Reference</h1>
+        <h1 id="slipstream-api-reference">SlipStream API Reference</h1>
 
 <h2 id="introduction">Introduction</h2>
 
@@ -76,13 +76,13 @@ You can get a serialised version of most SlipStream resources directly in the br
 <blockquote>
 <p>Adding <code class="prettyprint">?media=xml</code>(for XML) at the end of the URL in the browser, you request the response to be returned in the specified content-type:</p>
 </blockquote>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com?media<span class="o">=</span>xml
+<pre><code class="highlight shell">curl https://nuv.la?media<span class="o">=</span>xml
 </code></pre>
 
 <blockquote>
 <p>is equivalent to</p>
 </blockquote>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com -H <span class="s2">"Content-Type: application/xml"</span>
+<pre><code class="highlight shell">curl https://nuv.la -H <span class="s2">"Content-Type: application/xml"</span>
 </code></pre>
 
 <h2 id="resource-oriented-architecture-(roa)">Resource Oriented Architecture (ROA)</h2>
@@ -97,13 +97,13 @@ deployment and project can be uniquely identified via a unique URI.</p>
 
 <p>With the exception of the login page, all resources require authentication.</p>
 
-<p>SlipStream currently supports both <code class="prettyprint">Basic Authentication</code> and <code class="prettyprint">Cookies</code>. 
+<p>SlipStream currently supports both <code class="prettyprint">Basic Authentication</code> and <code class="prettyprint">Cookies</code>.
 To generate a time limited cookie, use the <code class="prettyprint">/login</code> resource.</p>
 
 <h1 id="login">Login</h1>
 
 <h2 id="basic-authentication">Basic authentication</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com?media<span class="o">=</span>xml -u &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://nuv.la?media<span class="o">=</span>xml -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
 
 <blockquote>
@@ -141,7 +141,7 @@ To generate a time limited cookie, use the <code class="prettyprint">/login</cod
 <p>SlipStream supports basic authentication.  This can be tested using simple username/password pair.</p>
 
 <h2 id="generate-a-cookie">Generate a cookie</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/login -d <span class="nv">username</span><span class="o">=</span>&lt;user&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;password&gt; -H <span class="s2">"Content-Type: application/xml"</span>
+<pre><code class="highlight shell">curl https://nuv.la/login -d <span class="nv">username</span><span class="o">=</span>&lt;user&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;password&gt; -H <span class="s2">"Content-Type: application/xml"</span>
 </code></pre>
 
 <blockquote>
@@ -151,7 +151,7 @@ To generate a time limited cookie, use the <code class="prettyprint">/login</cod
 <span class="na">Server</span><span class="p">:</span> <span class="s">nginx/1.4.7</span>
 <span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 06 May 2014 18:46:12 GMT</span>
 <span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
-<span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">https://nuv.la</span>
 <span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.1m4</span>
 <span class="na">Set-Cookie</span><span class="p">:</span> <span class="s">com.sixsq.slipstream.cookie=SOME_LONG_STRING; Path=/</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
@@ -162,7 +162,7 @@ to the <code class="prettyprint">Set-Cookie</code> of the response header.</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">POST https://slipstream.sixsq.com/login</code></p>
+<p><code class="prettyprint">POST https://nuv.la/login</code></p>
 
 <h3 id="body-parameters">Body Parameters</h3>
 
@@ -208,7 +208,7 @@ Remember, image, deployment and project are type attributes of the module resour
 </aside>
 
 <h2 id="get-a-module">Get a module</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/&lt;module&gt; --user &lt;user&gt;:&lt;password&gt; -H <span class="s2">"Content-Type: application/xml"</span>
+<pre><code class="highlight shell">curl https://nuv.la/module/&lt;module&gt; --user &lt;user&gt;:&lt;password&gt; -H <span class="s2">"Content-Type: application/xml"</span>
 </code></pre>
 
 <blockquote>
@@ -257,14 +257,14 @@ Remember, image, deployment and project are type attributes of the module resour
     <span class="nt">&lt;/cloudImageIdentifiers&gt;</span>
 <span class="nt">&lt;/imageModule&gt;</span>
 </code></pre>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/examples/foo -H <span class="s2">"Content-Type: application/xml"</span> --user &lt;user&gt;:&lt;password&gt; &gt; foo.xml
+<pre><code class="highlight shell">curl https://nuv.la/module/examples/foo -H <span class="s2">"Content-Type: application/xml"</span> --user &lt;user&gt;:&lt;password&gt; &gt; foo.xml
 </code></pre>
 
 <p>Get a module (i.e. image, deployment or project).</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/module/&lt;module&gt;[/&lt;version&gt;]</code></p>
+<p><code class="prettyprint">GET https://nuv.la/module/&lt;module&gt;[/&lt;version&gt;]</code></p>
 
 <h3 id="url-parameters">Url Parameters</h3>
 
@@ -292,7 +292,7 @@ To list the root projects, simply omit the <em>&lt;MODULE></em> from the request
 </aside>
 
 <h2 id="update-a-module">Update a module</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/&lt;module&gt; --user &lt;user&gt;:&lt;password&gt; --data @&lt;file&gt; -X PUT -H <span class="s2">"Content-Type: application/xml"</span>
+<pre><code class="highlight shell">curl https://nuv.la/module/&lt;module&gt; --user &lt;user&gt;:&lt;password&gt; --data @&lt;file&gt; -X PUT -H <span class="s2">"Content-Type: application/xml"</span>
 </code></pre>
 
 <blockquote>
@@ -303,7 +303,7 @@ To list the root projects, simply omit the <em>&lt;MODULE></em> from the request
 <pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
 <span class="na">Date</span><span class="p">:</span> <span class="s">Mon, 12 May 2014 15:16:49 GMT</span>
 <span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
-<span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com/module/examples/foo/1199</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">https://nuv.la/module/examples/foo/1199</span>
 <span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.1m4</span>
 <span class="na">Set-Cookie</span><span class="p">:</span> <span class="s">com.sixsq.slipstream.cookie=com.sixsq.idtype=local&amp;com.sixsq.identifier=test&amp;com.sixsq.expirydate=1399951006191&amp;com.sixsq.signature=-cotcj9t5rzu3zx2uof96x8scptxh5mbraazmf63doem22tkvlq1519twaz7uxlvtyyxd0fxvygvrsn1hip09yvn7v11c9a74j21; Path=/</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
@@ -319,7 +319,7 @@ To list the root projects, simply omit the <em>&lt;MODULE></em> from the request
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">PUT https://slipstream.sixsq.com/module/&lt;module&gt;[/&lt;version&gt;]</code></p>
+<p><code class="prettyprint">PUT https://nuv.la/module/&lt;module&gt;[/&lt;version&gt;]</code></p>
 
 <p>The <strong>Location</strong> attribute in the response header provides the full url of the updated resource, with the incremented version.</p>
 
@@ -349,7 +349,7 @@ This PUT request is not idem potent - i.e. calling it several times will create 
 </aside>
 
 <h2 id="delete-a-module">Delete a module</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/&lt;module&gt; -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
+<pre><code class="highlight shell">curl https://nuv.la/module/&lt;module&gt; -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
 </code></pre>
 
 <blockquote>
@@ -358,7 +358,7 @@ This PUT request is not idem potent - i.e. calling it several times will create 
 <pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">No Content</span>
 <span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 13 May 2014 03:08:15 GMT</span>
 <span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
-<span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com/module/examples/toto/11</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">https://nuv.la/module/examples/toto/11</span>
 <span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.1m4</span>
 <span class="na">Set-Cookie</span><span class="p">:</span> <span class="s">com.sixsq.slipstream.cookie=com.sixsq.idtype=local&amp;com.sixsq.identifier=test&amp;com.sixsq.expirydate=1399993694970&amp;com.sixsq.signature=izoalqmos489wxw8z25k03nqtsdfyxyv2ak5adi1e0h73zdziq45y1eat66tcob5ybvh7oe5gbh8es1onj4f6orj2enrqu9w9j0; Path=/</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
@@ -370,7 +370,7 @@ This PUT request is not idem potent - i.e. calling it several times will create 
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">DELETE https://slipstream.sixsq.com/module/&lt;module&gt;[/&lt;version&gt;]</code></p>
+<p><code class="prettyprint">DELETE https://nuv.la/module/&lt;module&gt;[/&lt;version&gt;]</code></p>
 
 <h3 id="url-parameters">URL Parameters</h3>
 
@@ -394,7 +394,7 @@ This PUT request is not idem potent - i.e. calling it several times will create 
 </tbody></table>
 
 <h2 id="module-history-(versions)">Module history (versions)</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/&lt;module&gt;/ -u &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://nuv.la/module/&lt;module&gt;/ -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
 <pre><code class="highlight xml"><span class="nt">&lt;versionList&gt;</span>
    <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"module/examples/an-image/12"</span> <span class="na">lastModified=</span><span class="s">"2014-05-13 04:53:47.339 CEST"</span> <span class="na">version=</span><span class="s">"12"</span> <span class="na">category=</span><span class="s">"Image"</span> <span class="na">name=</span><span class="s">"an-image"</span><span class="nt">&gt;</span>
@@ -419,7 +419,7 @@ of the module, this request allows users to list these.</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/module/&lt;module&gt;/</code></p>
+<p><code class="prettyprint">GET https://nuv.la/module/&lt;module&gt;/</code></p>
 
 <aside class="notice">
 Notice the trailing &rsquo;/&rsquo; in the URL
@@ -456,7 +456,7 @@ SlipStream supports 3 types of runs:</p>
 on the state of the run.</p>
 
 <h2 id="list-all-runs">List all Runs</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run -u &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://nuv.la/run -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
 <pre><code class="highlight xml"><span class="nt">&lt;runs</span> <span class="na">offset=</span><span class="s">"0"</span> <span class="na">limit=</span><span class="s">"20"</span> <span class="na">count=</span><span class="s">"20"</span> <span class="na">totalCount=</span><span class="s">"93"</span><span class="nt">&gt;</span>
    <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"run/fed1dd04-aa05-4a92-abb8-ed279f1f4dd4"</span> <span class="na">uuid=</span><span class="s">"fed1dd04-aa05-4a92-abb8-ed279f1f4dd4"</span> <span class="na">moduleResourceUri=</span><span class="s">"module/SlipStream/deploy-slipstream-dpl/745"</span> <span class="na">status=</span><span class="s">"Done"</span> <span class="na">abort=</span><span class="s">""</span> <span class="na">startTime=</span><span class="s">"2015-03-17 13:34:51.440 UTC"</span> <span class="na">cloudServiceNames=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">username=</span><span class="s">"sixsq_dev"</span> <span class="na">type=</span><span class="s">"Orchestration"</span> <span class="na">tags=</span><span class="s">""</span><span class="nt">/&gt;</span>
@@ -469,10 +469,10 @@ on the state of the run.</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/run</code></p>
+<p><code class="prettyprint">GET https://nuv.la/run</code></p>
 
 <h2 id="get-a-run">Get a Run</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run/&lt;run&gt; -u &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://nuv.la/run/&lt;run&gt; -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
 <pre><code class="highlight xml"><span class="nt">&lt;runs&gt;</span>
    <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"run/4f187379-cdb9-470d-9656-b6fac6dc33d8"</span> <span class="na">uuid=</span><span class="s">"4f187379-cdb9-470d-9656-b6fac6dc33d8"</span> <span class="na">moduleResourceUri=</span><span class="s">"module/examples/tutorials/service-testing/system/471"</span> <span class="na">status=</span><span class="s">"Done"</span> <span class="na">startTime=</span><span class="s">"2014-05-10 15:22:56.882 UTC"</span> <span class="na">cloudServiceName=</span><span class="s">"exoscale-ch-gva"</span> <span class="na">username=</span><span class="s">"meb"</span> <span class="na">type=</span><span class="s">"Orchestration"</span> <span class="na">tags=</span><span class="s">""</span><span class="nt">/&gt;</span>
@@ -484,7 +484,7 @@ on the state of the run.</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/run/&lt;run-uuid&gt;</code></p>
+<p><code class="prettyprint">GET https://nuv.la/run/&lt;run-uuid&gt;</code></p>
 
 <h3 id="url-parameters">Url Parameters</h3>
 
@@ -503,7 +503,7 @@ on the state of the run.</p>
 </tbody></table>
 
 <h2 id="create-a-run">Create a Run</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run -d <span class="nv">refqname</span><span class="o">=</span>module/examples/an-image -d <span class="nb">type</span><span class="o">=</span>Run -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
+<pre><code class="highlight shell">curl https://nuv.la/run -d <span class="nv">refqname</span><span class="o">=</span>module/examples/an-image -d <span class="nb">type</span><span class="o">=</span>Run -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
 <blockquote>
@@ -512,7 +512,7 @@ on the state of the run.</p>
 <pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
 <span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 13 May 2014 11:29:56 GMT</span>
 <span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
-<span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e</span>
 <span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.1m4</span>
 <span class="na">Set-Cookie</span><span class="p">:</span> <span class="s">com.sixsq.slipstream.cookie=com.sixsq.idtype=local&amp;com.sixsq.identifier=test&amp;com.sixsq.expirydate=1400023769837&amp;com.sixsq.signature=eck79w5qyslb16ke31vfof2b9o6729mcsjgnsqc143nsgqkuepmkgqnaakv544x7nankz4875p0uyg8unl8d5m4dl60wzr6pcpn; Path=/</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
@@ -532,7 +532,7 @@ This mutable/immutable feature only applies to deployment type run (aka <em>Orch
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">POST https://slipstream.sixsq.com/run</code></p>
+<p><code class="prettyprint">POST https://nuv.la/run</code></p>
 
 <h3 id="body-parameters">Body Parameters</h3>
 
@@ -576,7 +576,7 @@ This mutable/immutable feature only applies to deployment type run (aka <em>Orch
 </tbody></table>
 
 <h2 id="create-a-mutable-run">Create a mutable Run</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run -d <span class="nv">refqname</span><span class="o">=</span>module/examples/a-deployment -d <span class="nv">mutable</span><span class="o">=</span><span class="nb">true</span> -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
+<pre><code class="highlight shell">curl https://nuv.la/run -d <span class="nv">refqname</span><span class="o">=</span>module/examples/a-deployment -d <span class="nv">mutable</span><span class="o">=</span><span class="nb">true</span> -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
 <blockquote>
@@ -585,7 +585,7 @@ This mutable/immutable feature only applies to deployment type run (aka <em>Orch
 <pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
 <span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 13 May 2014 11:29:56 GMT</span>
 <span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
-<span class="na">Location</span><span class="p">:</span> <span class="s">https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e</span>
 <span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.1m4</span>
 <span class="na">Set-Cookie</span><span class="p">:</span> <span class="s">com.sixsq.slipstream.cookie=com.sixsq.idtype=local&amp;com.sixsq.identifier=test&amp;com.sixsq.expirydate=1400023769837&amp;com.sixsq.signature=eck79w5qyslb16ke31vfof2b9o6729mcsjgnsqc143nsgqkuepmkgqnaakv544x7nankz4875p0uyg8unl8d5m4dl60wzr6pcpn; Path=/</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
@@ -597,7 +597,7 @@ This mutable/immutable feature only applies to deployment type run (aka <em>Orch
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">POST https://slipstream.sixsq.com/run</code></p>
+<p><code class="prettyprint">POST https://nuv.la/run</code></p>
 
 <h3 id="body-parameters">Body Parameters</h3>
 
@@ -625,7 +625,7 @@ Only <em>Orchestration</em> type run can be created as mutable.
 </aside>
 
 <h2 id="add-node-instances-to-a-mutable-run">Add node instances to a mutable Run</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d <span class="nv">n</span><span class="o">=</span>2 -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
+<pre><code class="highlight shell">curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d <span class="nv">n</span><span class="o">=</span>2 -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
 <blockquote>
@@ -647,7 +647,7 @@ centos_node.2,centos_node.3
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">POST https://slipstream.sixsq.com/run/&lt;run-uuid&gt;/&lt;node-name&gt;</code></p>
+<p><code class="prettyprint">POST https://nuv.la/run/&lt;run-uuid&gt;/&lt;node-name&gt;</code></p>
 
 <h3 id="url-parameters">Url Parameters</h3>
 
@@ -687,7 +687,7 @@ centos_node.2,centos_node.3
 </tbody></table>
 
 <h2 id="remove-node-instances-from-a-run">Remove node instances from a Run</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d <span class="nv">ids</span><span class="o">=</span>1,2 -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
+<pre><code class="highlight shell">curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d <span class="nv">ids</span><span class="o">=</span>1,2 -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
 </code></pre>
 
 <blockquote>
@@ -705,7 +705,7 @@ centos_node.2,centos_node.3
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">DELETE https://slipstream.sixsq.com/run/&lt;run-uuid&gt;/&lt;node-name&gt;</code></p>
+<p><code class="prettyprint">DELETE https://nuv.la/run/&lt;run-uuid&gt;/&lt;node-name&gt;</code></p>
 
 <h3 id="url-parameters">Url Parameters</h3>
 
@@ -745,7 +745,7 @@ centos_node.2,centos_node.3
 </tbody></table>
 
 <h2 id="get-instance-names-of-a-node-in-run">Get instance names of a node in Run</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u &lt;user&gt;:&lt;password&gt; <span class="s2">"Content-Type: text/plain"</span> -D -
+<pre><code class="highlight shell">curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u &lt;user&gt;:&lt;password&gt; <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
 <blockquote>
@@ -767,7 +767,7 @@ centos_node.1,centos_node.2,centos_node.3
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/run/&lt;run-uuid&gt;/&lt;node-name&gt;</code></p>
+<p><code class="prettyprint">GET https://nuv.la/run/&lt;run-uuid&gt;/&lt;node-name&gt;</code></p>
 
 <h3 id="url-parameters">Url Parameters</h3>
 
@@ -791,20 +791,20 @@ centos_node.1,centos_node.2,centos_node.3
 </tbody></table>
 
 <h2 id="set-a-node-instance-(vm)-runtime-parameter">Set a node instance (VM) runtime parameter</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -d my_value -u &lt;user&gt;:&lt;password&gt; -X PUT
+<pre><code class="highlight shell">curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -d my_value -u &lt;user&gt;:&lt;password&gt; -X PUT
 </code></pre>
 
 <blockquote>
 <p>The above command sets <code class="prettyprint">my_value</code> on the runtime parameter <code class="prettyprint">my_parameter</code> of
 the node instance <code class="prettyprint">centos_node.1</code>. On success, the return code is 200. If the
-body of the request is not provided or set to an empty string, the parameter is 
+body of the request is not provided or set to an empty string, the parameter is
 said to be <code class="prettyprint">unset</code>. Please refer to the <code class="prettyprint">&quot;Get a node instance (VM) runtime parameter&quot;</code>
 section for handling the cases of the parameters either being <code class="prettyprint">not yet set</code> or <code class="prettyprint">unset</code>.</p>
 </blockquote>
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">PUT https://slipstream.sixsq.com/run/&lt;run-uuid&gt;/&lt;node-instance-name&gt;:&lt;parameter-name&gt;</code></p>
+<p><code class="prettyprint">PUT https://nuv.la/run/&lt;run-uuid&gt;/&lt;node-instance-name&gt;:&lt;parameter-name&gt;</code></p>
 
 <h3 id="url-parameters">Url Parameters</h3>
 
@@ -849,7 +849,7 @@ section for handling the cases of the parameters either being <code class="prett
 </tbody></table>
 
 <h2 id="get-a-node-instance-(vm)-runtime-parameter">Get a node instance (VM) runtime parameter</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -u &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
 
 <blockquote>
@@ -893,7 +893,7 @@ key centos_node.1:my_parameter not yet set
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/run/&lt;run-uuid&gt;/&lt;node-instance-name&gt;:&lt;parameter-name&gt;</code></p>
+<p><code class="prettyprint">GET https://nuv.la/run/&lt;run-uuid&gt;/&lt;node-instance-name&gt;:&lt;parameter-name&gt;</code></p>
 
 <h3 id="url-parameters">Url Parameters</h3>
 
@@ -922,7 +922,7 @@ key centos_node.1:my_parameter not yet set
 </tbody></table>
 
 <h1 id="virtual-machines">Virtual machines</h1>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/vms --user &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://nuv.la/vms --user &lt;user&gt;:&lt;password&gt;
 </code></pre>
 
 <blockquote>
@@ -982,7 +982,7 @@ VMs are sorted by <code class="prettyprint">measurment</code>
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/vms</code></p>
+<p><code class="prettyprint">GET https://nuv.la/vms</code></p>
 
 <h3 id="query-parameters">Query Parameters</h3>
 
@@ -1167,7 +1167,7 @@ The <code class="prettyprint">user</code> parameter is reserved to privileged us
 <p>The user resource provides user management.</p>
 
 <h2 id="get-all-users">Get All Users</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/user --user &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://nuv.la/user --user &lt;user&gt;:&lt;password&gt;
 </code></pre>
 
 <blockquote>
@@ -1186,10 +1186,10 @@ This resource is restricted to privileged users.
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/user</code></p>
+<p><code class="prettyprint">GET https://nuv.la/user</code></p>
 
 <h2 id="get-a-specific-user">Get a specific user</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/user/&lt;user&gt; --user &lt;user&gt;:&lt;password&gt;
+<pre><code class="highlight shell">curl https://nuv.la/user/&lt;user&gt; --user &lt;user&gt;:&lt;password&gt;
 </code></pre>
 
 <blockquote>
@@ -1268,7 +1268,7 @@ This resource is restricted to privileged users.
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/user/&lt;user&gt;</code></p>
+<p><code class="prettyprint">GET https://nuv.la/user/&lt;user&gt;</code></p>
 
 <h3 id="url-parameters">URL Parameters</h3>
 
@@ -1291,7 +1291,7 @@ This resource is restricted to privileged users.
 <p>From <a href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13</a></p>
 
 <aside class="notice">
-An resource that represents the occurrence of an event within the managed infrastructure. 
+An resource that represents the occurrence of an event within the managed infrastructure.
 <br/><br/>
 Some examples of Events may be:
 
@@ -1316,7 +1316,7 @@ An event can <strong>not</strong> be updated, only deleted.
 </aside>
 
 <h2 id="list-all-events">List all Events</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/event/ -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl https://nuv.la/event/ -u &lt;user&gt;:&lt;password&gt; -D -
 </code></pre>
 
 <blockquote>
@@ -1384,10 +1384,10 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/event/</code></p>
+<p><code class="prettyprint">GET https://nuv.la/event/</code></p>
 
 <h2 id="create-an-event">Create an Event</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/event -d <span class="s2">"{ </span><span class="se">\"</span><span class="s2">acl</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">owner</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">USER</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">principal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">joe</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">rules</span><span class="se">\"</span><span class="s2">: [{</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ROLE</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">prinipal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ANON</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">right</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ALL</span><span class="se">\"</span><span class="s2">}]},    </span><span class="se">\"</span><span class="s2">id</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">123</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">created</span><span class="se">\"</span><span class="s2"> :  </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">updated</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">resourceURI</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">http://slipstream.sixsq.com/ssclj/1/Event</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">timestamp</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">2015-01-10T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">content</span><span class="se">\"</span><span class="s2"> :  { </span><span class="se">\"</span><span class="s2">resource</span><span class="se">\"</span><span class="s2">:  {</span><span class="se">\"</span><span class="s2">href</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Run/45614147-aed1-4a24-889d-6365b0b1f2cd</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">Started</span><span class="se">\"</span><span class="s2"> } ,    </span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">severity</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">medium</span><span class="se">\"</span><span class="s2">}"</span> -X POST -H <span class="s2">"Content-Type: application/json"</span> -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl https://nuv.la/event -d <span class="s2">"{ </span><span class="se">\"</span><span class="s2">acl</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">owner</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">USER</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">principal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">joe</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">rules</span><span class="se">\"</span><span class="s2">: [{</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ROLE</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">prinipal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ANON</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">right</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ALL</span><span class="se">\"</span><span class="s2">}]},    </span><span class="se">\"</span><span class="s2">id</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">123</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">created</span><span class="se">\"</span><span class="s2"> :  </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">updated</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">resourceURI</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">http://slipstream.sixsq.com/ssclj/1/Event</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">timestamp</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">2015-01-10T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">content</span><span class="se">\"</span><span class="s2"> :  { </span><span class="se">\"</span><span class="s2">resource</span><span class="se">\"</span><span class="s2">:  {</span><span class="se">\"</span><span class="s2">href</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Run/45614147-aed1-4a24-889d-6365b0b1f2cd</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">Started</span><span class="se">\"</span><span class="s2"> } ,    </span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">severity</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">medium</span><span class="se">\"</span><span class="s2">}"</span> -X POST -H <span class="s2">"Content-Type: application/json"</span> -u &lt;user&gt;:&lt;password&gt; -D -
 </code></pre>
 
 <blockquote>
@@ -1426,7 +1426,7 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">POST https://slipstream.sixsq.com/event</code></p>
+<p><code class="prettyprint">POST https://nuv.la/event</code></p>
 
 <h3 id="body-parameters">Body Parameters</h3>
 
@@ -1460,7 +1460,7 @@ An event can <strong>not</strong> be updated, only deleted.
 </tbody></table>
 
 <h2 id="get-an-event">Get an Event</h2>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl https://nuv.la/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u &lt;user&gt;:&lt;password&gt; -D -
 </code></pre>
 
 <blockquote>
@@ -1508,10 +1508,10 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/event/&lt;event-uuid&gt;</code></p>
+<p><code class="prettyprint">GET https://nuv.la/event/&lt;event-uuid&gt;</code></p>
 
 <h2 id="delete-an-event">Delete an Event</h2>
-<pre><code class="highlight shell">curl -X DELETE  https://slipstream.sixsq.com/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl -X DELETE  https://nuv.la/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u &lt;user&gt;:&lt;password&gt; -D -
 </code></pre>
 
 <blockquote>
@@ -1544,21 +1544,21 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">DELETE https://slipstream.sixsq.com/event/&lt;event-uuid&gt;</code></p>
+<p><code class="prettyprint">DELETE https://nuv.la/event/&lt;event-uuid&gt;</code></p>
 
-<h1 id="usage-records">Usage Records</h1>
+<h1 id="usage">Usage</h1>
 
 <p>Represents the summary of cloud usage records for a given user and cloud, on a specific period.</p>
 
-<h2 id="list-all-usage-records">List all Usage Records</h2>
+<h2 id="list-all-usage">List all Usage</h2>
 
 <p>The collection of usage records (in reverse order) is returned filtered with the provided authentication.
 (Only resources for the given user are returned.)</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/usage</code></p>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/usage -u &lt;user&gt;:&lt;password&gt; -D -
+<p><code class="prettyprint">GET https://nuv.la/usage</code></p>
+<pre><code class="highlight shell">curl https://nuv.la/usage -u &lt;user&gt;:&lt;password&gt; -D -
 </code></pre>
 
 <blockquote>
@@ -1641,7 +1641,7 @@ An event can <strong>not</strong> be updated, only deleted.
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 
-<h2 id="filtering-usage-records">Filtering Usage Records</h2>
+<h2 id="filtering-usage">Filtering Usage</h2>
 
 <p>From <a href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections</a></p>
 
@@ -1661,7 +1661,7 @@ section. The $filter parameter shall be of the form:
 
 <p>Note, however, that such a filter contains characters that must be <strong>URL-encoded</strong>, and the HTTP request will look like this:</p>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/usage?%24filter=cloud%3D%27cloud-name%27</code></p>
+<p><code class="prettyprint">GET https://nuv.la/usage?%24filter=cloud%3D%27cloud-name%27</code></p>
 
 <h3 id="filtering-on-date-comparison-(equality)">Filtering on date comparison (equality)</h3>
 
@@ -1671,7 +1671,7 @@ section. The $filter parameter shall be of the form:
 
 <p>Full URL with encoding:</p>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3D2015-06-22</code></p>
+<p><code class="prettyprint">GET https://nuv.la/usage?%24filter=start_timestamp%3D2015-06-22</code></p>
 
 <h3 id="filtering-on-date-comparison-(before-or-after)">Filtering on date comparison (before or after)</h3>
 
@@ -1681,7 +1681,7 @@ section. The $filter parameter shall be of the form:
 
 <p>Full URL with encoding:</p>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3E2015-06-22</code></p>
+<p><code class="prettyprint">GET https://nuv.la/usage?%24filter=start_timestamp%3E2015-06-22</code></p>
 
 <p>To filter usage records before a specific date, use <strong>&lt;</strong> (URL-encoded as <strong>%3C</strong>) instead.</p>
 
@@ -1693,11 +1693,11 @@ section. The $filter parameter shall be of the form:
 
 <p>Full URL with encoding:</p>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27</code></p>
+<p><code class="prettyprint">GET https://nuv.la/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27</code></p>
 
 <p>These are only some examples, consult the CIMI documentation for an exhaustive list of possibilities.</p>
 
-<h2 id="paginating-usage-records">Paginating Usage Records</h2>
+<h2 id="paginating-usage">Paginating Usage</h2>
 
 <p>From <a href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.2 Subsetting Collections</a></p>
 
@@ -1707,18 +1707,319 @@ number of entities of the Collection that are returned.
 &hellip;
 This specification defined two query parameters that, if used, shall indicate the first and last ordinal
 positions of the entities within the Collection that are returned. The query parameters shall be of the form:
-￼?$first=number 
+￼?$first=number
  ?$last=number
 </aside>
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/usage?%24first=2&amp;%24last=2</code></p>
+<p><code class="prettyprint">GET https://nuv.la/usage?%24first=2&amp;%24last=2</code></p>
 
 <p>will return only the <em>second</em> usage record.</p>
 
+<h1 id="attribute">Attribute</h1>
+
+<p>This resource represents the meta-information of each attribute of a Service Catalog instance (see Service Catalog resource).</p>
+
+<h2 id="list-attribute-resource">List Attribute resource</h2>
+
+<p>This returns the collection of Attribute resources.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://nuv.la/api/attribute</code></p>
+<pre><code class="highlight shell">curl https://nuv.la/api/attribute -u &lt;user&gt;:&lt;password&gt; -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns a json structured like this (truncated for readability):</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">Aleph/0.4.0</span>
+<span class="na">Connection</span><span class="p">:</span> <span class="s">Keep-Alive</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 09 Feb 2016 12:32:38 GMT</span>
+<span class="na">content-length</span><span class="p">:</span> <span class="s">22221</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"MODIFY"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/AttributeCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"attribute"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/add"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"attribute"</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">31</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"attribute"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"minor-version"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"updated"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-02-09T12:11:27.735Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"major-version"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"String"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"created"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-02-09T12:11:27.735Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"en"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"name"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"price.storage.per.hour"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"categories"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">"Price"</span><span class="w"> </span><span class="p">],</span><span class="w">
+      </span><span class="s2">"description"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Nature: the price for use of a unit (e.g. 1 GB) of storage per hour; Value: the price in euros, e.g. \u20AC0.0005; Explanation: note that is possible that storage is either associated with a particular VM or as a generally-available resource"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/edit"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0"</span><span class="w">
+    </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/delete"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+    </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Attribute"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"uri"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://schema.hnx.helix-nebula.eu/price.storage.per.hour"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"patch-version"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"normative"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="err">...</span><span class="w">
+</span></code></pre>
+
+<h2 id="create-an-attribute-resource">Create an Attribute resource</h2>
+
+<h3 id="http-request">HTTP REQUEST</h3>
+
+<p><code class="prettyprint">POST https://nuv.la/api/attribute</code></p>
+
+<h3 id="body-parameters">Body Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>major-version</td>
+<td>true</td>
+<td>Major version number of the schema</td>
+</tr>
+<tr>
+<td>minor-version</td>
+<td>true</td>
+<td>Minor version number of the schema</td>
+</tr>
+<tr>
+<td>patch-version</td>
+<td>true</td>
+<td>Patch version number of the schema</td>
+</tr>
+<tr>
+<td>normative</td>
+<td>true</td>
+<td></td>
+</tr>
+<tr>
+<td>type</td>
+<td>true</td>
+<td>Type of the data: String, &hellip;</td>
+</tr>
+<tr>
+<td>uri</td>
+<td>true</td>
+<td>URI of this schema</td>
+</tr>
+<tr>
+<td>en.name</td>
+<td>true</td>
+<td>Name of this attribute</td>
+</tr>
+<tr>
+<td>en.categories</td>
+<td>true</td>
+<td>List of categories</td>
+</tr>
+<tr>
+<td>en.description</td>
+<td>true</td>
+<td>Description of this attribute</td>
+</tr>
+</tbody></table>
+<pre><code class="highlight shell">curl -X POST -H <span class="s2">"Content-Type: application/json"</span> https://nuv.la/api/attribute -d <span class="s2">"{</span><span class="se">\"</span><span class="s2">major-version</span><span class="se">\"</span><span class="s2">: 1, </span><span class="se">\"</span><span class="s2">minor-version</span><span class="se">\"</span><span class="s2">: 0, </span><span class="se">\"</span><span class="s2">patch-version</span><span class="se">\"</span><span class="s2">: 0, </span><span class="se">\"</span><span class="s2">normative</span><span class="se">\"</span><span class="s2">: true, </span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">String</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">uri</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">http://schema.hnx.helix-nebula.eu/hyper.price.per.hour</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">en</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">name</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">hyper.price.per.hour</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">categories</span><span class="se">\"</span><span class="s2">: [</span><span class="se">\"</span><span class="s2">Price</span><span class="se">\"</span><span class="s2">],</span><span class="se">\"</span><span class="s2">description</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Nature: the price for a Hyper type instance with 16 CPU and 128 GB RAM</span><span class="se">\"</span><span class="s2">}}"</span> -u &lt;user&gt;:&lt;password&gt; -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns a json response:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">attribute/d77a553b-7332-48a0-b653-3b2b4b336049</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">Aleph/0.4.0</span>
+<span class="na">Connection</span><span class="p">:</span> <span class="s">Keep-Alive</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 09 Feb 2016 12:55:09 GMT</span>
+<span class="na">content-length</span><span class="p">:</span> <span class="s">160</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">201</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"created attribute/d77a553b-7332-48a0-b653-3b2b4b336049"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"resource-id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"attribute/d77a553b-7332-48a0-b653-3b2b4b336049"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<h2 id="delete-an-attribute-resource">Delete an Attribute resource</h2>
+
+<h3 id="http-request">HTTP REQUEST</h3>
+
+<p><code class="prettyprint">DELETE https://nuv.la/api/attribute/&lt;id&gt;</code></p>
+<pre><code class="highlight shell">curl -X DELETE -H <span class="s2">"Content-Type: application/json"</span> https://nuv.la/api/attribute/d77a553b-7332-48a0-b653-3b2b4b336049 -u &lt;user&gt;:&lt;password&gt; -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns a json response:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">No Content</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">Aleph/0.4.0</span>
+<span class="na">Connection</span><span class="p">:</span> <span class="s">Keep-Alive</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 09 Feb 2016 13:03:31 GMT</span>
+<span class="na">content-length</span><span class="p">:</span> <span class="s">160</span>
+</code></pre>
+
+<h1 id="service-catalog">Service Catalog</h1>
+
+<p>Provides detailed capability information for each available cloud.</p>
+
+<h2 id="get-the-service-catalog">Get the Service Catalog</h2>
+
+<h3 id="http-request">HTTP REQUEST</h3>
+
+<p><code class="prettyprint">GET https://nuv.la/api/service-info</code></p>
+<pre><code class="highlight shell">curl -X GET -H <span class="s2">"Content-Type: application/json"</span> https://nuv.la/api/service-info -u &lt;user&gt;:&lt;password&gt; -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns a json response:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">Aleph/0.4.0</span>
+<span class="na">Connection</span><span class="p">:</span> <span class="s">Keep-Alive</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 09 Feb 2016 18:04:39 GMT</span>
+<span class="na">content-length</span><span class="p">:</span> <span class="s">20147</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"MODIFY"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/ServiceInfoCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"service-info"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/add"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"service-info"</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"service-info"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"connector"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"t-systems-de1-indigo-1"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/suppliers.catalog"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/single.vm.storage.volatile"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/single.vm.storage.persistent"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/single.vm.max.ram"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/overall.capacity.cpu"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/price.charging.period"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/price.ram.per.hour"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"updated"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-02-09T18:00:22.387Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"created"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-02-09T18:00:22.387Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/price.charging.unit"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/overall.capacity.storage"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/location"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"service-info/023285da-7be4-4931-90f5-c50baadc58a4"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/price.cpu.per.hour"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/single.vm.min.cpu"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"VIEW"</span><span class="w">
+      </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/ServiceInfo"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/price.io"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/overall.capacity.ram"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/single.vm.max.cpu"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/single.vm.min.ram"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://schema.a.b.c/price.storage.per.hour"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">...</span><span class="w">
+</span></code></pre>
+
+<h2 id="create-a-service-catalog">Create a Service Catalog</h2>
+
+<h3 id="http-request">HTTP REQUEST</h3>
+
+<p><code class="prettyprint">POST https://nuv.la/api/service-info</code></p>
+
+<h3 id="body-parameters">Body Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>connector.href</td>
+<td>true</td>
+<td>The cloud name</td>
+</tr>
+<tr>
+<td>uri of an attribute 1</td>
+<td>false</td>
+<td>Value of the attribute for this cloud</td>
+</tr>
+<tr>
+<td>uri of an attribute 2</td>
+<td>false</td>
+<td>Value of the attribute for this cloud</td>
+</tr>
+<tr>
+<td>&hellip;</td>
+<td>false</td>
+<td>&hellip;</td>
+</tr>
+</tbody></table>
+
+<h2 id="delete-a-service-catalog">Delete a Service Catalog</h2>
+
+<h3 id="http-request">HTTP REQUEST</h3>
+
+<p><code class="prettyprint">DELETE https://nuv.la/api/service-info</code></p>
+
 <h1 id="the-new-resource">The <em>new</em> resource</h1>
-<pre><code class="highlight shell">curl https://slipstream.sixsq.com/module/examples/new?category<span class="o">=</span>Image login -d <span class="nv">username</span><span class="o">=</span>&lt;USER&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;PASSWORD&gt;
+<pre><code class="highlight shell">curl https://nuv.la/module/examples/new?category<span class="o">=</span>Image login -d <span class="nv">username</span><span class="o">=</span>&lt;USER&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;PASSWORD&gt;
 </code></pre>
 
 <blockquote>
@@ -1807,7 +2108,7 @@ you can use the special <em>new</em> resource.</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://slipstream.sixsq.com/&lt;type&gt;/new[?category=&lt;category&gt;]</code></p>
+<p><code class="prettyprint">GET https://nuv.la/&lt;type&gt;/new[?category=&lt;category&gt;]</code></p>
 
 <h3 id="url-parameter">Url Parameter</h3>
 
