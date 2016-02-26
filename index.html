@@ -1316,7 +1316,7 @@ An event can <strong>not</strong> be updated, only deleted.
 </aside>
 
 <h2 id="list-all-events">List all Events</h2>
-<pre><code class="highlight shell">curl https://nuv.la/event/ -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl https://nuv.la/api/event/ -u &lt;user&gt;:&lt;password&gt; -D -
 </code></pre>
 
 <blockquote>
@@ -1384,10 +1384,10 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://nuv.la/event/</code></p>
+<p><code class="prettyprint">GET https://nuv.la/api/event/</code></p>
 
 <h2 id="create-an-event">Create an Event</h2>
-<pre><code class="highlight shell">curl https://nuv.la/event -d <span class="s2">"{ </span><span class="se">\"</span><span class="s2">acl</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">owner</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">USER</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">principal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">joe</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">rules</span><span class="se">\"</span><span class="s2">: [{</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ROLE</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">prinipal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ANON</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">right</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ALL</span><span class="se">\"</span><span class="s2">}]},    </span><span class="se">\"</span><span class="s2">id</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">123</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">created</span><span class="se">\"</span><span class="s2"> :  </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">updated</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">resourceURI</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">http://slipstream.sixsq.com/ssclj/1/Event</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">timestamp</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">2015-01-10T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">content</span><span class="se">\"</span><span class="s2"> :  { </span><span class="se">\"</span><span class="s2">resource</span><span class="se">\"</span><span class="s2">:  {</span><span class="se">\"</span><span class="s2">href</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Run/45614147-aed1-4a24-889d-6365b0b1f2cd</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">Started</span><span class="se">\"</span><span class="s2"> } ,    </span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">severity</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">medium</span><span class="se">\"</span><span class="s2">}"</span> -X POST -H <span class="s2">"Content-Type: application/json"</span> -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl https://nuv.la/api/event -d <span class="s2">"{ </span><span class="se">\"</span><span class="s2">acl</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">owner</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">USER</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">principal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">joe</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">rules</span><span class="se">\"</span><span class="s2">: [{</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ROLE</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">prinipal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ANON</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">right</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ALL</span><span class="se">\"</span><span class="s2">}]},    </span><span class="se">\"</span><span class="s2">id</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">123</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">created</span><span class="se">\"</span><span class="s2"> :  </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">updated</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">resourceURI</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">http://slipstream.sixsq.com/ssclj/1/Event</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">timestamp</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">2015-01-10T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">content</span><span class="se">\"</span><span class="s2"> :  { </span><span class="se">\"</span><span class="s2">resource</span><span class="se">\"</span><span class="s2">:  {</span><span class="se">\"</span><span class="s2">href</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Run/45614147-aed1-4a24-889d-6365b0b1f2cd</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">Started</span><span class="se">\"</span><span class="s2"> } ,    </span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">severity</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">medium</span><span class="se">\"</span><span class="s2">}"</span> -X POST -H <span class="s2">"Content-Type: application/json"</span> -u &lt;user&gt;:&lt;password&gt; -D -
 </code></pre>
 
 <blockquote>
@@ -1426,7 +1426,7 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">POST https://nuv.la/event</code></p>
+<p><code class="prettyprint">POST https://nuv.la/api/event</code></p>
 
 <h3 id="body-parameters">Body Parameters</h3>
 
@@ -1460,7 +1460,7 @@ An event can <strong>not</strong> be updated, only deleted.
 </tbody></table>
 
 <h2 id="get-an-event">Get an Event</h2>
-<pre><code class="highlight shell">curl https://nuv.la/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl https://nuv.la/api/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u &lt;user&gt;:&lt;password&gt; -D -
 </code></pre>
 
 <blockquote>
@@ -1508,10 +1508,10 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://nuv.la/event/&lt;event-uuid&gt;</code></p>
+<p><code class="prettyprint">GET https://nuv.la/api/event/&lt;event-uuid&gt;</code></p>
 
 <h2 id="delete-an-event">Delete an Event</h2>
-<pre><code class="highlight shell">curl -X DELETE  https://nuv.la/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl -X DELETE  https://nuv.la/api/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u &lt;user&gt;:&lt;password&gt; -D -
 </code></pre>
 
 <blockquote>
@@ -1544,7 +1544,7 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">DELETE https://nuv.la/event/&lt;event-uuid&gt;</code></p>
+<p><code class="prettyprint">DELETE https://nuv.la/api/event/&lt;event-uuid&gt;</code></p>
 
 <h1 id="usage">Usage</h1>
 
@@ -1557,8 +1557,8 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://nuv.la/usage</code></p>
-<pre><code class="highlight shell">curl https://nuv.la/usage -u &lt;user&gt;:&lt;password&gt; -D -
+<p><code class="prettyprint">GET https://nuv.la/api/usage</code></p>
+<pre><code class="highlight shell">curl https://nuv.la/api/usage -u &lt;user&gt;:&lt;password&gt; -D -
 </code></pre>
 
 <blockquote>
@@ -1661,7 +1661,7 @@ section. The $filter parameter shall be of the form:
 
 <p>Note, however, that such a filter contains characters that must be <strong>URL-encoded</strong>, and the HTTP request will look like this:</p>
 
-<p><code class="prettyprint">GET https://nuv.la/usage?%24filter=cloud%3D%27cloud-name%27</code></p>
+<p><code class="prettyprint">GET https://nuv.la/api/usage?%24filter=cloud%3D%27cloud-name%27</code></p>
 
 <h3 id="filtering-on-date-comparison-(equality)">Filtering on date comparison (equality)</h3>
 
@@ -1671,7 +1671,7 @@ section. The $filter parameter shall be of the form:
 
 <p>Full URL with encoding:</p>
 
-<p><code class="prettyprint">GET https://nuv.la/usage?%24filter=start_timestamp%3D2015-06-22</code></p>
+<p><code class="prettyprint">GET https://nuv.la/api/usage?%24filter=start_timestamp%3D2015-06-22</code></p>
 
 <h3 id="filtering-on-date-comparison-(before-or-after)">Filtering on date comparison (before or after)</h3>
 
@@ -1681,7 +1681,7 @@ section. The $filter parameter shall be of the form:
 
 <p>Full URL with encoding:</p>
 
-<p><code class="prettyprint">GET https://nuv.la/usage?%24filter=start_timestamp%3E2015-06-22</code></p>
+<p><code class="prettyprint">GET https://nuv.la/api/usage?%24filter=start_timestamp%3E2015-06-22</code></p>
 
 <p>To filter usage records before a specific date, use <strong>&lt;</strong> (URL-encoded as <strong>%3C</strong>) instead.</p>
 
@@ -1693,7 +1693,7 @@ section. The $filter parameter shall be of the form:
 
 <p>Full URL with encoding:</p>
 
-<p><code class="prettyprint">GET https://nuv.la/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27</code></p>
+<p><code class="prettyprint">GET https://nuv.la/api/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27</code></p>
 
 <p>These are only some examples, consult the CIMI documentation for an exhaustive list of possibilities.</p>
 
@@ -1713,7 +1713,7 @@ positions of the entities within the Collection that are returned. The query par
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://nuv.la/usage?%24first=2&amp;%24last=2</code></p>
+<p><code class="prettyprint">GET https://nuv.la/api/usage?%24first=2&amp;%24last=2</code></p>
 
 <p>will return only the <em>second</em> usage record.</p>
 
