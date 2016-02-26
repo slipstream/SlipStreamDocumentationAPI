@@ -955,7 +955,7 @@ An event can <strong>not</strong> be updated, only deleted.
 ## List all Events
 
 ```shell
-curl https://nuv.la/event/ -u <user>:<password> -D -
+curl https://nuv.la/api/event/ -u <user>:<password> -D -
 ```
 
 > The above command returns json structured like this:
@@ -1023,12 +1023,12 @@ Lists all events accessible by the authenticated user. A user has the right to s
 
 ### HTTP Request
 
-`GET https://nuv.la/event/`
+`GET https://nuv.la/api/event/`
 
 ## Create an Event
 
 ```shell
-curl https://nuv.la/event -d "{ \"acl\": {\"owner\": {\"type\": \"USER\", \"principal\": \"joe\"},    \"rules\": [{\"type\": \"ROLE\", \"prinipal\": \"ANON\", \"right\": \"ALL\"}]},    \"id\": \"123\",    \"created\" :  \"2015-01-16T08:20:00.0Z\",    \"updated\" : \"2015-01-16T08:20:00.0Z\",    \"resourceURI\" : \"http://slipstream.sixsq.com/ssclj/1/Event\",    \"timestamp\": \"2015-01-10T08:20:00.0Z\",    \"content\" :  { \"resource\":  {\"href\": \"Run/45614147-aed1-4a24-889d-6365b0b1f2cd\"},    \"state\" : \"Started\" } ,    \"type\": \"state\",    \"severity\": \"medium\"}" -X POST -H "Content-Type: application/json" -u <user>:<password> -D -
+curl https://nuv.la/api/event -d "{ \"acl\": {\"owner\": {\"type\": \"USER\", \"principal\": \"joe\"},    \"rules\": [{\"type\": \"ROLE\", \"prinipal\": \"ANON\", \"right\": \"ALL\"}]},    \"id\": \"123\",    \"created\" :  \"2015-01-16T08:20:00.0Z\",    \"updated\" : \"2015-01-16T08:20:00.0Z\",    \"resourceURI\" : \"http://slipstream.sixsq.com/ssclj/1/Event\",    \"timestamp\": \"2015-01-10T08:20:00.0Z\",    \"content\" :  { \"resource\":  {\"href\": \"Run/45614147-aed1-4a24-889d-6365b0b1f2cd\"},    \"state\" : \"Started\" } ,    \"type\": \"state\",    \"severity\": \"medium\"}" -X POST -H "Content-Type: application/json" -u <user>:<password> -D -
 ```
 
 > The above command returns a json structured like this:
@@ -1067,7 +1067,7 @@ Create an event that contains information (mainly timestamp and state) related t
 
 ### HTTP Request
 
-`POST https://nuv.la/event`
+`POST https://nuv.la/api/event`
 
 ### Body Parameters
 
@@ -1081,7 +1081,7 @@ severity    | true      | Accepted values: `critical`, `high`, `medium` and `low
 ## Get an Event
 
 ```shell
-curl https://nuv.la/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u <user>:<password> -D -
+curl https://nuv.la/api/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u <user>:<password> -D -
 ```
 
 > The above command returns a json structured like this:
@@ -1129,12 +1129,12 @@ Get a specific event.
 
 ### HTTP Request
 
-`GET https://nuv.la/event/<event-uuid>`
+`GET https://nuv.la/api/event/<event-uuid>`
 
 ## Delete an Event
 
 ```shell
-curl -X DELETE  https://nuv.la/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u <user>:<password> -D -
+curl -X DELETE  https://nuv.la/api/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u <user>:<password> -D -
 ```
 
 > The above command returns a json structured like this:
@@ -1167,7 +1167,7 @@ Delete a specific (the event-uuid is known) event.
 
 ### HTTP Request
 
-`DELETE https://nuv.la/event/<event-uuid>`
+`DELETE https://nuv.la/api/event/<event-uuid>`
 
 
 # Usage
@@ -1181,10 +1181,10 @@ The collection of usage records (in reverse order) is returned filtered with the
 
 ### HTTP Request
 
-`GET https://nuv.la/usage`
+`GET https://nuv.la/api/usage`
 
 ```shell
-curl https://nuv.la/usage -u <user>:<password> -D -
+curl https://nuv.la/api/usage -u <user>:<password> -D -
 ```
 
 > The above command returns a json structured like this:
@@ -1286,7 +1286,7 @@ To retrieve the usage records for a given cloud, the CIMI filter can be written
 
 Note, however, that such a filter contains characters that must be **URL-encoded**, and the HTTP request will look like this:
 
-`GET https://nuv.la/usage?%24filter=cloud%3D%27cloud-name%27`
+`GET https://nuv.la/api/usage?%24filter=cloud%3D%27cloud-name%27`
 
 ### Filtering on date comparison (equality)
 
@@ -1296,7 +1296,7 @@ To retrieve the usage records for a specific date, the CIMI filter can be writte
 
 Full URL with encoding:
 
-`GET https://nuv.la/usage?%24filter=start_timestamp%3D2015-06-22`
+`GET https://nuv.la/api/usage?%24filter=start_timestamp%3D2015-06-22`
 
 ### Filtering on date comparison (before or after)
 
@@ -1306,7 +1306,7 @@ To retrieve the usage records after a specific date, the CIMI filter can be writ
 
 Full URL with encoding:
 
-`GET https://nuv.la/usage?%24filter=start_timestamp%3E2015-06-22`
+`GET https://nuv.la/api/usage?%24filter=start_timestamp%3E2015-06-22`
 
 To filter usage records before a specific date, use **<** (URL-encoded as **%3C**) instead.
 
@@ -1318,7 +1318,7 @@ You can join conditons with **and** (logical and), or **or** (logical or).
 
 Full URL with encoding:
 
-`GET https://nuv.la/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27`
+`GET https://nuv.la/api/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27`
 
 These are only some examples, consult the CIMI documentation for an exhaustive list of possibilities.
 
@@ -1337,7 +1337,7 @@ positions of the entities within the Collection that are returned. The query par
 
 ### HTTP Request
 
-`GET https://nuv.la/usage?%24first=2&%24last=2`
+`GET https://nuv.la/api/usage?%24first=2&%24last=2`
 
 will return only the *second* usage record.
 
