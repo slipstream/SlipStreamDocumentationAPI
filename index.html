@@ -1288,10 +1288,13 @@ This resource is restricted to privileged users.
 
 <h1 id="event">Event</h1>
 
-<p>From <a href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13</a></p>
-
 <aside class="notice">
-An resource that represents the occurrence of an event within the managed infrastructure.
+From
+<a target="_blank" href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">
+CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13</a>
+<br />
+<br />
+A resource that represents the occurrence of an event within the managed infrastructure.
 <br/><br/>
 Some examples of Events may be:
 
@@ -1552,7 +1555,7 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <h2 id="list-all-usage">List all Usage</h2>
 
-<p>The collection of usage records (in reverse order) is returned filtered with the provided authentication.
+<p>The collection of usage records (most recent are listed first) is returned filtered with the provided authentication.
 (Only resources for the given user are returned.)</p>
 
 <h3 id="http-request">HTTP Request</h3>
@@ -1643,9 +1646,12 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <h2 id="filtering-usage">Filtering Usage</h2>
 
-<p>From <a href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections</a></p>
-
 <aside class="notice">
+
+From <a target="_blank" href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">
+CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections</a>
+<br />
+<br />
 If retrieving the representation of a Collection, Consumers may include the $filter query parameter to
 reduce the number of entries of the Collection that are returned based on the data within the entries of the
 Collection. Providers shall interpret and process the $filter query parameter as described in this
