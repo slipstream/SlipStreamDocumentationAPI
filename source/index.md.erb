@@ -926,10 +926,13 @@ user | true | User name to retrieve
 
 # Event
 
-From [CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
-
 <aside class="notice">
-An resource that represents the occurrence of an event within the managed infrastructure.
+From
+<a target="_blank" href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">
+CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13</a>
+<br />
+<br />
+A resource that represents the occurrence of an event within the managed infrastructure.
 <br/><br/>
 Some examples of Events may be:
 
@@ -1176,7 +1179,7 @@ Represents the summary of cloud usage records for a given user and cloud, on a s
 
 ## List all Usage
 
-The collection of usage records (in reverse order) is returned filtered with the provided authentication.
+The collection of usage records (most recent are listed first) is returned filtered with the provided authentication.
 (Only resources for the given user are returned.)
 
 ### HTTP Request
@@ -1268,9 +1271,13 @@ Date: Mon, 22 Jun 2015 08:49:33 GMT
 ```
 
 ## Filtering Usage
-From [CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
 
 <aside class="notice">
+
+From <a target="_blank" href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">
+CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections</a>
+<br />
+<br />
 If retrieving the representation of a Collection, Consumers may include the $filter query parameter to
 reduce the number of entries of the Collection that are returned based on the data within the entries of the
 Collection. Providers shall interpret and process the $filter query parameter as described in this
