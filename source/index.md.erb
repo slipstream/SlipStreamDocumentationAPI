@@ -423,14 +423,14 @@ Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identif
 Content-Length: 0
 ```
 
-Create a new immutable (standard) run.
+Create a new standard (non-scalable) run.
 
 <aside class="notice">
-Immutable runs cannot be changed once deployed. If you require to scale up or down the run, then request a <em>mutable</em> run (see below).
+Non-scalable runs cannot be changed once deployed. If you require to scale up or down the run, then request a <em>scalable</em> run (see below).
 </aside>
 
 <aside class="notice">
-This mutable/immutable feature only applies to deployment type run (aka <em>Orchestration</em> type).
+This scalable/non-scalable feature only applies to deployment type run (aka <em>Orchestration</em> type).
 </aside>
 
 The **Location** attribute in the response header provides the full url of the updated resource, with the incremented version.
@@ -452,7 +452,7 @@ Orchestration  | Deployment: only applies to deployment category.  This is the o
 Machine        | Build: build a new image on the targeted cloud and set the unique id back in the image definition.
 Run            | Simple run: single VM deployment.
 
-## Create a mutable Run
+## Create a scalable Run
 
 ```shell
 curl https://nuv.la/run -d refqname=module/examples/a-deployment -d mutable=true -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
@@ -470,7 +470,7 @@ Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identif
 Content-Length: 0
 ```
 
-Create a new mutable run from a predefined deployment.
+Create a new scalable run from a predefined deployment.
 
 The **Location** attribute in the response header provides the full url of the newly created run.
 
@@ -483,13 +483,13 @@ The **Location** attribute in the response header provides the full url of the n
 Parameter | Required | Description
 --------- | -------- | -----------
 refqname  | true     | Reference module from which to create a run. Must be a *Deployment* category - e.g. *module/SlipStream/deploy-slipstream-dpl*.
-mutable  | true     | Define that the run is mutable - i.e., providing a possibility to add and remove node instances.
+mutable  | true     | Define that the run is scalable - i.e., providing a possibility to add and remove node instances.
 
 <aside class="notice">
-Only <em>Orchestration</em> type run can be created as mutable.
+Only <em>Orchestration</em> type run can be created as scalable.
 </aside>
 
-## Add node instances to a mutable Run
+## Add node instances to a scalable Run
 
 ```shell
 curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d n=2 -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
@@ -510,7 +510,7 @@ Set-cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identif
 centos_node.2,centos_node.3
 ```
 
-Add node instances on a mutable Run.
+Add node instances on a scalable Run.
 
 ### HTTP Request
 
@@ -881,7 +881,7 @@ curl https://nuv.la/user/<user> --user <user>:<password>
       <entry>
          <string>General.keep-running</string>
          <parameter name="General.keep-running" description="Keep running after deployment" category="General" mandatory="true" type="Enum" readonly="false" order_="15" order="15">
-            <instructions><![CDATA[Here you can define if and when SlipStream should leave the application running after performing the deployment. <br/><code>On success</code> is useful for production deployments or long tests. </br><code>On Error</code> might be useful so that resources are consumed only when debugging is needed. <br/><code>Never</code> ensures that SlipStream automatically terminates the application after performing the deployment. <br/>Note: This parameter doesn't apply to <code>mutable deployment</code> Runs and to <code>build image</code> Runs.]]></instructions>
+            <instructions><![CDATA[Here you can define if and when SlipStream should leave the application running after performing the deployment. <br/><code>On success</code> is useful for production deployments or long tests. </br><code>On Error</code> might be useful so that resources are consumed only when debugging is needed. <br/><code>Never</code> ensures that SlipStream automatically terminates the application after performing the deployment. <br/>Note: This parameter doesn't apply to <code>scalable deployment</code> Runs and to <code>build image</code> Runs.]]></instructions>
             <enumValues length="4">
                <string>always</string>
                <string>on-success</string>
