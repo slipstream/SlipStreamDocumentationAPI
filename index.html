@@ -518,14 +518,14 @@ on the state of the run.</p>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
 </code></pre>
 
-<p>Create a new immutable (standard) run.</p>
+<p>Create a new standard (non-scalable) run.</p>
 
 <aside class="notice">
-Immutable runs cannot be changed once deployed. If you require to scale up or down the run, then request a <em>mutable</em> run (see below).
+Non-scalable runs cannot be changed once deployed. If you require to scale up or down the run, then request a <em>scalable</em> run (see below).
 </aside>
 
 <aside class="notice">
-This mutable/immutable feature only applies to deployment type run (aka <em>Orchestration</em> type).
+This scalable/non-scalable feature only applies to deployment type run (aka <em>Orchestration</em> type).
 </aside>
 
 <p>The <strong>Location</strong> attribute in the response header provides the full url of the updated resource, with the incremented version.</p>
@@ -575,7 +575,7 @@ This mutable/immutable feature only applies to deployment type run (aka <em>Orch
 </tr>
 </tbody></table>
 
-<h2 id="create-a-mutable-run">Create a mutable Run</h2>
+<h2 id="create-a-scalable-run">Create a scalable Run</h2>
 <pre><code class="highlight shell">curl https://nuv.la/run -d <span class="nv">refqname</span><span class="o">=</span>module/examples/a-deployment -d <span class="nv">mutable</span><span class="o">=</span><span class="nb">true</span> -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
@@ -591,7 +591,7 @@ This mutable/immutable feature only applies to deployment type run (aka <em>Orch
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
 </code></pre>
 
-<p>Create a new mutable run from a predefined deployment.</p>
+<p>Create a new scalable run from a predefined deployment.</p>
 
 <p>The <strong>Location</strong> attribute in the response header provides the full url of the newly created run.</p>
 
@@ -616,15 +616,15 @@ This mutable/immutable feature only applies to deployment type run (aka <em>Orch
 <tr>
 <td>mutable</td>
 <td>true</td>
-<td>Define that the run is mutable - i.e., providing a possibility to add and remove node instances.</td>
+<td>Define that the run is scalable - i.e., providing a possibility to add and remove node instances.</td>
 </tr>
 </tbody></table>
 
 <aside class="notice">
-Only <em>Orchestration</em> type run can be created as mutable.
+Only <em>Orchestration</em> type run can be created as scalable.
 </aside>
 
-<h2 id="add-node-instances-to-a-mutable-run">Add node instances to a mutable Run</h2>
+<h2 id="add-node-instances-to-a-scalable-run">Add node instances to a scalable Run</h2>
 <pre><code class="highlight shell">curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d <span class="nv">n</span><span class="o">=</span>2 -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
@@ -643,7 +643,7 @@ Only <em>Orchestration</em> type run can be created as mutable.
 centos_node.2,centos_node.3
 </code></pre>
 
-<p>Add node instances on a mutable Run.</p>
+<p>Add node instances on a scalable Run.</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
@@ -1233,7 +1233,7 @@ This resource is restricted to privileged users.
       <span class="nt">&lt;entry&gt;</span>
          <span class="nt">&lt;string&gt;</span>General.keep-running<span class="nt">&lt;/string&gt;</span>
          <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.keep-running"</span> <span class="na">description=</span><span class="s">"Keep running after deployment"</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Enum"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"15"</span> <span class="na">order=</span><span class="s">"15"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;instructions&gt;</span><span class="cp">&lt;![CDATA[Here you can define if and when SlipStream should leave the application running after performing the deployment. &lt;br/&gt;&lt;code&gt;On success&lt;/code&gt; is useful for production deployments or long tests. &lt;/br&gt;&lt;code&gt;On Error&lt;/code&gt; might be useful so that resources are consumed only when debugging is needed. &lt;br/&gt;&lt;code&gt;Never&lt;/code&gt; ensures that SlipStream automatically terminates the application after performing the deployment. &lt;br/&gt;Note: This parameter doesn't apply to &lt;code&gt;mutable deployment&lt;/code&gt; Runs and to &lt;code&gt;build image&lt;/code&gt; Runs.]]&gt;</span><span class="nt">&lt;/instructions&gt;</span>
+            <span class="nt">&lt;instructions&gt;</span><span class="cp">&lt;![CDATA[Here you can define if and when SlipStream should leave the application running after performing the deployment. &lt;br/&gt;&lt;code&gt;On success&lt;/code&gt; is useful for production deployments or long tests. &lt;/br&gt;&lt;code&gt;On Error&lt;/code&gt; might be useful so that resources are consumed only when debugging is needed. &lt;br/&gt;&lt;code&gt;Never&lt;/code&gt; ensures that SlipStream automatically terminates the application after performing the deployment. &lt;br/&gt;Note: This parameter doesn't apply to &lt;code&gt;scalable deployment&lt;/code&gt; Runs and to &lt;code&gt;build image&lt;/code&gt; Runs.]]&gt;</span><span class="nt">&lt;/instructions&gt;</span>
             <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"4"</span><span class="nt">&gt;</span>
                <span class="nt">&lt;string&gt;</span>always<span class="nt">&lt;/string&gt;</span>
                <span class="nt">&lt;string&gt;</span>on-success<span class="nt">&lt;/string&gt;</span>
@@ -1286,6 +1286,21 @@ This resource is restricted to privileged users.
 </tr>
 </tbody></table>
 
+<h1 id="authentication-for-/api-resources">Authentication for /api resources</h1>
+
+<p>The resources under <code class="prettyprint">/api</code> namespace use an authentication token.</p>
+
+<h2 id="obtain-an-authentication-cookie">Obtain an authentication cookie</h2>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">POST https://nuv.la/auth/login</code></p>
+<pre><code class="highlight shell">curl -k -s -D - https://nuv.la/auth/login -X POST -d <span class="s2">"user-name=name&amp;password=secret"</span> -c cookie-user.txt
+</code></pre>
+
+<p>This will store the authentication token inside <code class="prettyprint">cookie-user.txt</code> file.
+This cookie must be used later on (for example with <code class="prettyprint">-b</code> option in curl command) to access the API.</p>
+
 <h1 id="event">Event</h1>
 
 <aside class="notice">
@@ -1319,7 +1334,7 @@ An event can <strong>not</strong> be updated, only deleted.
 </aside>
 
 <h2 id="list-all-events">List all Events</h2>
-<pre><code class="highlight shell">curl https://nuv.la/api/event/ -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl https://nuv.la/api/event/ -b cookie-user.txt -D -
 </code></pre>
 
 <blockquote>
@@ -1390,7 +1405,7 @@ An event can <strong>not</strong> be updated, only deleted.
 <p><code class="prettyprint">GET https://nuv.la/api/event/</code></p>
 
 <h2 id="create-an-event">Create an Event</h2>
-<pre><code class="highlight shell">curl https://nuv.la/api/event -d <span class="s2">"{ </span><span class="se">\"</span><span class="s2">acl</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">owner</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">USER</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">principal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">joe</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">rules</span><span class="se">\"</span><span class="s2">: [{</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ROLE</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">prinipal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ANON</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">right</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ALL</span><span class="se">\"</span><span class="s2">}]},    </span><span class="se">\"</span><span class="s2">id</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">123</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">created</span><span class="se">\"</span><span class="s2"> :  </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">updated</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">resourceURI</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">http://slipstream.sixsq.com/ssclj/1/Event</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">timestamp</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">2015-01-10T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">content</span><span class="se">\"</span><span class="s2"> :  { </span><span class="se">\"</span><span class="s2">resource</span><span class="se">\"</span><span class="s2">:  {</span><span class="se">\"</span><span class="s2">href</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Run/45614147-aed1-4a24-889d-6365b0b1f2cd</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">Started</span><span class="se">\"</span><span class="s2"> } ,    </span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">severity</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">medium</span><span class="se">\"</span><span class="s2">}"</span> -X POST -H <span class="s2">"Content-Type: application/json"</span> -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl https://nuv.la/api/event -d <span class="s2">"{ </span><span class="se">\"</span><span class="s2">acl</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">owner</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">USER</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">principal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">joe</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">rules</span><span class="se">\"</span><span class="s2">: [{</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ROLE</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">prinipal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ANON</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">right</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ALL</span><span class="se">\"</span><span class="s2">}]},    </span><span class="se">\"</span><span class="s2">id</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">123</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">created</span><span class="se">\"</span><span class="s2"> :  </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">updated</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">resourceURI</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">http://slipstream.sixsq.com/ssclj/1/Event</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">timestamp</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">2015-01-10T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">content</span><span class="se">\"</span><span class="s2"> :  { </span><span class="se">\"</span><span class="s2">resource</span><span class="se">\"</span><span class="s2">:  {</span><span class="se">\"</span><span class="s2">href</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Run/45614147-aed1-4a24-889d-6365b0b1f2cd</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">Started</span><span class="se">\"</span><span class="s2"> } ,    </span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">severity</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">medium</span><span class="se">\"</span><span class="s2">}"</span> -X POST -H <span class="s2">"Content-Type: application/json"</span> -b cookie-user.txt -D -
 </code></pre>
 
 <blockquote>
@@ -1463,7 +1478,7 @@ An event can <strong>not</strong> be updated, only deleted.
 </tbody></table>
 
 <h2 id="get-an-event">Get an Event</h2>
-<pre><code class="highlight shell">curl https://nuv.la/api/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl https://nuv.la/api/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -b cookie-user.txt -D -
 </code></pre>
 
 <blockquote>
@@ -1514,7 +1529,7 @@ An event can <strong>not</strong> be updated, only deleted.
 <p><code class="prettyprint">GET https://nuv.la/api/event/&lt;event-uuid&gt;</code></p>
 
 <h2 id="delete-an-event">Delete an Event</h2>
-<pre><code class="highlight shell">curl -X DELETE  https://nuv.la/api/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl -X DELETE  https://nuv.la/api/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -b cookie-user.txt -D -
 </code></pre>
 
 <blockquote>
@@ -1561,7 +1576,7 @@ An event can <strong>not</strong> be updated, only deleted.
 <h3 id="http-request">HTTP Request</h3>
 
 <p><code class="prettyprint">GET https://nuv.la/api/usage</code></p>
-<pre><code class="highlight shell">curl https://nuv.la/api/usage -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl https://nuv.la/api/usage -b cookie-user.txt -D -
 </code></pre>
 
 <blockquote>
@@ -1723,18 +1738,18 @@ positions of the entities within the Collection that are returned. The query par
 
 <p>will return only the <em>second</em> usage record.</p>
 
-<h1 id="attribute">Attribute</h1>
+<h1 id="service-attribute">Service Attribute</h1>
 
-<p>This resource represents the meta-information of each attribute of a Service Catalog instance (see Service Catalog resource).</p>
+<p>This resource represents the meta-information of each attribute of a Service Offer instance (see Service Offer resource).</p>
 
-<h2 id="list-attribute-resource">List Attribute resource</h2>
+<h2 id="list-service-attribute-resource">List Service Attribute resource</h2>
 
-<p>This returns the collection of Attribute resources.</p>
+<p>This returns the collection of Service Attribute resources.</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://nuv.la/api/attribute</code></p>
-<pre><code class="highlight shell">curl https://nuv.la/api/attribute -u &lt;user&gt;:&lt;password&gt; -D -
+<p><code class="prettyprint">GET https://nuv.la/api/service-attribute</code></p>
+<pre><code class="highlight shell">curl https://nuv.la/api/service-attribute -b cookie-user.txt -D -
 </code></pre>
 
 <blockquote>
@@ -1759,14 +1774,14 @@ positions of the entities within the Collection that are returned. The query par
       </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"MODIFY"</span><span class="w">
     </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
   </span><span class="p">},</span><span class="w">
-  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/AttributeCollection"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"attribute"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/ServiceAttributeCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"service-attribute"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/add"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"attribute"</span><span class="w">
+    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"service-attribute"</span><span class="w">
   </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
   </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">31</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"attribute"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="s2">"service-attribute"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="s2">"minor-version"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
     </span><span class="s2">"updated"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-02-09T12:11:27.735Z"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"major-version"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
@@ -1799,11 +1814,11 @@ positions of the entities within the Collection that are returned. The query par
   </span><span class="err">...</span><span class="w">
 </span></code></pre>
 
-<h2 id="create-an-attribute-resource">Create an Attribute resource</h2>
+<h2 id="create-an-service-attribute-resource">Create an Service Attribute resource</h2>
 
 <h3 id="http-request">HTTP REQUEST</h3>
 
-<p><code class="prettyprint">POST https://nuv.la/api/attribute</code></p>
+<p><code class="prettyprint">POST https://nuv.la/api/service-attribute</code></p>
 
 <h3 id="body-parameters">Body Parameters</h3>
 
@@ -1860,7 +1875,7 @@ positions of the entities within the Collection that are returned. The query par
 <td>Description of this attribute</td>
 </tr>
 </tbody></table>
-<pre><code class="highlight shell">curl -X POST -H <span class="s2">"Content-Type: application/json"</span> https://nuv.la/api/attribute -d <span class="s2">"{</span><span class="se">\"</span><span class="s2">major-version</span><span class="se">\"</span><span class="s2">: 1, </span><span class="se">\"</span><span class="s2">minor-version</span><span class="se">\"</span><span class="s2">: 0, </span><span class="se">\"</span><span class="s2">patch-version</span><span class="se">\"</span><span class="s2">: 0, </span><span class="se">\"</span><span class="s2">normative</span><span class="se">\"</span><span class="s2">: true, </span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">String</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">uri</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">http://schema.hnx.helix-nebula.eu/hyper.price.per.hour</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">en</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">name</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">hyper.price.per.hour</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">categories</span><span class="se">\"</span><span class="s2">: [</span><span class="se">\"</span><span class="s2">Price</span><span class="se">\"</span><span class="s2">],</span><span class="se">\"</span><span class="s2">description</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Nature: the price for a Hyper type instance with 16 CPU and 128 GB RAM</span><span class="se">\"</span><span class="s2">}}"</span> -u &lt;user&gt;:&lt;password&gt; -D -
+<pre><code class="highlight shell">curl -X POST -H <span class="s2">"Content-Type: application/json"</span> https://nuv.la/api/service-attribute -d <span class="s2">"{</span><span class="se">\"</span><span class="s2">major-version</span><span class="se">\"</span><span class="s2">: 1, </span><span class="se">\"</span><span class="s2">minor-version</span><span class="se">\"</span><span class="s2">: 0, </span><span class="se">\"</span><span class="s2">patch-version</span><span class="se">\"</span><span class="s2">: 0, </span><span class="se">\"</span><span class="s2">normative</span><span class="se">\"</span><span class="s2">: true, </span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">String</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">uri</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">http://schema.hnx.helix-nebula.eu/hyper.price.per.hour</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">en</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">name</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">hyper.price.per.hour</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">categories</span><span class="se">\"</span><span class="s2">: [</span><span class="se">\"</span><span class="s2">Price</span><span class="se">\"</span><span class="s2">],</span><span class="se">\"</span><span class="s2">description</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Nature: the price for a Hyper type instance with 16 CPU and 128 GB RAM</span><span class="se">\"</span><span class="s2">}}"</span> -b cookie-user.txt -D -
 </code></pre>
 
 <blockquote>
@@ -1868,7 +1883,7 @@ positions of the entities within the Collection that are returned. The query par
 </blockquote>
 <pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
-<span class="na">Location</span><span class="p">:</span> <span class="s">attribute/d77a553b-7332-48a0-b653-3b2b4b336049</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049</span>
 <span class="na">Server</span><span class="p">:</span> <span class="s">Aleph/0.4.0</span>
 <span class="na">Connection</span><span class="p">:</span> <span class="s">Keep-Alive</span>
 <span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 09 Feb 2016 12:55:09 GMT</span>
@@ -1876,17 +1891,17 @@ positions of the entities within the Collection that are returned. The query par
 
 <span class="p">{</span><span class="w">
   </span><span class="s2">"status"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">201</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"created attribute/d77a553b-7332-48a0-b653-3b2b4b336049"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"resource-id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"attribute/d77a553b-7332-48a0-b653-3b2b4b336049"</span><span class="w">
+  </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"created service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"resource-id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 
-<h2 id="delete-an-attribute-resource">Delete an Attribute resource</h2>
+<h2 id="delete-an-service-attribute-resource">Delete an Service Attribute resource</h2>
 
 <h3 id="http-request">HTTP REQUEST</h3>
 
-<p><code class="prettyprint">DELETE https://nuv.la/api/attribute/&lt;id&gt;</code></p>
-<pre><code class="highlight shell">curl -X DELETE -H <span class="s2">"Content-Type: application/json"</span> https://nuv.la/api/attribute/d77a553b-7332-48a0-b653-3b2b4b336049 -u &lt;user&gt;:&lt;password&gt; -D -
+<p><code class="prettyprint">DELETE https://nuv.la/api/service-attribute/&lt;id&gt;</code></p>
+<pre><code class="highlight shell">curl -X DELETE -H <span class="s2">"Content-Type: application/json"</span> https://nuv.la/api/service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049 -b cookie-user.txt -D -
 </code></pre>
 
 <blockquote>
@@ -1900,16 +1915,16 @@ positions of the entities within the Collection that are returned. The query par
 <span class="na">content-length</span><span class="p">:</span> <span class="s">160</span>
 </code></pre>
 
-<h1 id="service-catalog">Service Catalog</h1>
+<h1 id="service-offer">Service Offer</h1>
 
 <p>Provides detailed capability information for each available cloud.</p>
 
-<h2 id="get-the-service-catalog">Get the Service Catalog</h2>
+<h2 id="get-the-service-offer">Get the Service Offer</h2>
 
 <h3 id="http-request">HTTP REQUEST</h3>
 
-<p><code class="prettyprint">GET https://nuv.la/api/service-info</code></p>
-<pre><code class="highlight shell">curl -X GET -H <span class="s2">"Content-Type: application/json"</span> https://nuv.la/api/service-info -u &lt;user&gt;:&lt;password&gt; -D -
+<p><code class="prettyprint">GET https://nuv.la/api/service-offer</code></p>
+<pre><code class="highlight shell">curl -X GET -H <span class="s2">"Content-Type: application/json"</span> https://nuv.la/api/service-offer -b cookie-user.txt -D -
 </code></pre>
 
 <blockquote>
@@ -1934,14 +1949,14 @@ positions of the entities within the Collection that are returned. The query par
       </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"MODIFY"</span><span class="w">
     </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
   </span><span class="p">},</span><span class="w">
-  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/ServiceInfoCollection"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"service-info"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/ServiceOfferCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"service-offer"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/add"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"service-info"</span><span class="w">
+    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"service-offer"</span><span class="w">
   </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
   </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"service-info"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="s2">"serviceOffers"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="s2">"connector"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
       </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"t-systems-de1-indigo-1"</span><span class="w">
     </span><span class="p">},</span><span class="w">
@@ -1981,11 +1996,11 @@ positions of the entities within the Collection that are returned. The query par
   </span><span class="err">...</span><span class="w">
 </span></code></pre>
 
-<h2 id="create-a-service-catalog">Create a Service Catalog</h2>
+<h2 id="create-a-service-offer">Create a Service Offer</h2>
 
 <h3 id="http-request">HTTP REQUEST</h3>
 
-<p><code class="prettyprint">POST https://nuv.la/api/service-info</code></p>
+<p><code class="prettyprint">POST https://nuv.la/api/service-offer</code></p>
 
 <h3 id="body-parameters">Body Parameters</h3>
 
@@ -2018,11 +2033,11 @@ positions of the entities within the Collection that are returned. The query par
 </tr>
 </tbody></table>
 
-<h2 id="delete-a-service-catalog">Delete a Service Catalog</h2>
+<h2 id="delete-a-service-offer">Delete a Service Offer</h2>
 
 <h3 id="http-request">HTTP REQUEST</h3>
 
-<p><code class="prettyprint">DELETE https://nuv.la/api/service-info</code></p>
+<p><code class="prettyprint">DELETE https://nuv.la/api/service-offer</code></p>
 
 <h1 id="the-new-resource">The <em>new</em> resource</h1>
 <pre><code class="highlight shell">curl https://nuv.la/module/examples/new?category<span class="o">=</span>Image login -d <span class="nv">username</span><span class="o">=</span>&lt;USER&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;PASSWORD&gt;
