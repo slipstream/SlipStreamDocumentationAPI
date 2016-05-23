@@ -924,6 +924,24 @@ Parameter | Required | Description
 --------- | -------- | -----------
 user | true | User name to retrieve
 
+# Authentication for /api resources
+
+The resources under `/api` namespace use an authentication token.
+
+## Obtain an authentication cookie
+
+### HTTP Request
+
+`POST https://nuv.la/auth/login`
+
+
+```shell
+curl -k -s -D - https://nuv.la/auth/login -X POST -d "user-name=name&password=secret" -c cookie-user.txt
+```
+
+This will return a response containing a cookie with the authentication token.
+This cookie must be used later on (for example with `-b` option in curl command) to access the API.
+
 # Event
 
 <aside class="notice">
@@ -958,7 +976,7 @@ An event can <strong>not</strong> be updated, only deleted.
 ## List all Events
 
 ```shell
-curl https://nuv.la/api/event/ -u <user>:<password> -D -
+curl https://nuv.la/api/event/ -b cookie-user.txt -D -
 ```
 
 > The above command returns json structured like this:
@@ -1031,7 +1049,7 @@ Lists all events accessible by the authenticated user. A user has the right to s
 ## Create an Event
 
 ```shell
-curl https://nuv.la/api/event -d "{ \"acl\": {\"owner\": {\"type\": \"USER\", \"principal\": \"joe\"},    \"rules\": [{\"type\": \"ROLE\", \"prinipal\": \"ANON\", \"right\": \"ALL\"}]},    \"id\": \"123\",    \"created\" :  \"2015-01-16T08:20:00.0Z\",    \"updated\" : \"2015-01-16T08:20:00.0Z\",    \"resourceURI\" : \"http://slipstream.sixsq.com/ssclj/1/Event\",    \"timestamp\": \"2015-01-10T08:20:00.0Z\",    \"content\" :  { \"resource\":  {\"href\": \"Run/45614147-aed1-4a24-889d-6365b0b1f2cd\"},    \"state\" : \"Started\" } ,    \"type\": \"state\",    \"severity\": \"medium\"}" -X POST -H "Content-Type: application/json" -u <user>:<password> -D -
+curl https://nuv.la/api/event -d "{ \"acl\": {\"owner\": {\"type\": \"USER\", \"principal\": \"joe\"},    \"rules\": [{\"type\": \"ROLE\", \"prinipal\": \"ANON\", \"right\": \"ALL\"}]},    \"id\": \"123\",    \"created\" :  \"2015-01-16T08:20:00.0Z\",    \"updated\" : \"2015-01-16T08:20:00.0Z\",    \"resourceURI\" : \"http://slipstream.sixsq.com/ssclj/1/Event\",    \"timestamp\": \"2015-01-10T08:20:00.0Z\",    \"content\" :  { \"resource\":  {\"href\": \"Run/45614147-aed1-4a24-889d-6365b0b1f2cd\"},    \"state\" : \"Started\" } ,    \"type\": \"state\",    \"severity\": \"medium\"}" -X POST -H "Content-Type: application/json" -b cookie-user.txt -D -
 ```
 
 > The above command returns a json structured like this:
@@ -1084,7 +1102,7 @@ severity    | true      | Accepted values: `critical`, `high`, `medium` and `low
 ## Get an Event
 
 ```shell
-curl https://nuv.la/api/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -u <user>:<password> -D -
+curl https://nuv.la/api/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -b cookie-user.txt -D -
 ```
 
 > The above command returns a json structured like this:
@@ -1137,7 +1155,7 @@ Get a specific event.
 ## Delete an Event
 
 ```shell
-curl -X DELETE  https://nuv.la/api/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -u <user>:<password> -D -
+curl -X DELETE  https://nuv.la/api/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -b cookie-user.txt -D -
 ```
 
 > The above command returns a json structured like this:
@@ -1187,7 +1205,7 @@ The collection of usage records (most recent are listed first) is returned filte
 `GET https://nuv.la/api/usage`
 
 ```shell
-curl https://nuv.la/api/usage -u <user>:<password> -D -
+curl https://nuv.la/api/usage -b cookie-user.txt -D -
 ```
 
 > The above command returns a json structured like this:
@@ -1348,20 +1366,20 @@ positions of the entities within the Collection that are returned. The query par
 
 will return only the *second* usage record.
 
-# Attribute
+# Service Attribute
 
-This resource represents the meta-information of each attribute of a Service Catalog instance (see Service Catalog resource).
+This resource represents the meta-information of each attribute of a Service Offer instance (see Service Offer resource).
 
-## List Attribute resource
+## List Service Attribute resource
 
-This returns the collection of Attribute resources.
+This returns the collection of Service Attribute resources.
 
 ### HTTP Request
 
-`GET https://nuv.la/api/attribute`
+`GET https://nuv.la/api/service-attribute`
 
 ```shell
-curl https://nuv.la/api/attribute -u <user>:<password> -D -
+curl https://nuv.la/api/service-attribute -b cookie-user.txt -D -
 ```
 
 > The above command returns a json structured like this (truncated for readability):
@@ -1386,14 +1404,14 @@ content-length: 22221
       "right" : "MODIFY"
     } ]
   },
-  "resourceURI" : "http://sixsq.com/slipstream/1/AttributeCollection",
-  "id" : "attribute",
+  "resourceURI" : "http://sixsq.com/slipstream/1/ServiceAttributeCollection",
+  "id" : "service-attribute",
   "operations" : [ {
     "rel" : "http://sixsq.com/slipstream/1/Action/add",
-    "href" : "attribute"
+    "href" : "service-attribute"
   } ],
   "count" : 31,
-  "attribute" : [ {
+  "service-attribute" : [ {
     "minor-version" : 0,
     "updated" : "2016-02-09T12:11:27.735Z",
     "major-version" : 1,
@@ -1426,11 +1444,11 @@ content-length: 22221
   ...
 ```
 
-## Create an Attribute resource
+## Create an Service Attribute resource
 
 ### HTTP REQUEST
 
-`POST https://nuv.la/api/attribute`
+`POST https://nuv.la/api/service-attribute`
 
 ### Body Parameters
 
@@ -1447,7 +1465,7 @@ en.categories   | true      | List of categories
 en.description  | true      | Description of this attribute
 
 ```shell
-curl -X POST -H "Content-Type: application/json" https://nuv.la/api/attribute -d "{\"major-version\": 1, \"minor-version\": 0, \"patch-version\": 0, \"normative\": true, \"type\": \"String\", \"uri\": \"http://schema.hnx.helix-nebula.eu/hyper.price.per.hour\", \"en\": {\"name\": \"hyper.price.per.hour\",\"categories\": [\"Price\"],\"description\": \"Nature: the price for a Hyper type instance with 16 CPU and 128 GB RAM\"}}" -u <user>:<password> -D -
+curl -X POST -H "Content-Type: application/json" https://nuv.la/api/service-attribute -d "{\"major-version\": 1, \"minor-version\": 0, \"patch-version\": 0, \"normative\": true, \"type\": \"String\", \"uri\": \"http://schema.hnx.helix-nebula.eu/hyper.price.per.hour\", \"en\": {\"name\": \"hyper.price.per.hour\",\"categories\": [\"Price\"],\"description\": \"Nature: the price for a Hyper type instance with 16 CPU and 128 GB RAM\"}}" -b cookie-user.txt -D -
 ```
 
 > The above command returns a json response:
@@ -1455,7 +1473,7 @@ curl -X POST -H "Content-Type: application/json" https://nuv.la/api/attribute -d
 ```http
 HTTP/1.1 201 Created
 Content-Type: application/json
-Location: attribute/d77a553b-7332-48a0-b653-3b2b4b336049
+Location: service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049
 Server: Aleph/0.4.0
 Connection: Keep-Alive
 Date: Tue, 09 Feb 2016 12:55:09 GMT
@@ -1463,19 +1481,19 @@ content-length: 160
 
 {
   "status" : 201,
-  "message" : "created attribute/d77a553b-7332-48a0-b653-3b2b4b336049",
-  "resource-id" : "attribute/d77a553b-7332-48a0-b653-3b2b4b336049"
+  "message" : "created service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049",
+  "resource-id" : "service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049"
 }
 ```
 
-## Delete an Attribute resource
+## Delete an Service Attribute resource
 
 ### HTTP REQUEST
 
-`DELETE https://nuv.la/api/attribute/<id>`
+`DELETE https://nuv.la/api/service-attribute/<id>`
 
 ```shell
-curl -X DELETE -H "Content-Type: application/json" https://nuv.la/api/attribute/d77a553b-7332-48a0-b653-3b2b4b336049 -u <user>:<password> -D -
+curl -X DELETE -H "Content-Type: application/json" https://nuv.la/api/service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049 -b cookie-user.txt -D -
 ```
 
 > The above command returns a json response:
@@ -1489,18 +1507,18 @@ Date: Tue, 09 Feb 2016 13:03:31 GMT
 content-length: 160
 ```
 
-# Service Catalog
+# Service Offer
 
 Provides detailed capability information for each available cloud.
 
-## Get the Service Catalog
+## Get the Service Offer
 
 ### HTTP REQUEST
 
-`GET https://nuv.la/api/service-info`
+`GET https://nuv.la/api/service-offer`
 
 ```shell
-curl -X GET -H "Content-Type: application/json" https://nuv.la/api/service-info -u <user>:<password> -D -
+curl -X GET -H "Content-Type: application/json" https://nuv.la/api/service-offer -b cookie-user.txt -D -
 ```
 
 > The above command returns a json response:
@@ -1525,14 +1543,14 @@ content-length: 20147
       "right" : "MODIFY"
     } ]
   },
-  "resourceURI" : "http://sixsq.com/slipstream/1/ServiceInfoCollection",
-  "id" : "service-info",
+  "resourceURI" : "http://sixsq.com/slipstream/1/ServiceOfferCollection",
+  "id" : "service-offer",
   "operations" : [ {
     "rel" : "http://sixsq.com/slipstream/1/Action/add",
-    "href" : "service-info"
+    "href" : "service-offer"
   } ],
   "count" : 12,
-  "service-info" : [ {
+  "serviceOffers" : [ {
     "connector" : {
       "href" : "t-systems-de1-indigo-1"
     },
@@ -1572,11 +1590,11 @@ content-length: 20147
   ...
 ```
 
-## Create a Service Catalog
+## Create a Service Offer
 
 ### HTTP REQUEST
 
-`POST https://nuv.la/api/service-info`
+`POST https://nuv.la/api/service-offer`
 
 ### Body Parameters
 
@@ -1587,11 +1605,11 @@ uri of an attribute 1 | false     | Value of the attribute for this cloud
 uri of an attribute 2 | false     | Value of the attribute for this cloud
 ... | false     | ...
 
-## Delete a Service Catalog
+## Delete a Service Offer
 
 ### HTTP REQUEST
 
-`DELETE https://nuv.la/api/service-info`
+`DELETE https://nuv.la/api/service-offer`
 
 
 # The *new* resource
