@@ -939,7 +939,7 @@ The resources under `/api` namespace use an authentication token.
 curl -k -s -D - https://nuv.la/auth/login -X POST -d "user-name=name&password=secret" -c cookie-user.txt
 ```
 
-This will return a response containing a cookie with the authentication token.
+This will store the authentication token inside `cookie-user.txt` file.
 This cookie must be used later on (for example with `-b` option in curl command) to access the API.
 
 # Event
