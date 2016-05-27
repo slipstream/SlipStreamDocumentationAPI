@@ -54,12 +54,40 @@ deployment and project can be uniquely identified via a unique URI.
 
 With the exception of the login page, all resources require authentication.
 
-SlipStream currently supports both `Basic Authentication` and `Cookies`.
-To generate a time limited cookie, use the `/login` resource.
+SlipStream supports `Cookies` authentication and `Basic Authentication` (deprecated, soon to be removed).
+Resources under `/api` namespace suport only `Cookies` authentication.
+
+To generate a time limited cookie, use the `/auth/login` resource.
 
 # Login
 
-## Basic authentication
+## Generate a cookie
+
+`POST https://nuv.la/auth/login`
+
+
+Parameter | Required | Description
+--------- | -------- | -----------
+username | true | Name of the user to authenticate with
+password | true | Password corresponding to the username
+
+This resource allows users to generate a time limited cookie. The value of the cookie corresponds
+to the `Set-Cookie` of the response header.
+
+```shell
+curl -k -s -D - https://nuv.la/auth/login -X POST -d "username=name&password=secret" -c cookie-user.txt
+```
+
+This `curl` command will store the authentication token inside `cookie-user.txt` file.
+This cookie must be used later on (for example with `-b` option in curl command) to access the API.
+
+
+<aside class="notice">
+Remember — with the exception of this resource and the documentation, all resources require authentication.
+</aside>
+
+
+## Basic authentication (deprecated)
 
 ```shell
 curl https://nuv.la?media=xml -u <user>:<password>
@@ -96,46 +124,7 @@ curl https://<user>:<password>@slipstream.sixsq.com?media=xml
 
 > The above command returns a header structured like this:
 
-SlipStream supports basic authentication.  This can be tested using simple username/password pair.
-
-## Generate a cookie
-
-```shell
-curl https://nuv.la/login -d username=<user> -d password=<password> -H "Content-Type: application/xml"
-```
-
-> The above command returns a header structured like this:
-
-```http
-HTTP/1.1 200 OK
-Server: nginx/1.4.7
-Date: Tue, 06 May 2014 18:46:12 GMT
-Accept-Ranges: bytes
-Location: https://nuv.la
-Server: Restlet-Framework/2.1m4
-Set-Cookie: com.sixsq.slipstream.cookie=SOME_LONG_STRING; Path=/
-Content-Length: 0
-```
-
-This resource allows users to generate a time limited cookie. The value of the cookie corresponds
-to the `Set-Cookie` of the response header.
-
-### HTTP Request
-
-`POST https://nuv.la/login`
-
-### Body Parameters
-
-Parameter | Required | Description
---------- | -------- | -----------
-username | true | Username to authenticate with
-password | true | Password corresponding to the username
-
-<aside class="notice">
-Remember — with the exception of this resource and the documentation, all resources require authentication.
-</aside>
-
-
+Basic authentication can be tested using simple username/password pair.
 
 # Module
 
@@ -924,25 +913,9 @@ Parameter | Required | Description
 --------- | -------- | -----------
 user | true | User name to retrieve
 
-# Authentication for /api resources
-
-The resources under `/api` namespace use an authentication token.
-
-## Obtain an authentication cookie
-
-### HTTP Request
-
-`POST https://nuv.la/auth/login`
-
-
-```shell
-curl -k -s -D - https://nuv.la/auth/login -X POST -d "user-name=name&password=secret" -c cookie-user.txt
-```
-
-This will store the authentication token inside `cookie-user.txt` file.
-This cookie must be used later on (for example with `-b` option in curl command) to access the API.
-
 # Event
+
+The resources under `/api` namespace do not support basic authentication and require an authentication cookie.
 
 <aside class="notice">
 From
