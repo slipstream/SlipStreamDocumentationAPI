@@ -97,12 +97,49 @@ deployment and project can be uniquely identified via a unique URI.</p>
 
 <p>With the exception of the login page, all resources require authentication.</p>
 
-<p>SlipStream currently supports both <code class="prettyprint">Basic Authentication</code> and <code class="prettyprint">Cookies</code>.
-To generate a time limited cookie, use the <code class="prettyprint">/login</code> resource.</p>
+<p>SlipStream supports <code class="prettyprint">Cookies</code> authentication and <code class="prettyprint">Basic Authentication</code> (deprecated, soon to be removed).
+Resources under <code class="prettyprint">/api</code> namespace suport only <code class="prettyprint">Cookies</code> authentication.</p>
+
+<p>To generate a time limited cookie, use the <code class="prettyprint">/auth/login</code> resource.</p>
 
 <h1 id="login">Login</h1>
 
-<h2 id="basic-authentication">Basic authentication</h2>
+<h2 id="generate-a-cookie">Generate a cookie</h2>
+
+<p><code class="prettyprint">POST https://nuv.la/auth/login</code></p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>username</td>
+<td>true</td>
+<td>Name of the user to authenticate with</td>
+</tr>
+<tr>
+<td>password</td>
+<td>true</td>
+<td>Password corresponding to the username</td>
+</tr>
+</tbody></table>
+
+<p>This resource allows users to generate a time limited cookie. The value of the cookie corresponds
+to the <code class="prettyprint">Set-Cookie</code> of the response header.</p>
+<pre><code class="highlight shell">curl -k -s -D - https://nuv.la/auth/login -X POST -d <span class="s2">"username=name&amp;password=secret"</span> -c cookie-user.txt
+</code></pre>
+
+<p>This <code class="prettyprint">curl</code> command will store the authentication token inside <code class="prettyprint">cookie-user.txt</code> file.
+This cookie must be used later on (for example with <code class="prettyprint">-b</code> option in curl command) to access the API.</p>
+
+<aside class="notice">
+Remember — with the exception of this resource and the documentation, all resources require authentication.
+</aside>
+
+<h2 id="basic-authentication-(deprecated)">Basic authentication (deprecated)</h2>
 <pre><code class="highlight shell">curl https://nuv.la?media<span class="o">=</span>xml -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
 
@@ -138,56 +175,7 @@ To generate a time limited cookie, use the <code class="prettyprint">/login</cod
 <p>The above command returns a header structured like this:</p>
 </blockquote>
 
-<p>SlipStream supports basic authentication.  This can be tested using simple username/password pair.</p>
-
-<h2 id="generate-a-cookie">Generate a cookie</h2>
-<pre><code class="highlight shell">curl https://nuv.la/login -d <span class="nv">username</span><span class="o">=</span>&lt;user&gt; -d <span class="nv">password</span><span class="o">=</span>&lt;password&gt; -H <span class="s2">"Content-Type: application/xml"</span>
-</code></pre>
-
-<blockquote>
-<p>The above command returns a header structured like this:</p>
-</blockquote>
-<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="na">Server</span><span class="p">:</span> <span class="s">nginx/1.4.7</span>
-<span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 06 May 2014 18:46:12 GMT</span>
-<span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
-<span class="na">Location</span><span class="p">:</span> <span class="s">https://nuv.la</span>
-<span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.1m4</span>
-<span class="na">Set-Cookie</span><span class="p">:</span> <span class="s">com.sixsq.slipstream.cookie=SOME_LONG_STRING; Path=/</span>
-<span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
-</code></pre>
-
-<p>This resource allows users to generate a time limited cookie. The value of the cookie corresponds
-to the <code class="prettyprint">Set-Cookie</code> of the response header.</p>
-
-<h3 id="http-request">HTTP Request</h3>
-
-<p><code class="prettyprint">POST https://nuv.la/login</code></p>
-
-<h3 id="body-parameters">Body Parameters</h3>
-
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Required</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>username</td>
-<td>true</td>
-<td>Username to authenticate with</td>
-</tr>
-<tr>
-<td>password</td>
-<td>true</td>
-<td>Password corresponding to the username</td>
-</tr>
-</tbody></table>
-
-<aside class="notice">
-Remember — with the exception of this resource and the documentation, all resources require authentication.
-</aside>
+<p>Basic authentication can be tested using simple username/password pair.</p>
 
 <h1 id="module">Module</h1>
 
@@ -1286,22 +1274,9 @@ This resource is restricted to privileged users.
 </tr>
 </tbody></table>
 
-<h1 id="authentication-for-/api-resources">Authentication for /api resources</h1>
-
-<p>The resources under <code class="prettyprint">/api</code> namespace use an authentication token.</p>
-
-<h2 id="obtain-an-authentication-cookie">Obtain an authentication cookie</h2>
-
-<h3 id="http-request">HTTP Request</h3>
-
-<p><code class="prettyprint">POST https://nuv.la/auth/login</code></p>
-<pre><code class="highlight shell">curl -k -s -D - https://nuv.la/auth/login -X POST -d <span class="s2">"user-name=name&amp;password=secret"</span> -c cookie-user.txt
-</code></pre>
-
-<p>This will store the authentication token inside <code class="prettyprint">cookie-user.txt</code> file.
-This cookie must be used later on (for example with <code class="prettyprint">-b</code> option in curl command) to access the API.</p>
-
 <h1 id="event">Event</h1>
+
+<p>The resources under <code class="prettyprint">/api</code> namespace do not support basic authentication and require an authentication cookie.</p>
 
 <aside class="notice">
 From
