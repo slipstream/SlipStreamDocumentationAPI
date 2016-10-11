@@ -295,6 +295,47 @@ Parameter | Required | Description
 module | true | Unique identifier of the module - e.g. *examples/images/ubuntu-12.04*.
 version | false | Version of the module. If not provided, delete the latest (most recent)
 
+## Delete all versions of a module
+
+```shell
+curl https://nuv.la/module/<module>/ -u <user>:<password> -X DELETE -D -
+```
+
+> The above command returns a header structured like this:
+
+```http
+HTTP/1.1 204 No Content
+Date: Tue, 13 May 2014 03:08:15 GMT
+Accept-Ranges: bytes
+Location: https://nuv.la/module/examples/toto/11
+Server: Restlet-Framework/2.1m4
+Set-Cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identifier=test&com.sixsq.expirydate=1399993694970&com.sixsq.signature=izoalqmos489wxw8z25k03nqtsdfyxyv2ak5adi1e0h73zdziq45y1eat66tcob5ybvh7oe5gbh8es1onj4f6orj2enrqu9w9j0; Path=/
+Content-Length: 0
+```
+
+Delete all versions of a module (i.e. image, deployment or project) for which the authenticated user has the "delete" right.
+
+The DELETE request will delete all versions of the specified resource.
+
+### HTTP Request
+
+`DELETE https://nuv.la/module/<module>/`
+
+<aside class="notice">
+Notice the trailing '/' in the URL
+</aside>
+
+<aside class="notice">
+This call doesn't fails if the authenticated user doesn't have the right to delete some or all versions of the module.
+</aside>
+
+
+### URL Parameters
+
+Parameter | Required | Description
+--------- | -------- | -----------
+module | true | Unique identifier of the module with the trailing slash - e.g. *examples/images/ubuntu-12.04/*.
+
 ## Module history (versions)
 
 ```shell
@@ -335,7 +376,7 @@ Notice the trailing '/' in the URL
 
 Parameter | Required | Description
 --------- | -------- | -----------
-module | true | Unique identifier of the module - e.g. *examples/images/ubuntu-12.04*.
+module | true | Unique identifier of the module with the trailing slash - e.g. *examples/images/ubuntu-12.04*.
 
 # Run
 
