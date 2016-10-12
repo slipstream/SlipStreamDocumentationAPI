@@ -381,6 +381,54 @@ This PUT request is not idem potent - i.e. calling it several times will create 
 </tr>
 </tbody></table>
 
+<h2 id="delete-all-versions-of-a-module">Delete all versions of a module</h2>
+<pre><code class="highlight shell">curl https://nuv.la/module/&lt;module&gt;/ -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns a header structured like this:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">No Content</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Tue, 13 May 2014 03:08:15 GMT</span>
+<span class="na">Accept-Ranges</span><span class="p">:</span> <span class="s">bytes</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">https://nuv.la/module/examples/toto/11</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">Restlet-Framework/2.1m4</span>
+<span class="na">Set-Cookie</span><span class="p">:</span> <span class="s">com.sixsq.slipstream.cookie=com.sixsq.idtype=local&amp;com.sixsq.identifier=test&amp;com.sixsq.expirydate=1399993694970&amp;com.sixsq.signature=izoalqmos489wxw8z25k03nqtsdfyxyv2ak5adi1e0h73zdziq45y1eat66tcob5ybvh7oe5gbh8es1onj4f6orj2enrqu9w9j0; Path=/</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">0</span>
+</code></pre>
+
+<p>Delete all versions of a module (i.e. image, deployment or project) for which the authenticated user has the &ldquo;delete&rdquo; right.</p>
+
+<p>The DELETE request will delete all versions of the specified resource.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">DELETE https://nuv.la/module/&lt;module&gt;/</code></p>
+
+<aside class="notice">
+Notice the trailing &rsquo;/&rsquo; in the URL
+</aside>
+
+<aside class="notice">
+This call doesn&rsquo;t fails if the authenticated user doesn&rsquo;t have the right to delete some or all versions of the module.
+</aside>
+
+<h3 id="url-parameters">URL Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>module</td>
+<td>true</td>
+<td>Unique identifier of the module with the trailing slash - e.g. <em>examples/images/ubuntu-12.04/</em>.</td>
+</tr>
+</tbody></table>
+
 <h2 id="module-history-(versions)">Module history (versions)</h2>
 <pre><code class="highlight shell">curl https://nuv.la/module/&lt;module&gt;/ -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
@@ -425,7 +473,7 @@ Notice the trailing &rsquo;/&rsquo; in the URL
 <tr>
 <td>module</td>
 <td>true</td>
-<td>Unique identifier of the module - e.g. <em>examples/images/ubuntu-12.04</em>.</td>
+<td>Unique identifier of the module with the trailing slash - e.g. <em>examples/images/ubuntu-12.04</em>.</td>
 </tr>
 </tbody></table>
 
