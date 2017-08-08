@@ -49,82 +49,1061 @@ Resource Oriented Architecture (ROA) concept, which guided several design choice
 the resources-based architecture underpinning SlipStream.  For example, each version of an image,
 deployment and project can be uniquely identified via a unique URI.
 
+# CIMI API
+
+The [Cloud Infrastructure Management
+Interface](https://www.dmtf.org/sites/default/files/standards/documents/DSP0263_2.0.0.pdf)
+(CIMI) specification from DMTF describes a uniform, extensible,
+RESTful (HTTP) API for the management of cloud resources.
+
+As CIMI's underlying resource model closely resembles the existing
+SlipStream resource model and simplifies use of the API through
+standard patterns and autodiscovery, the SlipStream developers have
+decided to adopt this standard.
+
+<aside class="notice">
+All of the resources rooted at `/api` follow the CIMI resource
+management patterns. These are marked with "CIMI" in the table of
+contents. 
+</aside>
+
+## Autodiscovery
+
+The CIMI API has been designed to allow for automatic discovery of the
+supported resources and management operations.
+
+### Resource Directory
+
+```shell
+# Cloud Entry Point (directory of resources)
+curl https://nuv.la/api/cloud-entry-point
+```
+
+```json
+{
+  "id" : "cloud-entry-point",
+  "resourceURI" : "http://schemas.dmtf.org/cimi/2/CloudEntryPoint",
+  "created" : "2016-06-21T17:31:14.950Z",
+  "updated" : "2016-06-21T17:31:14.950Z",
+
+  "baseURI" : "https://nuv.la/api/",
+  
+  "connectors" : {
+    "href" : "connector"
+  },
+  "accountingRecords" : {
+    "href" : "accounting-record"
+  }, 
+
+  "other fields" : "..."
+}
+```
+
+The primary directory of resources is the Cloud Entry Point (CEP),
+which contains a list of named resource collections and their URLs (in
+the `href` field) relative to the `baseURI` value.  The CEP also
+contains some other metadata.
+
+<aside class="warning">
+Although SlipStream maintains consistent naming throughout the API,
+assumptions about the URL naming must not be made by clients. Clients
+must use the CEP to discover the correct URLs for managed resources.
+</aside>
+
+### Operations
+
+If the user is authorized to perform various management operations on
+a resource, the resource will contain an "operations" key.  The value
+of the key will contain a list of actions (e.g. `add`, `edit`,
+`delete`, `start`) along with the URL to use to execute the action. 
+
+## Resource Management (CRUD)
+
+The CIMI standard defines patterns for all of the usual database
+actions: Search (or Query), Create, Read, Update, and Delete (SCRUD),
+although the specification uses "Add" for "Create" and "Edit" for
+"Update".
+
+**See Section 4.2.1 of the CIMI specification for detailed
+descriptions of these patterns.**  Only differences from the standard
+patterns are documented here.
+
+The following table shows the mapping between the resource management
+action and the HTTP method to be used.
+
+Action | HTTP Method | URL
+------ | ----------- | ---
+Search | `GET` or `PUT` | resource collection
+Add (create) | `POST` | resource collection
+Read | `GET` | resource
+Edit (update) | `PUT` | resource
+Delete | `DELETE` | resource
+
+## Resource Selection
+
+The CIMI specification provides advanced features for selecting
+resources when searching collections, including paging (CIMI Section
+4.1.6.2), sorting (4.1.6.6), and filtering (4.1.6.1).
+
+All of the resource selection parameters are specified as HTTP query
+parameters.  These are specified directly within the URL when using
+the HTTP `GET` method.  They are specified in a body with the media
+type of `application/x-www-form-urlencoded` when using the `PUT`
+method. (Note that use of `PUT` for searches is an SlipStream
+extension to the CIMI standard.)
+
+<aside class="notice">
+The standard also describes facilities for subsetting resources and
+expanding resource references.  These are not yet implemented by
+SlipStream. 
+</aside>
+
+<aside class="warning">
+All of the CIMI query parameters are prefixed with a dollar sign
+($). This was an unfortunate choice because it signals variable
+interpolation in most shells.  When using these parameters at the
+command line, be sure to escape the dollar signs or to put the
+parameters within single quotes.
+</aside>
+
+### Ordering
+
+The results can be ordered by the values of fields within the
+resources.  The general form of a query with ordering is:
+
+`$orderby=attributeName[:asc|:desc], ...`
+
+The ascending (:asc, default) or descending (:desc) field is
+optional.  The sorting is done using the natural order of the field
+values. Multiple `$orderby` parameters are allowed, in which case
+resources are sorted by the first attribute, then equal values are
+sorted by the second attribute, etc. 
+
+### Paging
+
+A range of resources can be obtained by setting the `$first` and
+`$last` (1-based) query parameters.  The values default to the first
+and last resources, respectively, in the collection if explicit values
+are not provided.
+
+<aside class="notice">
+Note that the SlipStream implementation will limit the number of
+returned resources to 10000, independently of the values provided for
+these parameters.  This is to protect both the client and server from
+excessively large responses.
+</aside>
+
+<aside class="notice">
+The selection of resources via these parameters is done after any
+filtering and ordering.
+</aside>
+
+### Filtering
+
+> Example filters
+
+```c
+((alpha>2) and (beta>='bad value') or (nested/value!=false)
+```
+
+```c
+((property['alpha']="OK") or (missing=null))
+```
+
+
+The CIMI specification defines a simple, but powerful, filtering
+language to make sophisticated selections of resources. The syntax of
+the `$filter` query parameter consists of infix binary comparisons
+combined with `and` or `or` operators. Parentheses can be used to
+force the ordering of operations.  Whitespace is ignored.
+
+The following tables list the supported relational operators and
+types. All comparisons use the natural ordering of the data type.
+
+operator | description
+-------- | -----------
+= | equal
+!= | not equal
+< | less than
+<= | less than or equal
+> | greater than
+>= | greater than or equal
+^= | starts with (SlipStream extension)
+
+type | comment
+---- | -------
+integer | integer values
+string | single or double-quoted strings
+date | date in ISO8601 format
+boolean | either true or false
+null | null values (SlipStream extension)
+
+
+## Deviations
+
+SlipStream does not (yet) provide a complete implementation of the
+CIMI API and out of necessity deviates in several ways from the
+standard.
+
+### Media Types
+
+The CIMI standard mandates the support of both XML and JSON.  **The
+SlipStream implementation only supports JSON.**
+
+### Authorization
+
+The CIMI standard does not mandate any authentication and
+authorization process. The schema of all resources in the SlipStream
+implementation includes an "acl" key.  **The Access Control List (ACL)
+of each resource describes who is authorized to manage that
+resource.**
+
+### Searches
+
+The CIMI standard only provides for searches over resource collections
+with the HTTP `GET` method.  Because those filters can be quite long,
+there can be issues with the length of the `GET` URL. Consequently,
+SlipStream clients may also **search resource collections using the
+HTTP `PUT` method** with a body containing the filters (and other
+parameters) as a URL-encoded form.
 
 # Authentication
 
-With the exception of the login page, all resources require authentication.
-
-SlipStream supports `Cookies` authentication and `Basic Authentication` (deprecated, soon to be removed).
-Resources under `/api` namespace suport only `Cookies` authentication.
-
-To generate a time limited cookie, use the `/auth/login` resource.
-
-# Login
-
-## Generate a cookie
-
-`POST https://nuv.la/auth/login`
-
-
-Parameter | Required | Description
---------- | -------- | -----------
-username | true | Name of the user to authenticate with
-password | true | Password corresponding to the username
-
-This resource allows users to generate a time limited cookie. The value of the cookie corresponds
-to the `Set-Cookie` of the response header.
-
-```shell
-curl -k -s -D - https://nuv.la/auth/login -X POST -d "username=name&password=secret" -c cookie-user.txt
-```
-
-This `curl` command will store the authentication token inside `cookie-user.txt` file.
-This cookie must be used later on (for example with `-b` option in curl command) to access the API.
-
+Most SlipStream resources are only visible to authenticated users.
+The login process consists of creating a "session" resource via the
+standard CIMI add pattern and then using the returned token with
+subsequent interactions with the SlipStream server.  The details are
+covered in the sections for the Session and SessionTemplate resources.
 
 <aside class="notice">
-Remember — with the exception of this resource and the documentation, all resources require authentication.
+Older authentication methods currently still work with SlipStream
+servers but are deprecated.  Information on the older methods can be
+found in the "Deprecated Resources" section. 
+</aside>
+
+## SessionTemplate (CIMI)
+
+```shell
+# List all of the configured authentication mechanisms
+#
+curl https://nuv.la/api/session-template
+```
+
+```shell
+# You can get more details by using the "describe" action.
+#
+curl https://nuv.la/api/session-template/internal/describe
+```
+
+```json
+{
+  "description" : {
+    "displayName" : "Description",
+    "category" : "common",
+    "description" : "short, human-readable description",
+    "type" : "string",
+    "mandatory" : false,
+    "readOnly" : false,
+    "order" : 3
+  },
+  "properties" : {
+    "displayName" : "Properties",
+    "category" : "common",
+    "description" : "user-defined properties",
+    "type" : "map",
+    "mandatory" : false,
+    "readOnly" : false,
+    "order" : 6
+  },
+  "group" : {
+    "displayName" : "Authentication Group",
+    "category" : "general",
+    "description" : "optional label to group authentication methods",
+    "type" : "string",
+    "mandatory" : false,
+    "readOnly" : false,
+    "order" : 2
+  },
+
+  "more" : "values..."
+}
+```
+
+SlipStream supports a wide variety of methods for authenticating with
+the server.  The SessionTemplate resources represent the supported
+authentication methods for a given SlipStream server.
+
+The SlipStream **administrator** defines the available methods by
+creating SessionTemplate resources on the server via the standard CIMI
+"add" pattern (and in most cases an associated Configuration
+resource). These can also be "edited" and "deleted" by the SlipStream
+administrator.
+
+**All users (including anonymous users)** can list the
+SessionTemplates to discover supported authentication methods. These
+resources also support a "describe" action that provides a document
+with a detail description of authentication parameters.
+
+One SessionTemplate that will always exist on the server is the
+"session-template/internal" resource.  This allows logging into the
+server with a username and password pair stored in SlipStream's
+internal database. 
+
+## Session (CIMI)
+
+> An example document (named `create.json` below) for authenticating
+  via the "internal" (username and password) method.
+
+```json
+{
+  "sessionTemplate" : {
+                        "href" : "session-template/internal",
+                        "username" : "your-username",
+                        "password" : "your-password"
+                      }
+}
+```
+
+```shell
+# Be sure to get the URL from the cloud entry point!
+# The cookie options allow for automatic management of the
+# SlipStream authentication token (cookie).
+curl https://nuv.la/api/session \
+     -X POST \
+     -H 'content-type: application/json' \
+     -d @create.json \
+     --cookie-jar ~/cookies -b ~/cookies -sS
+```
+
+> On a successful authentication, the above command will return a 201
+  (created) status, a "set-cookie" header, and a "location" header
+  with the created session.
+
+Users (clients) authenticate with the SlipStream server by referencing
+a SessionTemplate resource (to identify the authentication method),
+providing values for the associated parameters, and then creating a
+Session resource via the CIMI "add" pattern.  A successful
+authentication attempt will return a token (as an HTTP cookie) that
+must be used in subsequent interactions with the SlipStream server.
+
+The detailed process consists of the following steps:
+
+1. Browse the SessionTemplate resources to find the authentication
+   method that you want to use.  Unless you have a browser-based
+   client, you will probably want to use either "internal" (username
+   and password) or "api-key" (API key and secret).
+
+2. Prepare a "create" JSON document that references the
+   SessionTemplate you have chosen and provides the corresponding
+   parameters (e.g. username and password for "internal").
+
+3. Post the "create" document to the SessionCollection URL. The
+   correct URL can be determined from the CEP information.
+
+4. On a successful authentication request, a token will be returned
+   allowing access to the SlipStream resources as the authenticated
+   user.  **For convenience, this token is returned as an HTTP
+   cookie.**
+
+The authentication token (cookie) must be used in all subsequent
+requests to the SlipStream server.  The token (cookie) has a **limited
+lifetime** and you must re-authenticate with the server when the token
+expires.
+
+<aside class="notice">
+To facilitate use of the API from browsers (i.e. javascript), the
+session resources also support bodies with a media type of
+"application/x-www-form-urlencoded".  When using this media type,
+encode only the value of the "sessionTemplate" key in the form.
+</aside>
+
+<aside class="notice">
+The search feature of Session resources will only return the Session
+resource associated with your current session (or none at all if your
+are not authenticated).  This can be used to determine whether or not
+you have an active session.
+</aside>
+
+# Service Catalog 
+
+The Service Catalog consists of several resources that allow users to
+view (and to select) the offers provided by the underlying cloud
+service providers.  The SlipStream deployment process selects offers
+from the Service Catalog that match the resource requirements of a
+particular application, presents the alternatives to the users, and,
+after user selection, provisions the corresponding cloud resources.
+
+## Service Offer (CIMI)
+
+Provides detailed capability information for each available cloud.
+
+### Get the Service Offer
+
+#### HTTP REQUEST
+
+`GET https://nuv.la/api/service-offer`
+
+```shell
+curl -X GET -H "Content-Type: application/json" https://nuv.la/api/service-offer -b cookie-user.txt -D -
+```
+
+> The above command returns a json response:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Server: Aleph/0.4.0
+Connection: Keep-Alive
+Date: Tue, 09 Feb 2016 18:04:39 GMT
+content-length: 20147
+
+{
+  "acl" : {
+    "owner" : {
+      "principal" : "ADMIN",
+      "type" : "ROLE"
+    },
+    "rules" : [ {
+      "principal" : "USER",
+      "type" : "ROLE",
+      "right" : "MODIFY"
+    } ]
+  },
+  "resourceURI" : "http://sixsq.com/slipstream/1/ServiceOfferCollection",
+  "id" : "service-offer",
+  "operations" : [ {
+    "rel" : "http://sixsq.com/slipstream/1/Action/add",
+    "href" : "service-offer"
+  } ],
+  "count" : 12,
+  "serviceOffers" : [ {
+    "connector" : {
+      "href" : "t-systems-de1-indigo-1"
+    },
+    "http://schema.a.b.c/suppliers.catalog" : "",
+    "http://schema.a.b.c/single.vm.storage.volatile" : "",
+    "http://schema.a.b.c/single.vm.storage.persistent" : "",
+    "http://schema.a.b.c/single.vm.max.ram" : "",
+    "http://schema.a.b.c/overall.capacity.cpu" : "",
+    "http://schema.a.b.c/price.charging.period" : "",
+    "http://schema.a.b.c/price.ram.per.hour" : "",
+    "updated" : "2016-02-09T18:00:22.387Z",
+    "created" : "2016-02-09T18:00:22.387Z",
+    "http://schema.a.b.c/price.charging.unit" : "",
+    "http://schema.a.b.c/overall.capacity.storage" : "",
+    "http://schema.a.b.c/location" : "",
+    "id" : "service-info/023285da-7be4-4931-90f5-c50baadc58a4",
+    "http://schema.a.b.c/price.cpu.per.hour" : "",
+    "http://schema.a.b.c/single.vm.min.cpu" : "",
+    "acl" : {
+      "owner" : {
+        "principal" : "ADMIN",
+        "type" : "ROLE"
+      },
+      "rules" : [ {
+        "principal" : "USER",
+        "type" : "ROLE",
+        "right" : "VIEW"
+      } ]
+    },
+    "resourceURI" : "http://sixsq.com/slipstream/1/ServiceInfo",
+    "http://schema.a.b.c/price.io" : "",
+    "http://schema.a.b.c/overall.capacity.ram" : "",
+    "http://schema.a.b.c/single.vm.max.cpu" : "",
+    "http://schema.a.b.c/single.vm.min.ram" : "",
+    "http://schema.a.b.c/price.storage.per.hour" : ""
+  }
+  ...
+```
+
+### Create a Service Offer
+
+#### HTTP REQUEST
+
+`POST https://nuv.la/api/service-offer`
+
+#### Body Parameters
+
+Parameter   | Required  | Description
+------------| --------  | -----------
+connector.href        | true      | The cloud name
+uri of an attribute 1 | false     | Value of the attribute for this cloud
+uri of an attribute 2 | false     | Value of the attribute for this cloud
+... | false     | ...
+
+### Delete a Service Offer
+
+#### HTTP REQUEST
+
+`DELETE https://nuv.la/api/service-offer`
+
+## Service Attribute (CIMI)
+
+This resource represents the meta-information of each attribute of a Service Offer instance (see Service Offer resource).
+
+### List Service Attribute resource
+
+This returns the collection of Service Attribute resources.
+
+#### HTTP Request
+
+`GET https://nuv.la/api/service-attribute`
+
+```shell
+curl https://nuv.la/api/service-attribute -b cookie-user.txt -D -
+```
+
+> The above command returns a json structured like this (truncated for readability):
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Server: Aleph/0.4.0
+Connection: Keep-Alive
+Date: Tue, 09 Feb 2016 12:32:38 GMT
+content-length: 22221
+
+{
+  "acl" : {
+    "owner" : {
+      "principal" : "ADMIN",
+      "type" : "ROLE"
+    },
+    "rules" : [ {
+      "principal" : "USER",
+      "type" : "ROLE",
+      "right" : "MODIFY"
+    } ]
+  },
+  "resourceURI" : "http://sixsq.com/slipstream/1/ServiceAttributeCollection",
+  "id" : "service-attribute",
+  "operations" : [ {
+    "rel" : "http://sixsq.com/slipstream/1/Action/add",
+    "href" : "service-attribute"
+  } ],
+  "count" : 31,
+  "service-attribute" : [ {
+    "minor-version" : 0,
+    "updated" : "2016-02-09T12:11:27.735Z",
+    "major-version" : 1,
+    "type" : "String",
+    "created" : "2016-02-09T12:11:27.735Z",
+    "en" : {
+      "name" : "price.storage.per.hour",
+      "categories" : [ "Price" ],
+      "description" : "Nature: the price for use of a unit (e.g. 1 GB) of storage per hour; Value: the price in euros, e.g. \u20AC0.0005; Explanation: note that is possible that storage is either associated with a particular VM or as a generally-available resource"
+    },
+    "id" : "attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0",
+    "acl" : {
+      "owner" : {
+        "principal" : "ADMIN",
+        "type" : "ROLE"
+      }
+    },
+    "operations" : [ {
+      "rel" : "http://sixsq.com/slipstream/1/Action/edit",
+      "href" : "attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0"
+    }, {
+      "rel" : "http://sixsq.com/slipstream/1/Action/delete",
+      "href" : "attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0"
+    } ],
+    "resourceURI" : "http://sixsq.com/slipstream/1/Attribute",
+    "uri" : "http://schema.hnx.helix-nebula.eu/price.storage.per.hour",
+    "patch-version" : 0,
+    "normative" : true
+  },
+  ...
+```
+
+### Create an Service Attribute resource
+
+#### HTTP REQUEST
+
+`POST https://nuv.la/api/service-attribute`
+
+#### Body Parameters
+
+Parameter   | Required  | Description
+------------| --------  | -----------
+major-version   | true      | Major version number of the schema
+minor-version   | true      | Minor version number of the schema
+patch-version   | true      | Patch version number of the schema
+normative       | true      |
+type            | true      | Type of the data: String, ...
+uri             | true      | URI of this schema
+en.name         | true      | Name of this attribute
+en.categories   | true      | List of categories
+en.description  | true      | Description of this attribute
+
+```shell
+curl -X POST -H "Content-Type: application/json" https://nuv.la/api/service-attribute -d "{\"major-version\": 1, \"minor-version\": 0, \"patch-version\": 0, \"normative\": true, \"type\": \"String\", \"uri\": \"http://schema.hnx.helix-nebula.eu/hyper.price.per.hour\", \"en\": {\"name\": \"hyper.price.per.hour\",\"categories\": [\"Price\"],\"description\": \"Nature: the price for a Hyper type instance with 16 CPU and 128 GB RAM\"}}" -b cookie-user.txt -D -
+```
+
+> The above command returns a json response:
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+Location: service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049
+Server: Aleph/0.4.0
+Connection: Keep-Alive
+Date: Tue, 09 Feb 2016 12:55:09 GMT
+content-length: 160
+
+{
+  "status" : 201,
+  "message" : "created service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049",
+  "resource-id" : "service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049"
+}
+```
+
+### Delete an Service Attribute resource
+
+#### HTTP REQUEST
+
+`DELETE https://nuv.la/api/service-attribute/<id>`
+
+```shell
+curl -X DELETE -H "Content-Type: application/json" https://nuv.la/api/service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049 -b cookie-user.txt -D -
+```
+
+> The above command returns a json response:
+
+```http
+HTTP/1.1 204 No Content
+Content-Type: application/json
+Server: Aleph/0.4.0
+Connection: Keep-Alive
+Date: Tue, 09 Feb 2016 13:03:31 GMT
+content-length: 160
+```
+
+# Monitoring
+
+## Event (CIMI)
+
+The resources under `/api` namespace do not support basic authentication and require an authentication cookie.
+
+<aside class="notice">
+From
+<a target="_blank" href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">
+CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13</a>
+<br />
+<br />
+A resource that represents the occurrence of an event within the managed infrastructure.
+<br/><br/>
+Some examples of Events may be:
+
+<ul>
+<li>Machine X has been rebooted by guest OS</li>
+<li>Machine X is not responding to platform services.</li>
+<li>A new vCPU has been added to machine X following defined elasticity rules.</li>
+</ul>
+</aside>
+
+This resource can be created for example to log for a given run the following events:
+
+* State transition
+* Termination (manual)
+* First abort call (with reason)
+* Scaling up or down
+
+<aside class="warning">
+An event can <strong>not</strong> be updated, only deleted.
 </aside>
 
 
-## Basic authentication (deprecated)
+### List all Events
 
 ```shell
-curl https://nuv.la?media=xml -u <user>:<password>
+curl https://nuv.la/api/event/ -b cookie-user.txt -D -
 ```
-> or
+
+> The above command returns json structured like this:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 2284
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:15:48 GMT
+
+{
+  "events" : [ {
+    "content" : {
+      "resource" : {
+        "href" : "Run/45614147-aed1-4a24-889d-6365b0b1f2cd"
+      },
+      "state" : "Started"
+    },
+    "updated" : "2015-03-19T09:39:38.238Z",
+    "type" : "state",
+    "created" : "2015-03-19T09:39:38.238Z",
+    "id" : "Event/0d78db78-1b98-4bd1-ba14-bf378da68a66",
+    "severity" : "medium",
+    "acl" : {
+      "owner" : {
+        "type" : "USER",
+        "principal" : "joe"
+      },
+      "rules" : [ {
+        "type" : "ROLE",
+        "principal" : "ANON",
+        "right" : "ALL"
+      } ]
+    },
+    "operations" : [ {
+      "rel" : "http://sixsq.com/slipstream/1/Action/delete",
+      "href" : "Event/0d78db78-1b98-4bd1-ba14-bf378da68a66"
+    } ],
+    "resourceURI" : "http://sixsq.com/slipstream/1/Event",
+    "timestamp" : "2015-01-10T08:20:00.0Z"
+  } ],
+  "operations" : [ {
+    "rel" : "http://sixsq.com/slipstream/1/Action/add",
+    "href" : "Event"
+  } ],
+  "acl" : {
+    "rules" : [ {
+      "type" : "ROLE",
+      "right" : "ALL",
+      "principal" : "ANON"
+    } ],
+    "owner" : {
+      "type" : "ROLE",
+      "principal" : "ADMIN"
+    }
+  },
+  "resourceURI" : "http://sixsq.com/slipstream/1/EventCollection",
+  "id" : "Event",
+  "count" : 1
+}
+```
+
+Lists all events accessible by the authenticated user. A user has the right to see an event if she is the owner, or is a super user.
+
+#### HTTP Request
+
+`GET https://nuv.la/api/event/`
+
+### Create an Event
 
 ```shell
-curl https://<user>:<password>@slipstream.sixsq.com?media=xml
+curl https://nuv.la/api/event -d "{ \"acl\": {\"owner\": {\"type\": \"USER\", \"principal\": \"joe\"},    \"rules\": [{\"type\": \"ROLE\", \"prinipal\": \"ANON\", \"right\": \"ALL\"}]},    \"id\": \"123\",    \"created\" :  \"2015-01-16T08:20:00.0Z\",    \"updated\" : \"2015-01-16T08:20:00.0Z\",    \"resourceURI\" : \"http://slipstream.sixsq.com/ssclj/1/Event\",    \"timestamp\": \"2015-01-10T08:20:00.0Z\",    \"content\" :  { \"resource\":  {\"href\": \"Run/45614147-aed1-4a24-889d-6365b0b1f2cd\"},    \"state\" : \"Started\" } ,    \"type\": \"state\",    \"severity\": \"medium\"}" -X POST -H "Content-Type: application/json" -b cookie-user.txt -D -
 ```
 
-```xml
-<welcome>
-   <modules>
-      <item resourceUri="module/Mebster/48" category="Project" version="48" name="Mebster">
-         <authz owner="meb" ownerGet="true" ownerPut="true" ownerPost="false" ownerDelete="true" ownerCreateChildren="true" groupGet="false" groupPut="false" groupPost="false" groupDelete="false" groupCreateChildren="false" publicGet="false" publicPut="false" publicPost="false" publicDelete="false" publicCreateChildren="false" inheritedGroupMembers="true">
-            <groupMembers class="java.util.ArrayList"/>
-         </authz>
-      </item>
-      <item resourceUri="module/SlipStream/280" category="Project" description="SlipStream dog fooding :-)" version="280" name="SlipStream">
-         <authz owner="sixsq_dev" ownerGet="true" ownerPut="true" ownerPost="false" ownerDelete="true" ownerCreateChildren="true" groupGet="true" groupPut="true" groupPost="false" groupDelete="false" groupCreateChildren="false" publicGet="false" publicPut="false" publicPost="false" publicDelete="false" publicCreateChildren="false" inheritedGroupMembers="false">
-            <groupMembers class="java.util.ArrayList">
-               <string>lionel</string>
-               <string>konstan</string>
-               <string>loomis</string>
-               <string>meb</string>
-               <string>rob</string>
-               <string>sebastien.fievet</string>
-            </groupMembers>
-         </authz>
-      </item>
+> The above command returns a json structured like this:
+
+```http
+HTTP/1.1 201 Created
+Location: Event/257cf1bd-1397-4296-8124-bb2213425b6e
+Content-Type: application/json
+Content-Length: 152
+Server: http-kit
+Date: Thu, 19 Mar 2015 12:47:38 GMT
+
+{
+  "status" : 201,
+  "message" : "created Event/257cf1bd-1397-4296-8124-bb2213425b6e",
+  "resource-id" : "Event/257cf1bd-1397-4296-8124-bb2213425b6e"
+}
+```
+
+> In case of error (e.g invalid value for `severity`), the following json is returned (note that the message details the origin of the problem):
+
+```http
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
+Content-Length: 232
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:48:11 GMT
+
+{
+  "status" : 400,
+  "message" : "resource does not satisfy defined schema: {:acl {:rules [{:prinicpal disallowed-key, :principal missing-required-key}]}, :severity (not (#{\"low\" \"high\" \"medium\" \"critical\"} \"urgent\"))}"
+}
+```
+
+Create an event that contains information (mainly timestamp and state) related to a target resource.
+
+#### HTTP Request
+
+`POST https://nuv.la/api/event`
+
+#### Body Parameters
+
+Parameter   | Required  | Description
+------------| --------  | -----------
+timestamp   | true      | The timestamp (GMT time) of the event (not to be confused with created and updated timestamps of the resource representing the event)
+content     | true      | Structure containing the resource reference (i.e the **target** of this event) and its state
+type        | true      | Accepted values: `state` and `alarm`
+severity    | true      | Accepted values: `critical`, `high`, `medium` and `low`
+
+### Get an Event
+
+```shell
+curl https://nuv.la/api/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -b cookie-user.txt -D -
+```
+
+> The above command returns a json structured like this:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 869
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:17:06 GMT
+
+{
+  "content" : {
+    "resource" : {
+      "href" : "Run/45614147-aed1-4a24-889d-6365b0b1f2cd"
+    },
+    "state" : "Started"
+  },
+  "updated" : "2015-03-19T12:46:16.766Z",
+  "type" : "state",
+  "created" : "2015-03-19T12:46:16.766Z",
+  "id" : "Event/4605ee06-ccda-48f5-a481-23c6ab296b0d",
+  "severity" : "medium",
+  "acl" : {
+    "owner" : {
+      "type" : "USER",
+      "principal" : "joe"
+    },
+    "rules" : [ {
+      "type" : "ROLE",
+      "principal" : "ANON",
+      "right" : "ALL"
+    } ]
+  },
+  "operations" : [ {
+    "rel" : "http://sixsq.com/slipstream/1/Action/delete",
+    "href" : "Event/4605ee06-ccda-48f5-a481-23c6ab296b0d"
+  } ],
+  "resourceURI" : "http://sixsq.com/slipstream/1/Event",
+  "timestamp" : "2015-01-10T08:20:00.0Z"
+}
+```
+
+Get a specific event.
+
+#### HTTP Request
+
+`GET https://nuv.la/api/event/<event-uuid>`
+
+### Delete an Event
+
+```shell
+curl -X DELETE  https://nuv.la/api/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -b cookie-user.txt -D -
+```
+
+> The above command returns a json structured like this:
+
+```http
+HTTP/1.1 204 No Content
+Content-Type: application/json
+Content-Length: 152
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:26:27 GMT
+```
+
+> When providing an invalid event-uuid, here is the response:
+
+```http
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+Content-Length: 102
+Server: http-kit
+Date: Thu, 19 Mar 2015 13:35:57 GMT
+
+{
+  "status" : 404,
+  "message" : "Event/wrong-uuid not found",
+  "resource-id" : "Event/wrong-uuid"
+}
+```
+
+Delete a specific (the event-uuid is known) event.
+
+#### HTTP Request
+
+`DELETE https://nuv.la/api/event/<event-uuid>`
+
+## Usage (CIMI)
+
+Represents the summary of cloud usage records for a given user and cloud, on a specific period.
+
+### List all Usage
+
+The collection of usage records (most recent are listed first) is returned filtered with the provided authentication.
+(Only resources for the given user are returned.)
+
+#### HTTP Request
+
+`GET https://nuv.la/api/usage`
+
+```shell
+curl https://nuv.la/api/usage -b cookie-user.txt -D -
+```
+
+> The above command returns a json structured like this:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 1511
+Server: http-kit
+Date: Mon, 22 Jun 2015 08:49:33 GMT
+
+{
+  "usages" : [ {
+    "usage" : {
+      "DISK" : {
+        "unit_minutes" : 86400.0
+      }
+    },
+    "end_timestamp" : "2017-09-26T00:00:00.000Z",
+    "start_timestamp" : "2017-09-25T00:00:00.000Z",
+    "cloud" : "cloud-8",
+    "user" : "user-1",
+    "acl" : {
+      "owner" : {
+        "type" : "USER",
+        "principal" : "user-1"
+      },
+      "rules" : [ {
+        "type" : "USER",
+        "principal" : "user-1",
+        "right" : "ALL"
+      }, {
+        "type" : "ROLE",
+        "principal" : "cloud-8",
+        "right" : "ALL"
+      } ]
+    },
+    "id" : "Usage/056169bf-ac20-47dd-a7f9-e6b835265a01"
+  }, {
+    "usage" : {
+      "vm" : {
+        "unit_minutes" : 1192.0
+      }
+    },
+    "end_timestamp" : "2017-09-26T00:00:00.000Z",
+    "start_timestamp" : "2017-09-25T00:00:00.000Z",
+    "cloud" : "cloud-5",
+    "user" : "user-1",
+    "acl" : {
+      "owner" : {
+        "type" : "USER",
+        "principal" : "user-1"
+      },
+      "rules" : [ {
+        "type" : "USER",
+        "principal" : "user-1",
+        "right" : "ALL"
+      }, {
+        "type" : "ROLE",
+        "principal" : "cloud-5",
+        "right" : "ALL"
+      } ]
+    },
+    "id" : "Usage/baf5ce10-9cee-4407-9860-61c2da0c0b13"
+  } ],
+  "acl" : {
+    "rules" : [ {
+      "type" : "ROLE",
+      "right" : "VIEW",
+      "principal" : "ANON"
+    } ],
+    "owner" : {
+      "type" : "ROLE",
+      "principal" : "ADMIN"
+    }
+  },
+  "resourceURI" : "http://sixsq.com/slipstream/1/UsageCollection",
+  "id" : "Usage",
+  "count" : 2
+}
+```
+
+### Filtering Usage
+
+<aside class="notice">
+
+From <a target="_blank" href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">
+CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections</a>
+<br />
+<br />
+If retrieving the representation of a Collection, Consumers may include the $filter query parameter to
+reduce the number of entries of the Collection that are returned based on the data within the entries of the
+Collection. Providers shall interpret and process the $filter query parameter as described in this
+section. The $filter parameter shall be of the form:
+?$filter=expression
+</aside>
+
+#### Filtering on string comparison
+
+To retrieve the usage records for a given cloud, the CIMI filter can be written
+
+`$filter=cloud='cloud-name'`
+
+Note, however, that such a filter contains characters that must be **URL-encoded**, and the HTTP request will look like this:
+
+`GET https://nuv.la/api/usage?%24filter=cloud%3D%27cloud-name%27`
+
+#### Filtering on date comparison (equality)
+
+To retrieve the usage records for a specific date, the CIMI filter can be written
+
+`?$filter=start_timestamp=2015-06-22`
+
+Full URL with encoding:
+
+`GET https://nuv.la/api/usage?%24filter=start_timestamp%3D2015-06-22`
+
+#### Filtering on date comparison (before or after)
+
+To retrieve the usage records after a specific date, the CIMI filter can be written
+
+`?$filter=start_timestamp>2015-06-22`
+
+Full URL with encoding:
+
+`GET https://nuv.la/api/usage?%24filter=start_timestamp%3E2015-06-22`
+
+To filter usage records before a specific date, use **<** (URL-encoded as **%3C**) instead.
+
+#### Filtering with multiple conditions
+
+You can join conditons with **and** (logical and), or **or** (logical or).
+
+`?$filter=start_timestamp>2015-06-22 and cloud='cloud-name'`
+
+Full URL with encoding:
+
+`GET https://nuv.la/api/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27`
+
+These are only some examples, consult the CIMI documentation for an exhaustive list of possibilities.
+
+### Paginating Usage
+From [CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.2 Subsetting Collections](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
+
+<aside class="notice">
+If retrieving the representation of a Collection, Consumers may include query parameters to subset the
+number of entities of the Collection that are returned.
 ...
+This specification defined two query parameters that, if used, shall indicate the first and last ordinal
+positions of the entities within the Collection that are returned. The query parameters shall be of the form:
+￼?$first=number
+ ?$last=number
+</aside>
 
-```
+#### HTTP Request
 
-> The above command returns a header structured like this:
+`GET https://nuv.la/api/usage?%24first=2&%24last=2`
 
-Basic authentication can be tested using simple username/password pair.
+will return only the *second* usage record.
 
 # Module
 
@@ -954,678 +1933,6 @@ Parameter | Required | Description
 --------- | -------- | -----------
 user | true | User name to retrieve
 
-# Event
-
-The resources under `/api` namespace do not support basic authentication and require an authentication cookie.
-
-<aside class="notice">
-From
-<a target="_blank" href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">
-CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13</a>
-<br />
-<br />
-A resource that represents the occurrence of an event within the managed infrastructure.
-<br/><br/>
-Some examples of Events may be:
-
-<ul>
-<li>Machine X has been rebooted by guest OS</li>
-<li>Machine X is not responding to platform services.</li>
-<li>A new vCPU has been added to machine X following defined elasticity rules.</li>
-</ul>
-</aside>
-
-This resource can be created for example to log for a given run the following events:
-
-* State transition
-* Termination (manual)
-* First abort call (with reason)
-* Scaling up or down
-
-<aside class="warning">
-An event can <strong>not</strong> be updated, only deleted.
-</aside>
-
-
-## List all Events
-
-```shell
-curl https://nuv.la/api/event/ -b cookie-user.txt -D -
-```
-
-> The above command returns json structured like this:
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 2284
-Server: http-kit
-Date: Thu, 19 Mar 2015 13:15:48 GMT
-
-{
-  "events" : [ {
-    "content" : {
-      "resource" : {
-        "href" : "Run/45614147-aed1-4a24-889d-6365b0b1f2cd"
-      },
-      "state" : "Started"
-    },
-    "updated" : "2015-03-19T09:39:38.238Z",
-    "type" : "state",
-    "created" : "2015-03-19T09:39:38.238Z",
-    "id" : "Event/0d78db78-1b98-4bd1-ba14-bf378da68a66",
-    "severity" : "medium",
-    "acl" : {
-      "owner" : {
-        "type" : "USER",
-        "principal" : "joe"
-      },
-      "rules" : [ {
-        "type" : "ROLE",
-        "principal" : "ANON",
-        "right" : "ALL"
-      } ]
-    },
-    "operations" : [ {
-      "rel" : "http://sixsq.com/slipstream/1/Action/delete",
-      "href" : "Event/0d78db78-1b98-4bd1-ba14-bf378da68a66"
-    } ],
-    "resourceURI" : "http://sixsq.com/slipstream/1/Event",
-    "timestamp" : "2015-01-10T08:20:00.0Z"
-  } ],
-  "operations" : [ {
-    "rel" : "http://sixsq.com/slipstream/1/Action/add",
-    "href" : "Event"
-  } ],
-  "acl" : {
-    "rules" : [ {
-      "type" : "ROLE",
-      "right" : "ALL",
-      "principal" : "ANON"
-    } ],
-    "owner" : {
-      "type" : "ROLE",
-      "principal" : "ADMIN"
-    }
-  },
-  "resourceURI" : "http://sixsq.com/slipstream/1/EventCollection",
-  "id" : "Event",
-  "count" : 1
-}
-```
-
-Lists all events accessible by the authenticated user. A user has the right to see an event if she is the owner, or is a super user.
-
-### HTTP Request
-
-`GET https://nuv.la/api/event/`
-
-## Create an Event
-
-```shell
-curl https://nuv.la/api/event -d "{ \"acl\": {\"owner\": {\"type\": \"USER\", \"principal\": \"joe\"},    \"rules\": [{\"type\": \"ROLE\", \"prinipal\": \"ANON\", \"right\": \"ALL\"}]},    \"id\": \"123\",    \"created\" :  \"2015-01-16T08:20:00.0Z\",    \"updated\" : \"2015-01-16T08:20:00.0Z\",    \"resourceURI\" : \"http://slipstream.sixsq.com/ssclj/1/Event\",    \"timestamp\": \"2015-01-10T08:20:00.0Z\",    \"content\" :  { \"resource\":  {\"href\": \"Run/45614147-aed1-4a24-889d-6365b0b1f2cd\"},    \"state\" : \"Started\" } ,    \"type\": \"state\",    \"severity\": \"medium\"}" -X POST -H "Content-Type: application/json" -b cookie-user.txt -D -
-```
-
-> The above command returns a json structured like this:
-
-```http
-HTTP/1.1 201 Created
-Location: Event/257cf1bd-1397-4296-8124-bb2213425b6e
-Content-Type: application/json
-Content-Length: 152
-Server: http-kit
-Date: Thu, 19 Mar 2015 12:47:38 GMT
-
-{
-  "status" : 201,
-  "message" : "created Event/257cf1bd-1397-4296-8124-bb2213425b6e",
-  "resource-id" : "Event/257cf1bd-1397-4296-8124-bb2213425b6e"
-}
-```
-
-> In case of error (e.g invalid value for `severity`), the following json is returned (note that the message details the origin of the problem):
-
-```http
-HTTP/1.1 400 Bad Request
-Content-Type: application/json
-Content-Length: 232
-Server: http-kit
-Date: Thu, 19 Mar 2015 13:48:11 GMT
-
-{
-  "status" : 400,
-  "message" : "resource does not satisfy defined schema: {:acl {:rules [{:prinicpal disallowed-key, :principal missing-required-key}]}, :severity (not (#{\"low\" \"high\" \"medium\" \"critical\"} \"urgent\"))}"
-}
-```
-
-Create an event that contains information (mainly timestamp and state) related to a target resource.
-
-### HTTP Request
-
-`POST https://nuv.la/api/event`
-
-### Body Parameters
-
-Parameter   | Required  | Description
-------------| --------  | -----------
-timestamp   | true      | The timestamp (GMT time) of the event (not to be confused with created and updated timestamps of the resource representing the event)
-content     | true      | Structure containing the resource reference (i.e the **target** of this event) and its state
-type        | true      | Accepted values: `state` and `alarm`
-severity    | true      | Accepted values: `critical`, `high`, `medium` and `low`
-
-## Get an Event
-
-```shell
-curl https://nuv.la/api/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -b cookie-user.txt -D -
-```
-
-> The above command returns a json structured like this:
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 869
-Server: http-kit
-Date: Thu, 19 Mar 2015 13:17:06 GMT
-
-{
-  "content" : {
-    "resource" : {
-      "href" : "Run/45614147-aed1-4a24-889d-6365b0b1f2cd"
-    },
-    "state" : "Started"
-  },
-  "updated" : "2015-03-19T12:46:16.766Z",
-  "type" : "state",
-  "created" : "2015-03-19T12:46:16.766Z",
-  "id" : "Event/4605ee06-ccda-48f5-a481-23c6ab296b0d",
-  "severity" : "medium",
-  "acl" : {
-    "owner" : {
-      "type" : "USER",
-      "principal" : "joe"
-    },
-    "rules" : [ {
-      "type" : "ROLE",
-      "principal" : "ANON",
-      "right" : "ALL"
-    } ]
-  },
-  "operations" : [ {
-    "rel" : "http://sixsq.com/slipstream/1/Action/delete",
-    "href" : "Event/4605ee06-ccda-48f5-a481-23c6ab296b0d"
-  } ],
-  "resourceURI" : "http://sixsq.com/slipstream/1/Event",
-  "timestamp" : "2015-01-10T08:20:00.0Z"
-}
-```
-
-Get a specific event.
-
-### HTTP Request
-
-`GET https://nuv.la/api/event/<event-uuid>`
-
-## Delete an Event
-
-```shell
-curl -X DELETE  https://nuv.la/api/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -b cookie-user.txt -D -
-```
-
-> The above command returns a json structured like this:
-
-```http
-HTTP/1.1 204 No Content
-Content-Type: application/json
-Content-Length: 152
-Server: http-kit
-Date: Thu, 19 Mar 2015 13:26:27 GMT
-```
-
-> When providing an invalid event-uuid, here is the response:
-
-```http
-HTTP/1.1 404 Not Found
-Content-Type: application/json
-Content-Length: 102
-Server: http-kit
-Date: Thu, 19 Mar 2015 13:35:57 GMT
-
-{
-  "status" : 404,
-  "message" : "Event/wrong-uuid not found",
-  "resource-id" : "Event/wrong-uuid"
-}
-```
-
-Delete a specific (the event-uuid is known) event.
-
-### HTTP Request
-
-`DELETE https://nuv.la/api/event/<event-uuid>`
-
-
-# Usage
-
-Represents the summary of cloud usage records for a given user and cloud, on a specific period.
-
-## List all Usage
-
-The collection of usage records (most recent are listed first) is returned filtered with the provided authentication.
-(Only resources for the given user are returned.)
-
-### HTTP Request
-
-`GET https://nuv.la/api/usage`
-
-```shell
-curl https://nuv.la/api/usage -b cookie-user.txt -D -
-```
-
-> The above command returns a json structured like this:
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 1511
-Server: http-kit
-Date: Mon, 22 Jun 2015 08:49:33 GMT
-
-{
-  "usages" : [ {
-    "usage" : {
-      "DISK" : {
-        "unit_minutes" : 86400.0
-      }
-    },
-    "end_timestamp" : "2017-09-26T00:00:00.000Z",
-    "start_timestamp" : "2017-09-25T00:00:00.000Z",
-    "cloud" : "cloud-8",
-    "user" : "user-1",
-    "acl" : {
-      "owner" : {
-        "type" : "USER",
-        "principal" : "user-1"
-      },
-      "rules" : [ {
-        "type" : "USER",
-        "principal" : "user-1",
-        "right" : "ALL"
-      }, {
-        "type" : "ROLE",
-        "principal" : "cloud-8",
-        "right" : "ALL"
-      } ]
-    },
-    "id" : "Usage/056169bf-ac20-47dd-a7f9-e6b835265a01"
-  }, {
-    "usage" : {
-      "vm" : {
-        "unit_minutes" : 1192.0
-      }
-    },
-    "end_timestamp" : "2017-09-26T00:00:00.000Z",
-    "start_timestamp" : "2017-09-25T00:00:00.000Z",
-    "cloud" : "cloud-5",
-    "user" : "user-1",
-    "acl" : {
-      "owner" : {
-        "type" : "USER",
-        "principal" : "user-1"
-      },
-      "rules" : [ {
-        "type" : "USER",
-        "principal" : "user-1",
-        "right" : "ALL"
-      }, {
-        "type" : "ROLE",
-        "principal" : "cloud-5",
-        "right" : "ALL"
-      } ]
-    },
-    "id" : "Usage/baf5ce10-9cee-4407-9860-61c2da0c0b13"
-  } ],
-  "acl" : {
-    "rules" : [ {
-      "type" : "ROLE",
-      "right" : "VIEW",
-      "principal" : "ANON"
-    } ],
-    "owner" : {
-      "type" : "ROLE",
-      "principal" : "ADMIN"
-    }
-  },
-  "resourceURI" : "http://sixsq.com/slipstream/1/UsageCollection",
-  "id" : "Usage",
-  "count" : 2
-}
-```
-
-## Filtering Usage
-
-<aside class="notice">
-
-From <a target="_blank" href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">
-CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections</a>
-<br />
-<br />
-If retrieving the representation of a Collection, Consumers may include the $filter query parameter to
-reduce the number of entries of the Collection that are returned based on the data within the entries of the
-Collection. Providers shall interpret and process the $filter query parameter as described in this
-section. The $filter parameter shall be of the form:
-?$filter=expression
-</aside>
-
-### Filtering on string comparison
-
-To retrieve the usage records for a given cloud, the CIMI filter can be written
-
-`$filter=cloud='cloud-name'`
-
-Note, however, that such a filter contains characters that must be **URL-encoded**, and the HTTP request will look like this:
-
-`GET https://nuv.la/api/usage?%24filter=cloud%3D%27cloud-name%27`
-
-### Filtering on date comparison (equality)
-
-To retrieve the usage records for a specific date, the CIMI filter can be written
-
-`?$filter=start_timestamp=2015-06-22`
-
-Full URL with encoding:
-
-`GET https://nuv.la/api/usage?%24filter=start_timestamp%3D2015-06-22`
-
-### Filtering on date comparison (before or after)
-
-To retrieve the usage records after a specific date, the CIMI filter can be written
-
-`?$filter=start_timestamp>2015-06-22`
-
-Full URL with encoding:
-
-`GET https://nuv.la/api/usage?%24filter=start_timestamp%3E2015-06-22`
-
-To filter usage records before a specific date, use **<** (URL-encoded as **%3C**) instead.
-
-### Filtering with multiple conditions
-
-You can join conditons with **and** (logical and), or **or** (logical or).
-
-`?$filter=start_timestamp>2015-06-22 and cloud='cloud-name'`
-
-Full URL with encoding:
-
-`GET https://nuv.la/api/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27`
-
-These are only some examples, consult the CIMI documentation for an exhaustive list of possibilities.
-
-## Paginating Usage
-From [CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.2 Subsetting Collections](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
-
-<aside class="notice">
-If retrieving the representation of a Collection, Consumers may include query parameters to subset the
-number of entities of the Collection that are returned.
-...
-This specification defined two query parameters that, if used, shall indicate the first and last ordinal
-positions of the entities within the Collection that are returned. The query parameters shall be of the form:
-￼?$first=number
- ?$last=number
-</aside>
-
-### HTTP Request
-
-`GET https://nuv.la/api/usage?%24first=2&%24last=2`
-
-will return only the *second* usage record.
-
-# Service Attribute
-
-This resource represents the meta-information of each attribute of a Service Offer instance (see Service Offer resource).
-
-## List Service Attribute resource
-
-This returns the collection of Service Attribute resources.
-
-### HTTP Request
-
-`GET https://nuv.la/api/service-attribute`
-
-```shell
-curl https://nuv.la/api/service-attribute -b cookie-user.txt -D -
-```
-
-> The above command returns a json structured like this (truncated for readability):
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-Server: Aleph/0.4.0
-Connection: Keep-Alive
-Date: Tue, 09 Feb 2016 12:32:38 GMT
-content-length: 22221
-
-{
-  "acl" : {
-    "owner" : {
-      "principal" : "ADMIN",
-      "type" : "ROLE"
-    },
-    "rules" : [ {
-      "principal" : "USER",
-      "type" : "ROLE",
-      "right" : "MODIFY"
-    } ]
-  },
-  "resourceURI" : "http://sixsq.com/slipstream/1/ServiceAttributeCollection",
-  "id" : "service-attribute",
-  "operations" : [ {
-    "rel" : "http://sixsq.com/slipstream/1/Action/add",
-    "href" : "service-attribute"
-  } ],
-  "count" : 31,
-  "service-attribute" : [ {
-    "minor-version" : 0,
-    "updated" : "2016-02-09T12:11:27.735Z",
-    "major-version" : 1,
-    "type" : "String",
-    "created" : "2016-02-09T12:11:27.735Z",
-    "en" : {
-      "name" : "price.storage.per.hour",
-      "categories" : [ "Price" ],
-      "description" : "Nature: the price for use of a unit (e.g. 1 GB) of storage per hour; Value: the price in euros, e.g. \u20AC0.0005; Explanation: note that is possible that storage is either associated with a particular VM or as a generally-available resource"
-    },
-    "id" : "attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0",
-    "acl" : {
-      "owner" : {
-        "principal" : "ADMIN",
-        "type" : "ROLE"
-      }
-    },
-    "operations" : [ {
-      "rel" : "http://sixsq.com/slipstream/1/Action/edit",
-      "href" : "attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0"
-    }, {
-      "rel" : "http://sixsq.com/slipstream/1/Action/delete",
-      "href" : "attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0"
-    } ],
-    "resourceURI" : "http://sixsq.com/slipstream/1/Attribute",
-    "uri" : "http://schema.hnx.helix-nebula.eu/price.storage.per.hour",
-    "patch-version" : 0,
-    "normative" : true
-  },
-  ...
-```
-
-## Create an Service Attribute resource
-
-### HTTP REQUEST
-
-`POST https://nuv.la/api/service-attribute`
-
-### Body Parameters
-
-Parameter   | Required  | Description
-------------| --------  | -----------
-major-version   | true      | Major version number of the schema
-minor-version   | true      | Minor version number of the schema
-patch-version   | true      | Patch version number of the schema
-normative       | true      |
-type            | true      | Type of the data: String, ...
-uri             | true      | URI of this schema
-en.name         | true      | Name of this attribute
-en.categories   | true      | List of categories
-en.description  | true      | Description of this attribute
-
-```shell
-curl -X POST -H "Content-Type: application/json" https://nuv.la/api/service-attribute -d "{\"major-version\": 1, \"minor-version\": 0, \"patch-version\": 0, \"normative\": true, \"type\": \"String\", \"uri\": \"http://schema.hnx.helix-nebula.eu/hyper.price.per.hour\", \"en\": {\"name\": \"hyper.price.per.hour\",\"categories\": [\"Price\"],\"description\": \"Nature: the price for a Hyper type instance with 16 CPU and 128 GB RAM\"}}" -b cookie-user.txt -D -
-```
-
-> The above command returns a json response:
-
-```http
-HTTP/1.1 201 Created
-Content-Type: application/json
-Location: service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049
-Server: Aleph/0.4.0
-Connection: Keep-Alive
-Date: Tue, 09 Feb 2016 12:55:09 GMT
-content-length: 160
-
-{
-  "status" : 201,
-  "message" : "created service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049",
-  "resource-id" : "service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049"
-}
-```
-
-## Delete an Service Attribute resource
-
-### HTTP REQUEST
-
-`DELETE https://nuv.la/api/service-attribute/<id>`
-
-```shell
-curl -X DELETE -H "Content-Type: application/json" https://nuv.la/api/service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049 -b cookie-user.txt -D -
-```
-
-> The above command returns a json response:
-
-```http
-HTTP/1.1 204 No Content
-Content-Type: application/json
-Server: Aleph/0.4.0
-Connection: Keep-Alive
-Date: Tue, 09 Feb 2016 13:03:31 GMT
-content-length: 160
-```
-
-# Service Offer
-
-Provides detailed capability information for each available cloud.
-
-## Get the Service Offer
-
-### HTTP REQUEST
-
-`GET https://nuv.la/api/service-offer`
-
-```shell
-curl -X GET -H "Content-Type: application/json" https://nuv.la/api/service-offer -b cookie-user.txt -D -
-```
-
-> The above command returns a json response:
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-Server: Aleph/0.4.0
-Connection: Keep-Alive
-Date: Tue, 09 Feb 2016 18:04:39 GMT
-content-length: 20147
-
-{
-  "acl" : {
-    "owner" : {
-      "principal" : "ADMIN",
-      "type" : "ROLE"
-    },
-    "rules" : [ {
-      "principal" : "USER",
-      "type" : "ROLE",
-      "right" : "MODIFY"
-    } ]
-  },
-  "resourceURI" : "http://sixsq.com/slipstream/1/ServiceOfferCollection",
-  "id" : "service-offer",
-  "operations" : [ {
-    "rel" : "http://sixsq.com/slipstream/1/Action/add",
-    "href" : "service-offer"
-  } ],
-  "count" : 12,
-  "serviceOffers" : [ {
-    "connector" : {
-      "href" : "t-systems-de1-indigo-1"
-    },
-    "http://schema.a.b.c/suppliers.catalog" : "",
-    "http://schema.a.b.c/single.vm.storage.volatile" : "",
-    "http://schema.a.b.c/single.vm.storage.persistent" : "",
-    "http://schema.a.b.c/single.vm.max.ram" : "",
-    "http://schema.a.b.c/overall.capacity.cpu" : "",
-    "http://schema.a.b.c/price.charging.period" : "",
-    "http://schema.a.b.c/price.ram.per.hour" : "",
-    "updated" : "2016-02-09T18:00:22.387Z",
-    "created" : "2016-02-09T18:00:22.387Z",
-    "http://schema.a.b.c/price.charging.unit" : "",
-    "http://schema.a.b.c/overall.capacity.storage" : "",
-    "http://schema.a.b.c/location" : "",
-    "id" : "service-info/023285da-7be4-4931-90f5-c50baadc58a4",
-    "http://schema.a.b.c/price.cpu.per.hour" : "",
-    "http://schema.a.b.c/single.vm.min.cpu" : "",
-    "acl" : {
-      "owner" : {
-        "principal" : "ADMIN",
-        "type" : "ROLE"
-      },
-      "rules" : [ {
-        "principal" : "USER",
-        "type" : "ROLE",
-        "right" : "VIEW"
-      } ]
-    },
-    "resourceURI" : "http://sixsq.com/slipstream/1/ServiceInfo",
-    "http://schema.a.b.c/price.io" : "",
-    "http://schema.a.b.c/overall.capacity.ram" : "",
-    "http://schema.a.b.c/single.vm.max.cpu" : "",
-    "http://schema.a.b.c/single.vm.min.ram" : "",
-    "http://schema.a.b.c/price.storage.per.hour" : ""
-  }
-  ...
-```
-
-## Create a Service Offer
-
-### HTTP REQUEST
-
-`POST https://nuv.la/api/service-offer`
-
-### Body Parameters
-
-Parameter   | Required  | Description
-------------| --------  | -----------
-connector.href        | true      | The cloud name
-uri of an attribute 1 | false     | Value of the attribute for this cloud
-uri of an attribute 2 | false     | Value of the attribute for this cloud
-... | false     | ...
-
-## Delete a Service Offer
-
-### HTTP REQUEST
-
-`DELETE https://nuv.la/api/service-offer`
-
-
 # The *new* resource
 ```shell
 curl https://nuv.la/module/examples/new?category=Image login -d username=<USER> -d password=<PASSWORD>
@@ -1761,3 +2068,75 @@ Error Code | Meaning
 429 | Too Many Requests -- The user has sent too many requests in a given amount of time.
 500 | Internal Server Error -- We have a problem with our server. Try again later.
 503 | Service Unavailable -- We're temporarially offline for maintenance. Please try again later.
+
+# Deprecated Resources
+
+The following sections describe the details of older, deprecated
+resources that still work with SlipStream.  Although these features
+work, they should not be used for any new code and existing code
+should migrate to equivalent, non-deprecated resources.
+
+## Login
+
+### Generate a cookie
+
+`POST https://nuv.la/auth/login`
+
+
+Parameter | Required | Description
+--------- | -------- | -----------
+username | true | Name of the user to authenticate with
+password | true | Password corresponding to the username
+
+This resource allows users to generate a time limited cookie. The value of the cookie corresponds
+to the `Set-Cookie` of the response header.
+
+```shell
+curl -k -s -D - https://nuv.la/auth/login -X POST -d "username=name&password=secret" -c cookie-user.txt
+```
+
+This `curl` command will store the authentication token inside `cookie-user.txt` file.
+This cookie must be used later on (for example with `-b` option in curl command) to access the API.
+
+
+<aside class="notice">
+Remember — with the exception of this resource and the documentation, all resources require authentication.
+</aside>
+
+
+### Basic authentication (deprecated)
+
+```shell
+curl https://nuv.la?media=xml -u <user>:<password>
+```
+> or
+
+```shell
+curl https://<user>:<password>@slipstream.sixsq.com?media=xml
+```
+
+```xml
+<welcome>
+   <modules>
+      <item resourceUri="module/Mebster/48" category="Project" version="48" name="Mebster">
+         <authz owner="meb" ownerGet="true" ownerPut="true" ownerPost="false" ownerDelete="true" ownerCreateChildren="true" groupGet="false" groupPut="false" groupPost="false" groupDelete="false" groupCreateChildren="false" publicGet="false" publicPut="false" publicPost="false" publicDelete="false" publicCreateChildren="false" inheritedGroupMembers="true">
+            <groupMembers class="java.util.ArrayList"/>
+         </authz>
+      </item>
+      <item resourceUri="module/SlipStream/280" category="Project" description="SlipStream dog fooding :-)" version="280" name="SlipStream">
+         <authz owner="sixsq_dev" ownerGet="true" ownerPut="true" ownerPost="false" ownerDelete="true" ownerCreateChildren="true" groupGet="true" groupPut="true" groupPost="false" groupDelete="false" groupCreateChildren="false" publicGet="false" publicPut="false" publicPost="false" publicDelete="false" publicCreateChildren="false" inheritedGroupMembers="false">
+            <groupMembers class="java.util.ArrayList">
+               <string>lionel</string>
+               <string>konstan</string>
+               <string>loomis</string>
+               <string>meb</string>
+               <string>rob</string>
+               <string>sebastien.fievet</string>
+            </groupMembers>
+         </authz>
+      </item>
+...
+
+```
+
+Basic authentication can be tested using simple username/password pair.
