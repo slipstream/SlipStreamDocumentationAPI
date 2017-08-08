@@ -24,7 +24,8 @@ and serve it locally, do the following:
     $ cd build
     $ bundle exec middleman server
 
-The server will run by default on `http://localhost:4567`.
+Middleman will print the endpoint of the local server.  It will
+normally be `http://localhost:4567`.
 
 Publishing Docs
 ---------------
