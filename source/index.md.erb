@@ -15,19 +15,92 @@ search: true
 
 # SlipStream API Reference
 
-## Introduction
+Welcome to the SlipStream API.  It has been designed to be
+comprehensive, covering all SlipStream resources, and portable,
+allowing access from any programming language. The API follows REST
+([Representational State
+Transfer](http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm))
+principles, was inspired from Richardson and Ruby's excellent book
+[RESTful Web
+Services](http://shop.oreilly.com/product/9780596529260.do), and
+reuses the standard and universally supported HTTP protocol.
 
-Welcome to the SlipStream API. You can use our API to access SlipStream endpoints in order to manipulate
-different REST resources, including project, image, deployment, available as *module*, as well as run and user.
+SlipStream predates the standardization efforts for APIs and libraries
+within the cloud sector.  Consequently, the original API is unique to
+SlipStream. However, as technologies have changed and the standards
+have emerged, the SlipStream developers have decided to incrementally
+adopt the [Cloud Infrastructure Management
+Interface](https://www.dmtf.org/sites/default/files/standards/documents/DSP0263_2.0.0.pdf)
+(CIMI) maintained by DMTF. As a result, the full SlipStream API
+consists of two parts: a **Legacy API** and the **CIMI API**.
 
-This API focuses on the REST service offered and has been documented in Bash. You can view code examples in the dark area to the right.
+This documentation focuses on the low-level, HTTP-based REST API.
+Examples have been documented in Bash using `curl`; these examples are
+visible in the dark column on the right.
 
-This API documentation page was created with [Slate](http://github.com/tripit/slate). Feel free to report
-any snags in the document in [GitHub](http://github.com/slipstream/SlipStreamDocumentationAPI).
+This API documentation page was created with
+[Slate](http://github.com/tripit/slate) and is hosted by [GitHub
+Pages](https://pages.github.com).  The sources are also hosted in
+GitHub, so feel free to report any snags in the [GitHub
+repository](http://github.com/slipstream/SlipStreamDocumentationAPI).
 
-<aside class="notice">
-You can get a serialised version of most SlipStream resources directly in the browser.
-</aside>
+## Libraries
+
+This documentation focuses on the low-level, HTTP-based REST API. As
+the HTTP protocol is supported by all programming languages, this API
+should be universally accessible. However, two language-specific
+SlipStream libraries are also maintained.  These may be more
+appropriate if you are using Python or Clojure.  The asynchronous part
+of the Clojure library is compatible with ClojureScript.  See the
+table below for information on these libraries.
+
+Additionally, SlipStream plugins for [Apache
+Libcloud](https://libcloud.apache.org) and
+[Terraform](https://www.terraform.io) are planned, but not yet
+available.
+
+
+Language | Sources | Documentation
+-------- | ------- | -------------
+Python | [slipstream/SlipStreamPythonAPI](https://github.com/slipstream/SlipStreamPythonAPI) | [Sphinx](http://slipstream.github.io/SlipStreamPythonAPI)
+Clojure(Script) | [slipstream/SlipStreamClojureAPI](https://github.com/slipstream/SlipStreamClojureAPI) | [autodoc](http://slipstream.github.io/SlipStreamClojureAPI/)
+
+# Legacy API
+
+The legacy API follows REST principles where each resource corresponds
+to a URL and standard HTTP methods are used to manage those resources.
+In general, the resource URLs that identify collections follow the
+pattern:
+
+`https://nuv.la/<type>?query-param=value`
+
+and those identifying individual resources:
+
+`https://nuv.la/<type>/<id>?query-param=value`
+
+where the `<type>` corresponds to the resource type and `<id>`, to the
+resource identifier.  Note that the resource identifier can have
+multiple components.  In the case of modules, the last part of the
+resource identifier is a unique version number.
+
+## Resource Management (CRUD)
+
+The standard HTTP methods are used to perform Search, Create, Read,
+Update, and Delete (SCRUD) operations on the resources.  The mapping
+between the SCRUD actions and HTTP methods are shown in the following
+table. Details are provided in the description of each
+resource. **Those resources *without* a CIMI notation follow the
+patterns of the legacy API.**
+
+Action | HTTP Method | URL
+------ | ----------- | ---
+Search | GET | resource collection
+Create | POST | resource collection
+Read | GET | resource
+Update | POST | resource
+Delete | DELETE | resource
+
+## Media Types
 
 > Adding `?media=xml`(for XML) at the end of the URL in the browser, you request the response to be returned in the specified content-type:
 
@@ -41,13 +114,126 @@ curl https://nuv.la?media=xml
 curl https://nuv.la -H "Content-Type: application/xml"
 ```
 
-## Resource Oriented Architecture (ROA)
+Generally, the legacy API accepts and returns documents in XML
+format. However, some resources can return HTML and/or JSON.  You can
+control the media type of returned documents by adding an "accept"
+header to the HTTP request. Within a browser, the same can be done by
+adding a "media" query parameter. If the requested media type is not
+available, then XML will be returned instead. 
 
-SlipStream's REST design was inspired from Richardson and Ruby's excellent book:
-[RESTful Web Services](http://shop.oreilly.com/product/9780596529260.do). They present the
-Resource Oriented Architecture (ROA) concept, which guided several design choices, including
-the resources-based architecture underpinning SlipStream.  For example, each version of an image,
-deployment and project can be uniquely identified via a unique URI.
+## Skeleton (*new*) Resources
+
+```shell
+curl https://nuv.la/module/examples/new?category=Image login -d username=<USER> -d password=<PASSWORD>
+```
+
+> The above command returns a response body structured like this:
+
+```xml
+<imageModule category="Image" creation="2014-05-12 09:59:36.354 UTC" deleted="false" isBase="false" isLatestVersion="false" loginUser="" parentUri="module/Mebster" platform="" shortName="new" version="-1">
+       <parameters>
+               <entry>
+                       <string>instanceid</string>
+                       <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String"/>
+               </entry>
+               <entry>
+                       <string>extra.disk.volatile</string>
+                       <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String"/>
+               </entry>
+               <entry>
+                       <string>ec2-eu-west.instance.type</string>
+                       <parameter category="ec2-eu-west" description="Cloud instance type" isSet="false" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                               <enumValues length="10">
+                                       <string>m1.small</string>
+                                       <string>m1.large</string>
+                                       <string>m1.xlarge</string>
+                                       <string>c1.medium</string>
+                                       <string>c1.xlarge</string>
+                                       <string>m2.xlarge</string>
+                                       <string>m2.2xlarge</string>
+                                       <string>m2.4xlarge</string>
+                                       <string>cc1.4xlarge</string>
+                                       <string>t1.micro</string>
+                               </enumValues>
+                       </parameter>
+               </entry>
+               <entry>
+                       <string>exoscale-ch-gva.security.groups</string>
+                       <parameter category="exoscale-ch-gva" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="exoscale-ch-gva.security.groups" order="0" order_="0" readonly="false" type="String">
+                               <value>default</value>
+                               <defaultValue>default</defaultValue>
+                       </parameter>
+               </entry>
+               <entry>
+                       <string>ec2-eu-west.security.group</string>
+                       <parameter category="ec2-eu-west" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.group" order="0" order_="0" readonly="false" type="String">
+                               <value>default</value>
+                               <defaultValue>default</defaultValue>
+                       </parameter>
+               </entry>
+               <entry>
+                       <string>network</string>
+                       <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+                               <enumValues length="2">
+                                       <string>Public</string>
+                                       <string>Private</string>
+                               </enumValues>
+                               <value>Public</value>
+                               <defaultValue>Public</defaultValue>
+                       </parameter>
+               </entry>
+               <entry>
+                       <string>exoscale-ch-gva.instance.type</string>
+                       <parameter category="exoscale-ch-gva" description="Instance type (flavor)" isSet="false" mandatory="true" name="exoscale-ch-gva.instance.type" order="0" order_="0" readonly="false" type="String"/>
+               </entry>
+               <entry>
+                       <string>hostname</string>
+                       <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String"/>
+               </entry>
+       </parameters>
+       <authz groupCreateChildren="false" groupDelete="false" groupGet="false" groupPost="false" groupPut="false" inheritedGroupMembers="true" owner="meb" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="false" publicPost="false" publicPut="false">
+               <groupMembers />
+       </authz>
+       <cloudNames length="3">
+               <string>exoscale-ch-gva</string>
+               <string>ec2-eu-west</string>
+               <string>default</string>
+       </cloudNames>
+       <runs/>
+       <targets />
+       <packages />
+       <prerecipe/>
+       <recipe/>
+       <cloudImageIdentifiers />
+</imageModule>
+```
+
+To retrieve example resource structures, especially for resource types that don't yet exist,
+you can use the special *new* resource.
+
+### HTTP Request
+
+`GET https://nuv.la/<type>/new[?category=<category>]`
+
+### Url Parameter
+
+Parameter | Required | Description
+--------- | -------- | -----------
+type | true | Type of resource to retrieve (e.g. module, user)
+
+### Query Parameter
+
+Parameter | Required | Description
+--------- | -------- | -----------
+category | false | Only required for *module* &lt;type>. Can be: *Project* (default), *Image* or *Deployment*.
+
+<aside class="notice">
+On the root module resource (i.e. /module), only project category can be requested.
+</aside>
+
+<aside class="notice">
+This also means that <em>new</em> is a reserved word and modules and users cannot be called new.
+</aside>
 
 # CIMI API
 
@@ -62,7 +248,7 @@ standard patterns and autodiscovery, the SlipStream developers have
 decided to adopt this standard.
 
 <aside class="notice">
-All of the resources rooted at `/api` follow the CIMI resource
+All of the resources rooted at "/api" follow the CIMI resource
 management patterns. These are marked with "CIMI" in the table of
 contents. 
 </aside>
@@ -99,7 +285,7 @@ curl https://nuv.la/api/cloud-entry-point
 }
 ```
 
-The primary directory of resources is the Cloud Entry Point (CEP),
+The primary directory of resources is the **Cloud Entry Point** (CEP),
 which contains a list of named resource collections and their URLs (in
 the `href` field) relative to the `baseURI` value.  The CEP also
 contains some other metadata.
@@ -129,7 +315,8 @@ descriptions of these patterns.**  Only differences from the standard
 patterns are documented here.
 
 The following table shows the mapping between the resource management
-action and the HTTP method to be used.
+action and the HTTP method to be used. **Those resources *with* a CIMI
+notation follow the CIMI patterns.**
 
 Action | HTTP Method | URL
 ------ | ----------- | ---
@@ -1942,122 +2129,6 @@ This resource retrieves a specific user.
 Parameter | Required | Description
 --------- | -------- | -----------
 user | true | User name to retrieve
-
-# The *new* resource
-```shell
-curl https://nuv.la/module/examples/new?category=Image login -d username=<USER> -d password=<PASSWORD>
-```
-
-> The above command returns a response body structured like this:
-
-```xml
-<imageModule category="Image" creation="2014-05-12 09:59:36.354 UTC" deleted="false" isBase="false" isLatestVersion="false" loginUser="" parentUri="module/Mebster" platform="" shortName="new" version="-1">
-	<parameters>
-		<entry>
-			<string>instanceid</string>
-			<parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String"/>
-		</entry>
-		<entry>
-			<string>extra.disk.volatile</string>
-			<parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String"/>
-		</entry>
-		<entry>
-			<string>ec2-eu-west.instance.type</string>
-			<parameter category="ec2-eu-west" description="Cloud instance type" isSet="false" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
-				<enumValues length="10">
-					<string>m1.small</string>
-					<string>m1.large</string>
-					<string>m1.xlarge</string>
-					<string>c1.medium</string>
-					<string>c1.xlarge</string>
-					<string>m2.xlarge</string>
-					<string>m2.2xlarge</string>
-					<string>m2.4xlarge</string>
-					<string>cc1.4xlarge</string>
-					<string>t1.micro</string>
-				</enumValues>
-			</parameter>
-		</entry>
-		<entry>
-			<string>exoscale-ch-gva.security.groups</string>
-			<parameter category="exoscale-ch-gva" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="exoscale-ch-gva.security.groups" order="0" order_="0" readonly="false" type="String">
-				<value>default</value>
-				<defaultValue>default</defaultValue>
-			</parameter>
-		</entry>
-		<entry>
-			<string>ec2-eu-west.security.group</string>
-			<parameter category="ec2-eu-west" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.group" order="0" order_="0" readonly="false" type="String">
-				<value>default</value>
-				<defaultValue>default</defaultValue>
-			</parameter>
-		</entry>
-		<entry>
-			<string>network</string>
-			<parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
-				<enumValues length="2">
-					<string>Public</string>
-					<string>Private</string>
-				</enumValues>
-				<value>Public</value>
-				<defaultValue>Public</defaultValue>
-			</parameter>
-		</entry>
-		<entry>
-			<string>exoscale-ch-gva.instance.type</string>
-			<parameter category="exoscale-ch-gva" description="Instance type (flavor)" isSet="false" mandatory="true" name="exoscale-ch-gva.instance.type" order="0" order_="0" readonly="false" type="String"/>
-		</entry>
-		<entry>
-			<string>hostname</string>
-			<parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String"/>
-		</entry>
-	</parameters>
-	<authz groupCreateChildren="false" groupDelete="false" groupGet="false" groupPost="false" groupPut="false" inheritedGroupMembers="true" owner="meb" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="false" publicPost="false" publicPut="false">
-		<groupMembers />
-	</authz>
-	<cloudNames length="3">
-		<string>exoscale-ch-gva</string>
-		<string>ec2-eu-west</string>
-		<string>default</string>
-	</cloudNames>
-	<runs/>
-	<targets />
-	<packages />
-	<prerecipe/>
-	<recipe/>
-	<cloudImageIdentifiers />
-</imageModule>
-```
-
-To retrieve example resource structures, especially for resource types that don't yet exist,
-you can use the special *new* resource.
-
-### HTTP Request
-
-`GET https://nuv.la/<type>/new[?category=<category>]`
-
-### Url Parameter
-
-Parameter | Required | Description
---------- | -------- | -----------
-type | true | Type of resource to retrieve (e.g. module, user)
-
-### Query Parameter
-
-Parameter | Required | Description
---------- | -------- | -----------
-category | false | Only required for *module* &lt;type>. Can be: *Project* (default), *Image* or *Deployment*.
-
-<aside class="notice">
-On the root module resource (i.e. /module), only project category can be requested.
-</aside>
-
-<aside class="notice">
-This also means that <em>new</em> is a reserved word and modules and users cannot be called new.
-</aside>
-
-
-
 
 # Errors
 
