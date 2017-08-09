@@ -613,11 +613,133 @@ you have an active session.
 
 ## Credential Template (CIMI)
 
+```shell
+# List all of the credential creation mechanisms
+#
+curl https://nuv.la/api/credential-template
+```
+
+```shell
+# You can get more details by using the "describe" action.
+#
+curl https://nuv.la/api/credential-template/generate-api-key/describe
+```
+
+SlipStream must manage a variety of credentials to provide, for
+example, programmatic access to SlipStream or SSH access to virtual
+machines running on a cloud infrastructure.  The CredentialTemplate
+resources correspond to the various methods that can be used to create
+these resources.
+
+The parameters required can be found within each template, using the
+standard CIMI read pattern.  Details for each parameter can be found
+by invoking the "describe" action on the resource.
+
+Template | Credential | Description
+-------- | ---------- | -----------
+import-ssh-public-key | ssh-public-key | imports an SSH public key from an existing key pair
+generate-ssh-key-pair | ssh-public-key | generates a new SSH key pair, storing public key and returning private key
+generate-api-key | api-key | generates API key and secret, storing secret digest and returning secret
+
 ## Credential (CIMI)
+
+SlipStream can manage credentials that are needed to access SlipStream
+or other services.  Currently, SlipStream manages SSH public keys and
+API keys and secrets.  Creating new Credential resources requires
+referencing a CredentialTemplate resource. 
 
 ### SSH Public Key
 
+> An example document (named `create.json` below) for creating
+  a new SSH key pair.
+
+```json
+{
+  "credentialTemplate" : {
+                           "href" : "credential-template/generate-ssh-key-pair"
+                         }
+}
+```
+
+```shell
+# Be sure to get the URL from the cloud entry point!
+# The cookie options allow for automatic management of the
+# SlipStream authentication token (cookie).
+curl https://nuv.la/api/credential \
+     -X POST \
+     -H 'content-type: application/json' \
+     -d @create.json \
+     --cookie-jar ~/cookies -b ~/cookies -sS
+```
+
+> On a successful authentication, the above command will return a 201
+  (created) status, a "location" header with the created credential
+  resource, and a JSON document containing the SSH private key of the
+  generated key pair.
+
+The "ssh-public-key" Credential resource stores the public key (in
+OpenSSH format), the algorithm used to create the key ("rsa" or
+"dsa"), and the fingerprint of the key itself.
+
+These resources can be created either by providing the public key of
+an existing SSH key pair or by having the server generate a new SSH
+key pair.  In the second case, the server will provide the private key
+in the 201 (created) response.
+
+<aside class="notice">
+When the server generates a new SSH key pair, the server returns the
+private key in the response. The server does not store this private
+key, so you must capture and save the key from this response!
+</aside>
+
 ### API Key and Secret
+
+> An example document (named `create.json` below) for creating
+  an API key and secret with a lifetime of 1 day (86400 seconds).
+
+```json
+{
+  "credentialTemplate" : {
+                           "href" : "credential-template/generate-api-key",
+                           "ttl" : 86400
+                         }
+}
+```
+
+```shell
+# Be sure to get the URL from the cloud entry point!
+# The cookie options allow for automatic management of the
+# SlipStream authentication token (cookie).
+curl https://nuv.la/api/credential \
+     -X POST \
+     -H 'content-type: application/json' \
+     -d @create.json \
+     --cookie-jar ~/cookies -b ~/cookies -sS
+```
+
+> On a successful authentication, the above command will return a 201
+  (created) status, a "location" header with the created credential
+  resource, and a JSON document containing the plain text secret.
+
+It is often useful to have credentials to log into the SlipStream
+server that are independent of your account credentials.  This allows
+you, for example, to provide time-limited access or to revoke access
+at any time without affecting the access to your account with your
+main credentials.
+
+For users who authenticate with external authentication mechanisms, an
+API key and secret is mandatory for programmic access to SlipStream,
+as the external authentication mechanisms usually cannot be used
+with the API.
+
+The example shows how to create an API key and secret credential.
+
+<aside class="notice">
+When the server generates a new API key and secret, the server returns
+the plain text secret in the response. The server stores only a digest
+of the secret, so you must capture and save the plain text secret from
+this response! 
+</aside>
 
 # Service Catalog 
 
