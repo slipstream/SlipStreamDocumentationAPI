@@ -31,8 +31,9 @@ SlipStream. However, as technologies have changed and the standards
 have emerged, the SlipStream developers have decided to incrementally
 adopt the [Cloud Infrastructure Management
 Interface](https://www.dmtf.org/sites/default/files/standards/documents/DSP0263_2.0.0.pdf)
-(CIMI) maintained by DMTF. As a result, the full SlipStream API
-consists of two parts: a **Legacy API** and the **CIMI API**.
+(CIMI) maintained by DMTF (https://www.dmtf.org). As a result, the
+full SlipStream API consists of two parts: a **Legacy API** and the
+**CIMI API**.
 
 This documentation focuses on the low-level, HTTP-based REST API.
 Examples have been documented in Bash using `curl`; these examples are
@@ -97,21 +98,23 @@ Action | HTTP Method | URL
 Search | GET | resource collection
 Create | POST | resource collection
 Read | GET | resource
-Update | POST | resource
+Update | PUT | resource
 Delete | DELETE | resource
 
 ## Media Types
 
-> Adding `?media=xml`(for XML) at the end of the URL in the browser, you request the response to be returned in the specified content-type:
+> Adding `?media=xml`(for XML) at the end of the URL in the browser,
+  you request the response to be returned in the specified
+  content-type, for example:
 
 ```shell
-curl https://nuv.la?media=xml
+curl https://nuv.la/run?media=xml
 ```
 
 > is equivalent to
 
 ```shell
-curl https://nuv.la -H "Content-Type: application/xml"
+curl https://nuv.la/run -H "Content-Type: application/xml"
 ```
 
 Generally, the legacy API accepts and returns documents in XML
@@ -615,12 +618,16 @@ you have an active session.
 
 ```shell
 # List all of the credential creation mechanisms
+# NOTE: You must be authenticated.  Add the appropriate
+# cookie options to the curl command.
 #
 curl https://nuv.la/api/credential-template
 ```
 
 ```shell
 # You can get more details by using the "describe" action.
+# NOTE: You must be authenticated.  Add the appropriate
+# cookie options to the curl command.
 #
 curl https://nuv.la/api/credential-template/generate-api-key/describe
 ```
@@ -679,7 +686,8 @@ curl https://nuv.la/api/credential \
 
 The "ssh-public-key" Credential resource stores the public key (in
 OpenSSH format), the algorithm used to create the key ("rsa" or
-"dsa"), and the fingerprint of the key itself.
+"dsa"), and the fingerprint of the key itself.  You can create any
+number of SSH public key credentials on the server.
 
 These resources can be created either by providing the public key of
 an existing SSH key pair or by having the server generate a new SSH
@@ -902,26 +910,11 @@ uri | true | full URI associated with the prefix
 
 ## Event (CIMI)
 
-The resources under `/api` namespace do not support basic authentication and require an authentication cookie.
+Event resources provide a timestamp for the occurrence of some action.
+These are used within the SlipStream server to mark changes in the
+lifecycle of a cloud application and for other important actions. 
 
-<aside class="notice">
-From
-<a target="_blank" href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">
-CIMI Model and RESTful HTTP-based Protocol documentation 5.17.13</a>
-<br />
-<br />
-A resource that represents the occurrence of an event within the managed infrastructure.
-<br/><br/>
-Some examples of Events may be:
-
-<ul>
-<li>Machine X has been rebooted by guest OS</li>
-<li>Machine X is not responding to platform services.</li>
-<li>A new vCPU has been added to machine X following defined elasticity rules.</li>
-</ul>
-</aside>
-
-This resource can be created for example to log for a given run the following events:
+Some of the lifecycle changes that generate events are:
 
 * State transition
 * Termination (manual)
@@ -931,7 +924,6 @@ This resource can be created for example to log for a given run the following ev
 <aside class="warning">
 An event can <strong>not</strong> be updated, only deleted.
 </aside>
-
 
 ### List all Events
 
