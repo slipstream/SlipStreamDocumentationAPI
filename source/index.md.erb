@@ -752,250 +752,151 @@ after user selection, provisions the corresponding cloud resources.
 
 ## Service Offer (CIMI)
 
-Provides detailed capability information for each available cloud.
+> An example service offer from the Open Telekom Cloud (OTC).
 
-### Get the Service Offer
-
-#### HTTP REQUEST
-
-`GET https://nuv.la/api/service-offer`
-
-```shell
-curl -X GET -H "Content-Type: application/json" https://nuv.la/api/service-offer -b cookie-user.txt -D -
-```
-
-> The above command returns a json response:
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-Server: Aleph/0.4.0
-Connection: Keep-Alive
-Date: Tue, 09 Feb 2016 18:04:39 GMT
-content-length: 20147
-
+```json
 {
-  "acl" : {
-    "owner" : {
-      "principal" : "ADMIN",
-      "type" : "ROLE"
-    },
-    "rules" : [ {
-      "principal" : "USER",
-      "type" : "ROLE",
-      "right" : "MODIFY"
-    } ]
+  "id" : "service-offer/0b2a46dd-f8c8-4420-a851-519daa581a1d",
+  "name" : "(4/4096/800 c1.xlarge windows) [DE]",
+  "description" : "VM (standard) with 4 vCPU, 4096 MiB RAM, 800 GiB root disk, windows [DE] (c1.xlarge)",
+  "created" : "2017-06-26T11:13:42.883Z",
+  "updated" : "2017-07-05T15:17:55.005Z",
+  
+  "connector" : {
+    "href" : "open-telekom-de1"
   },
-  "resourceURI" : "http://sixsq.com/slipstream/1/ServiceOfferCollection",
-  "id" : "service-offer",
-  "operations" : [ {
-    "rel" : "http://sixsq.com/slipstream/1/Action/add",
-    "href" : "service-offer"
-  } ],
-  "count" : 12,
-  "serviceOffers" : [ {
-    "connector" : {
-      "href" : "t-systems-de1-indigo-1"
-    },
-    "http://schema.a.b.c/suppliers.catalog" : "",
-    "http://schema.a.b.c/single.vm.storage.volatile" : "",
-    "http://schema.a.b.c/single.vm.storage.persistent" : "",
-    "http://schema.a.b.c/single.vm.max.ram" : "",
-    "http://schema.a.b.c/overall.capacity.cpu" : "",
-    "http://schema.a.b.c/price.charging.period" : "",
-    "http://schema.a.b.c/price.ram.per.hour" : "",
-    "updated" : "2016-02-09T18:00:22.387Z",
-    "created" : "2016-02-09T18:00:22.387Z",
-    "http://schema.a.b.c/price.charging.unit" : "",
-    "http://schema.a.b.c/overall.capacity.storage" : "",
-    "http://schema.a.b.c/location" : "",
-    "id" : "service-info/023285da-7be4-4931-90f5-c50baadc58a4",
-    "http://schema.a.b.c/price.cpu.per.hour" : "",
-    "http://schema.a.b.c/single.vm.min.cpu" : "",
-    "acl" : {
-      "owner" : {
-        "principal" : "ADMIN",
-        "type" : "ROLE"
-      },
-      "rules" : [ {
-        "principal" : "USER",
-        "type" : "ROLE",
-        "right" : "VIEW"
-      } ]
-    },
-    "resourceURI" : "http://sixsq.com/slipstream/1/ServiceInfo",
-    "http://schema.a.b.c/price.io" : "",
-    "http://schema.a.b.c/overall.capacity.ram" : "",
-    "http://schema.a.b.c/single.vm.max.cpu" : "",
-    "http://schema.a.b.c/single.vm.min.ram" : "",
-    "http://schema.a.b.c/price.storage.per.hour" : ""
-  }
-  ...
-```
 
-### Create a Service Offer
-
-#### HTTP REQUEST
-
-`POST https://nuv.la/api/service-offer`
-
-#### Body Parameters
-
-Parameter   | Required  | Description
-------------| --------  | -----------
-connector.href        | true      | The cloud name
-uri of an attribute 1 | false     | Value of the attribute for this cloud
-uri of an attribute 2 | false     | Value of the attribute for this cloud
-... | false     | ...
-
-### Delete a Service Offer
-
-#### HTTP REQUEST
-
-`DELETE https://nuv.la/api/service-offer`
-
-## Service Attribute (CIMI)
-
-This resource represents the meta-information of each attribute of a Service Offer instance (see Service Offer resource).
-
-### List Service Attribute resource
-
-This returns the collection of Service Attribute resources.
-
-#### HTTP Request
-
-`GET https://nuv.la/api/service-attribute`
-
-```shell
-curl https://nuv.la/api/service-attribute -b cookie-user.txt -D -
-```
-
-> The above command returns a json structured like this (truncated for readability):
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-Server: Aleph/0.4.0
-Connection: Keep-Alive
-Date: Tue, 09 Feb 2016 12:32:38 GMT
-content-length: 22221
-
-{
-  "acl" : {
-    "owner" : {
-      "principal" : "ADMIN",
-      "type" : "ROLE"
-    },
-    "rules" : [ {
-      "principal" : "USER",
-      "type" : "ROLE",
-      "right" : "MODIFY"
-    } ]
-  },
-  "resourceURI" : "http://sixsq.com/slipstream/1/ServiceAttributeCollection",
-  "id" : "service-attribute",
-  "operations" : [ {
-    "rel" : "http://sixsq.com/slipstream/1/Action/add",
-    "href" : "service-attribute"
-  } ],
-  "count" : 31,
-  "service-attribute" : [ {
-    "minor-version" : 0,
-    "updated" : "2016-02-09T12:11:27.735Z",
-    "major-version" : 1,
-    "type" : "String",
-    "created" : "2016-02-09T12:11:27.735Z",
-    "en" : {
-      "name" : "price.storage.per.hour",
-      "categories" : [ "Price" ],
-      "description" : "Nature: the price for use of a unit (e.g. 1 GB) of storage per hour; Value: the price in euros, e.g. \u20AC0.0005; Explanation: note that is possible that storage is either associated with a particular VM or as a generally-available resource"
-    },
-    "id" : "attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0",
-    "acl" : {
-      "owner" : {
-        "principal" : "ADMIN",
-        "type" : "ROLE"
-      }
-    },
-    "operations" : [ {
-      "rel" : "http://sixsq.com/slipstream/1/Action/edit",
-      "href" : "attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0"
-    }, {
-      "rel" : "http://sixsq.com/slipstream/1/Action/delete",
-      "href" : "attribute/12e5c0ea-fbe5-4d39-ba3b-e919789078b0"
-    } ],
-    "resourceURI" : "http://sixsq.com/slipstream/1/Attribute",
-    "uri" : "http://schema.hnx.helix-nebula.eu/price.storage.per.hour",
-    "patch-version" : 0,
-    "normative" : true
-  },
-  ...
-```
-
-### Create an Service Attribute resource
-
-#### HTTP REQUEST
-
-`POST https://nuv.la/api/service-attribute`
-
-#### Body Parameters
-
-Parameter   | Required  | Description
-------------| --------  | -----------
-major-version   | true      | Major version number of the schema
-minor-version   | true      | Minor version number of the schema
-patch-version   | true      | Patch version number of the schema
-normative       | true      |
-type            | true      | Type of the data: String, ...
-uri             | true      | URI of this schema
-en.name         | true      | Name of this attribute
-en.categories   | true      | List of categories
-en.description  | true      | Description of this attribute
-
-```shell
-curl -X POST -H "Content-Type: application/json" https://nuv.la/api/service-attribute -d "{\"major-version\": 1, \"minor-version\": 0, \"patch-version\": 0, \"normative\": true, \"type\": \"String\", \"uri\": \"http://schema.hnx.helix-nebula.eu/hyper.price.per.hour\", \"en\": {\"name\": \"hyper.price.per.hour\",\"categories\": [\"Price\"],\"description\": \"Nature: the price for a Hyper type instance with 16 CPU and 128 GB RAM\"}}" -b cookie-user.txt -D -
-```
-
-> The above command returns a json response:
-
-```http
-HTTP/1.1 201 Created
-Content-Type: application/json
-Location: service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049
-Server: Aleph/0.4.0
-Connection: Keep-Alive
-Date: Tue, 09 Feb 2016 12:55:09 GMT
-content-length: 160
-
-{
-  "status" : 201,
-  "message" : "created service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049",
-  "resource-id" : "service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049"
+  "price:billingPeriodCode" : "MIN",
+  "price:billingUnitCode" : "HUR",
+  "price:currency" : "EUR",
+  "price:freeUnits" : 0,
+  "price:unitCost" : 0.38711111111111113,
+  "price:unitCode" : "C62",
+  
+  "resource:class" : "standard",
+  "resource:country" : "DE",
+  "resource:diskType" : "SATA",
+  "resource:instanceType" : "c1.xlarge",
+  "resource:operatingSystem" : "windows",
+  "resource:platform" : "openstack",
+  "resource:ram" : 4096,
+  "resource:vcpu" : 4,
+  
+  "otc:instanceType" : "c1.xlarge",
+  "otc:flavorPurpose" : "Compute I Nr. 3",
+  
+  "acl" : {"..." : "..."}
 }
 ```
 
-### Delete an Service Attribute resource
-
-#### HTTP REQUEST
-
-`DELETE https://nuv.la/api/service-attribute/<id>`
+> Show all of the ServiceOffer resources from the "exoscale-ch-gva"
+  cloud that provide more than 4096 MB of RAM.  Be sure to escape the
+  dollar sign in the `$filter` query parameter!
 
 ```shell
-curl -X DELETE -H "Content-Type: application/json" https://nuv.la/api/service-attribute/d77a553b-7332-48a0-b653-3b2b4b336049 -b cookie-user.txt -D -
+curl 'https://nuv.la/api/service-offer?$filter=connector/href="exoscale-ch-gva" and resource:ram>4096'
 ```
 
-> The above command returns a json response:
+The ServiceOffer resource is the primary resource in the Service
+Catalog.  Each offer describes a specific resource offer from a cloud
+service provider.  The specific offer for a virtual machine would
+typically describe the offer's CPU, RAM, and disk resources, the
+geographical location, and the price.
 
-```http
-HTTP/1.1 204 No Content
-Content-Type: application/json
-Server: Aleph/0.4.0
-Connection: Keep-Alive
-Date: Tue, 09 Feb 2016 13:03:31 GMT
-content-length: 160
+In the example offer from the Open Telekom Cloud (OTC), you can see
+three types of information: metadata (e.g. id, name), the cloud
+connector (in connector/href), and the cloud characteristics
+(e.g. price:unitCost, resource:country).
+
+The schema for the cloud characteristics is open, allowing cloud
+providers to supply any information that is useful for users. The only
+requirement is that these attributes must be namespaced.  The
+namespaces **must** be defined in a ServiceAttributeNamespace resources
+and the attribute itself **may** be described in a a ServiceAttribute
+resource.
+
+Currently, only SlipStream administrators can add, update, or delete
+ServiceOffer resources.  The standard CIMI patterns for these actions
+apply to these resources.  Most users will search the ServiceOffer
+entries by using a filter expression on the ServiceOffer collection.
+The example searches for all ServiceOffers from the "exoscale-ch-gva"
+cloud with more than 4096 MB of RAM. 
+
+## Service Attribute (CIMI)
+
+> Show all of the ServiceAttribute resources.
+
+```shell
+curl https://nuv.la/api/service-attribute
 ```
+
+A ServiceAttribute resource provides semantic information concerning
+an attribute that appears in ServiceOffer resources.  This resource is
+intended to provide information that helps humans understand the
+information provided in a ServiceOffer resource.  The resource's
+parameters are described in the table below.
+
+Currently, only an administrator can create, update, or delete
+ServiceAttribute resources. These actions follow the standard CIMI
+patterns.  Most users will only search these resources and look at the
+details for a particular ServiceAttribute resource.
+
+Parameter | Required  | Description
+--------- | --------  | -----------
+name | true | short human-readable tag
+description | true | longer human-readable description
+prefix | true | namespace prefix
+attributeName | true | name of the attribute itself
+type | true | type of the attribute's value
 
 ## Service Attribute Namespace (CIMI)
+
+> Search for all of the ServiceAttributeNamespace resources.
+
+```shell
+curl https://nuv.la/api/service-attribute-namespace
+```
+
+> Show the ServiceAttributeNamespace resource for the "exoscale"
+  prefix. 
+
+```shell
+curl https://nuv.la/api/service-attribute-namespace/exoscale
+```
+
+```json
+{
+  "id" : "service-attribute-namespace/exoscale",
+  "resourceURI" : "http://sixsq.com/slipstream/1/ServiceAttributeNamespace",
+  "created" : "2017-04-27T08:41:39.470Z",
+  "updated" : "2017-04-27T08:41:39.470Z",
+
+  "prefix" : "exoscale",
+  "uri" : "http://sixsq.com/slipstream/schema/1/connector/exoscale",
+  
+  "acl" : {"..." : "..."}
+}
+```
+
+Every attribute in a ServiceOffer resource must be namespaced to avoid
+collisions.  The ServiceAttributeNamespace resources maintain the
+mapping between a namespace prefix and the associated, complete
+URI. The parameters are described in the table below.
+
+A ServiceOffer resource cannot be uploaded to the server unless all of
+the namespace prefixes within the document have been defined.
+
+Currently, only an administrator can create, update, or delete
+ServiceAttributeNamespace resources. These actions follow the standard
+CIMI patterns.  Most users will only search these resources and look
+at the details for a particular ServiceAttributeNamespace resource.
+
+Parameter | Required  | Description
+--------- | --------  | -----------
+prefix | true | namespace prefix
+uri | true | full URI associated with the prefix
+
+
 
 # Monitoring
 
