@@ -17,8 +17,8 @@ and serve it locally, do the following:
     # install dependencies (remove --path for system-wide installation)
     $ bundle install --path vendor/bundle
 
-    # build the documentation
-    $ rake build
+    # build the documentation (use bundle to ensure paths are correct!)
+    $ bundle exec rake build
 
     # serve the documentation from a local server
     $ cd build
@@ -32,7 +32,7 @@ Publishing Docs
 
 To publish changes to GitHub Pages do the following:
 
-    $ rake publish
+    $ bundle exec rake publish
 
 Troubleshooting
 ---------------
