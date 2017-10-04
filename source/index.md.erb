@@ -889,9 +889,9 @@ connector (in connector/href), and the cloud characteristics
 The schema for the cloud characteristics is open, allowing cloud
 providers to supply any information that is useful for users. The only
 requirement is that these attributes must be namespaced.  The
-namespaces **must** be defined in a ServiceAttributeNamespace resources
-and the attribute itself **may** be described in a a ServiceAttribute
-resource.
+namespaces **must** be defined in a ServiceAttributeNamespace
+resources and the attribute itself **may** be described in a
+ServiceAttribute resource.
 
 Currently, only SlipStream administrators can add, update, or delete
 ServiceOffer resources.  The standard CIMI patterns for these actions
@@ -929,7 +929,7 @@ cloud with more than 4096 MB of RAM.
     "resource:instanceType": "Micro"
   },
   
-  "whetstone:score": 3997.3
+  "whetstone:score": 3997.3,
   "whetstone:units": "MWIPS",
   "whetstone:freetext": "Executed by a Nuvla App",
   
@@ -942,8 +942,8 @@ cloud with more than 4096 MB of RAM.
 }
 ```
 
-> Show all of the ServiceBench resources from the "exoscale-ch-gva".
-  With an average over the Whetstone score. 
+> Show all of the ServiceBenchmark resources from the
+  "exoscale-ch-gva".  With an average over the Whetstone score.
 
 ```shell
 curl 'https://nuv.la/api/service-benchmark?$filter=serviceOffer/connector/href="exoscale-ch-gva"&$aggregation=avg:whetstone:score'
@@ -969,6 +969,12 @@ The ServiceBenchmark resource allows performance and other service
 metrics to be posted about one or more Service Offers.  Such
 information can be used to make informed decisions about which cloud
 resources to provision for a particular application. 
+
+Like for the ServiceOffer, the schema is open, allowing publication of
+any benchmarks.  The only requirement is that these attributes must be
+namespaced.  The namespaces **must** be defined in a
+ServiceAttributeNamespace resources and the attribute itself **may**
+be described in a ServiceAttribute resource.
 
 ## Service Attribute (CIMI)
 
