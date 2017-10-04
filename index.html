@@ -401,7 +401,11 @@ must use the CEP to discover the correct URLs for managed resources.
 <p>If the user is authorized to perform various management operations on
 a resource, the resource will contain an &ldquo;operations&rdquo; key.  The value
 of the key will contain a list of actions (e.g. <code class="prettyprint">add</code>, <code class="prettyprint">edit</code>,
-<code class="prettyprint">delete</code>, <code class="prettyprint">start</code>) along with the URL to use to execute the action. </p>
+<code class="prettyprint">delete</code>, <code class="prettyprint">start</code>) along with the URL to use to execute the action.</p>
+
+<p>The HTTP methods to use for the CIMI <code class="prettyprint">add</code>, <code class="prettyprint">edit</code>, and <code class="prettyprint">delete</code>
+operations are POST, PUT, and DELETE, respectively.  All other actions
+use the HTTP POST method. </p>
 
 <h2 id="resource-management-(crud)">Resource Management (CRUD)</h2>
 
@@ -451,6 +455,16 @@ notation follow the CIMI patterns.</strong></p>
 <td>resource</td>
 </tr>
 </tbody></table>
+
+<p>Any other action listed in the operations section of a response will
+use the HTTP POST method to the provided URL.</p>
+
+<p>Note that there are two CIMI add (create) patterns: one that uses a
+template to create the resource and another that creates a resource
+without a template.  In the Cloud Entry Point, <strong>any resource that has
+a corresponding template resource will use the templated add
+pattern</strong>. For example, the Session resource will use the templated
+add pattern because there is a SessionTemplate resource also listed.</p>
 
 <h2 id="resource-selection">Resource Selection</h2>
 
@@ -594,6 +608,74 @@ types. All comparisons use the natural ordering of the data type.</p>
 </tr>
 </tbody></table>
 
+<h3 id="aggregations">Aggregations</h3>
+
+<p>The SlipStream CIMI implementation also allows users to aggregate
+values over a set of filtered documents.  This is useful for providing
+summary information concerning a set of documents, such as the sum of
+an attribute, average, etc.</p>
+
+<p>The general form of a query with an aggregation is:</p>
+
+<p><code class="prettyprint">$aggregation=algorithm:attributeName, ...</code></p>
+
+<p>Multiple aggregation expressions can be provided.  The results of
+these calculations are provided in the &ldquo;aggregations&rdquo; section of the
+response. The supported aggregations are described in the following
+table.</p>
+
+<table><thead>
+<tr>
+<th>algorithm</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>min</td>
+<td>minimum value</td>
+</tr>
+<tr>
+<td>max</td>
+<td>maximum value</td>
+</tr>
+<tr>
+<td>sum</td>
+<td>sum of values</td>
+</tr>
+<tr>
+<td>avg</td>
+<td>average of values</td>
+</tr>
+<tr>
+<td>stats</td>
+<td>statistics of values</td>
+</tr>
+<tr>
+<td>extendedstats</td>
+<td>extended statistics of values</td>
+</tr>
+<tr>
+<td>count</td>
+<td>number of values/documents</td>
+</tr>
+<tr>
+<td>percentiles</td>
+<td>binned percentiles of values</td>
+</tr>
+<tr>
+<td>cardinality</td>
+<td>cardinality of a field</td>
+</tr>
+<tr>
+<td>missing</td>
+<td>number of documents with missing field</td>
+</tr>
+<tr>
+<td>terms</td>
+<td>histogram of values and counts</td>
+</tr>
+</tbody></table>
+
 <h2 id="deviations">Deviations</h2>
 
 <p>SlipStream does not (yet) provide a complete implementation of the
@@ -603,7 +685,8 @@ standard.</p>
 <h3 id="media-types">Media Types</h3>
 
 <p>The CIMI standard mandates the support of both XML and JSON.  <strong>The
-SlipStream implementation only supports JSON.</strong></p>
+SlipStream implementation only supports JSON</strong> (and in some cases
+URL-encoded forms). </p>
 
 <h3 id="authorization">Authorization</h3>
 
@@ -622,13 +705,19 @@ SlipStream clients may also <strong>search resource collections using the
 HTTP <code class="prettyprint">PUT</code> method</strong> with a body containing the filters (and other
 parameters) as a URL-encoded form.</p>
 
+<h3 id="aggregations">Aggregations</h3>
+
+<p>As described earlier, SlipStream extends the CIMI standard to also
+include aggregating values over a collection of resources.</p>
+
 <h1 id="authentication">Authentication</h1>
 
 <p>Most SlipStream resources are only visible to authenticated users.
 The login process consists of creating a &ldquo;session&rdquo; resource via the
-standard CIMI add pattern and then using the returned token with
-subsequent interactions with the SlipStream server.  The details are
-covered in the sections for the Session and SessionTemplate resources.</p>
+standard CIMI templated add pattern and then using the returned token
+with subsequent interactions with the SlipStream server.  The details
+are covered in the sections for the Session and SessionTemplate
+resources.</p>
 
 <aside class="notice">
 Older authentication methods currently still work with SlipStream
@@ -701,8 +790,8 @@ internal database. </p>
 <h2 id="session-(cimi)">Session (CIMI)</h2>
 
 <blockquote>
-<p>An example document (named <code class="prettyprint">create.json</code> below) for authenticating
-  via the &ldquo;internal&rdquo; (username and password) method.</p>
+<p>An example document (named <code class="prettyprint">create-internal.json</code> below) for
+  authenticating via the &ldquo;internal&rdquo; (username and password) method.</p>
 </blockquote>
 <pre><code class="highlight json"><span class="p">{</span><span class="w">
   </span><span class="s2">"sessionTemplate"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
@@ -712,13 +801,27 @@ internal database. </p>
                       </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
+
+<blockquote>
+<p>A similar document for logging into with an API key/secret (named
+  <code class="prettyprint">create-api-key.json</code>). Verify the name of the template on the
+  server; the administrator may have chosen a different name.</p>
+</blockquote>
+<pre><code class="highlight json"><span class="p">{</span><span class="w">
+  </span><span class="s2">"sessionTemplate"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"session-template/api-key"</span><span class="p">,</span><span class="w">
+                        </span><span class="s2">"key"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"your-api-key"</span><span class="p">,</span><span class="w">
+                        </span><span class="s2">"secret"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"your-api-secret"</span><span class="w">
+                      </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
 <pre><code class="highlight shell"><span class="c"># Be sure to get the URL from the cloud entry point!</span>
 <span class="c"># The cookie options allow for automatic management of the</span>
 <span class="c"># SlipStream authentication token (cookie).</span>
 curl https://nuv.la/api/session <span class="se">\</span>
      -X POST <span class="se">\</span>
      -H <span class="s1">'content-type: application/json'</span> <span class="se">\</span>
-     -d @create.json <span class="se">\</span>
+     -d @create-internal.json <span class="se">\</span>
      --cookie-jar ~/cookies -b ~/cookies -sS
 </code></pre>
 
@@ -741,11 +844,12 @@ must be used in subsequent interactions with the SlipStream server.</p>
 <li><p>Browse the SessionTemplate resources to find the authentication
 method that you want to use.  Unless you have a browser-based
 client, you will probably want to use either &ldquo;internal&rdquo; (username
-and password) or &ldquo;api-key&rdquo; (API key and secret).</p></li>
+and password) or &ldquo;api-key&rdquo; (API key and secret).  <strong>Use of API keys
+and secrets is preferred over the username and password.</strong></p></li>
 <li><p>Prepare a &ldquo;create&rdquo; JSON document that references the
 SessionTemplate you have chosen and provides the corresponding
 parameters (e.g. username and password for &ldquo;internal&rdquo;).</p></li>
-<li><p>Post the &ldquo;create&rdquo; document to the SessionCollection URL. The
+<li><p>Post the &ldquo;create&rdquo; document to the Session collection URL. The
 correct URL can be determined from the CEP information.</p></li>
 <li><p>On a successful authentication request, a token will be returned
 allowing access to the SlipStream resources as the authenticated
@@ -760,9 +864,10 @@ expires.</p>
 
 <aside class="notice">
 To facilitate use of the API from browsers (i.e. javascript), the
-session resources also support bodies with a media type of
+session resources also support request bodies with a media type of
 &ldquo;application/x-www-form-urlencoded&rdquo;.  When using this media type,
-encode only the value of the &ldquo;sessionTemplate&rdquo; key in the form.
+encode only the value of the &ldquo;sessionTemplate&rdquo; key in the example JSON
+forms.
 </aside>
 
 <aside class="notice">
@@ -819,6 +924,10 @@ by invoking the &ldquo;describe&rdquo; action on the resource.</p>
 <td>generates API key and secret, storing secret digest and returning secret</td>
 </tr>
 </tbody></table>
+
+<p>Typically, there will also be Credential Template resources
+that describe the credentials for each supported cloud
+infrastructure. </p>
 
 <h2 id="credential-(cimi)">Credential (CIMI)</h2>
 
@@ -1001,6 +1110,74 @@ apply to these resources.  Most users will search the ServiceOffer
 entries by using a filter expression on the ServiceOffer collection.
 The example searches for all ServiceOffers from the &ldquo;exoscale-ch-gva&rdquo;
 cloud with more than 4096 MB of RAM. </p>
+
+<h2 id="service-benchmark-(cimi)">Service Benchmark (CIMI)</h2>
+
+<blockquote>
+<p>An example service benchmark showing the Whetstone and Dhrystone
+  benchmarks for an instance at Exoscale.</p>
+</blockquote>
+<pre><code class="highlight json"><span class="w">
+</span><span class="p">{</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"service-benchmark/25de61b0-0a54-41ab-b8da-d2846194da13"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/ServiceBenchmark"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"created"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-10-03T19:36:16.962Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"updated"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-10-03T19:36:16.962Z"</span><span class="p">,</span><span class="w">
+
+  </span><span class="s2">"credentials"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"credential/51f3ed99-c46e-43c8-9926-b8b64bcb86dd"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"serviceOffer"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"service-offer/92fee6cb-86c2-4fff-be5e-c87e6b27cf37"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"connector"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"exoscale-ch-gva"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"resource:ram"</span><span class="p">:</span><span class="w"> </span><span class="mi">512</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"resource:vcpu"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"resource:disk"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"resource:instanceType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Micro"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+
+  </span><span class="s2">"whetstone:score"</span><span class="p">:</span><span class="w"> </span><span class="mf">3997.3</span><span class="w">
+  </span><span class="s2">"whetstone:units"</span><span class="err">:</span><span class="w"> </span><span class="s2">"MWIPS"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"whetstone:freetext"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Executed by a Nuvla App"</span><span class="p">,</span><span class="w">
+
+  </span><span class="s2">"dhrystone:score"</span><span class="p">:</span><span class="w"> </span><span class="mf">33322937.2</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"dhrystone:units"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lps"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"dhrystone:freetext"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Executed by a Nuvla App"</span><span class="p">,</span><span class="w">
+
+  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">"..."</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"..."</span><span class="p">},</span><span class="w">
+  </span><span class="s2">"operations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">"..."</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<blockquote>
+<p>Show all of the ServiceBench resources from the &ldquo;exoscale-ch-gva&rdquo;.
+  With an average over the Whetstone score. </p>
+</blockquote>
+<pre><code class="highlight shell">curl <span class="s1">'https://nuv.la/api/service-benchmark?$filter=serviceOffer/connector/href="exoscale-ch-gva"&amp;$aggregation=avg:whetstone:score'</span>
+</code></pre>
+<pre><code class="highlight json"><span class="p">{</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"service-benchmark"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/ServiceBenchmarkCollection"</span><span class="p">,</span><span class="w">
+
+  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"aggregations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"avg:whetstone:score"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"value"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mf">4061.52400390625</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+
+  </span><span class="s2">"serviceBenchmarks"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"..."</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"..."</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>The ServiceBenchmark resource allows performance and other service
+metrics to be posted about one or more Service Offers.  Such
+information can be used to make informed decisions about which cloud
+resources to provision for a particular application. </p>
 
 <h2 id="service-attribute-(cimi)">Service Attribute (CIMI)</h2>
 
