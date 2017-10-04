@@ -30,7 +30,14 @@ normally be `http://localhost:4567`.
 Publishing Docs
 ---------------
 
-To publish changes to GitHub Pages do the following:
+Before publishing the documents on GitHub Pages, be sure to **remove**
+the build directory. If you do not do this then, the publishing
+process will fail with an error like:
+
+    Command failed with status (1): [git push origin gh-pages...]
+
+After removing the `build` directory, you can publish changes to
+GitHub Pages with the following command:
 
     $ bundle exec rake publish
 
