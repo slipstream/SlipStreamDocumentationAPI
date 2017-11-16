@@ -516,11 +516,10 @@ with subsequent interactions with the SlipStream server.  The details
 are covered in the sections for the Session and SessionTemplate
 resources.
 
-<aside class="notice">
-Older authentication methods currently still work with SlipStream
-servers but are deprecated.  Information on the older methods can be
-found in the "Deprecated Resources" section. 
-</aside>
+The supported Python and Clojure(Script) libraries (see
+[Libraries](#libraries)) directly use the REST API defined here for
+Session management, but also provide higher-level functions that
+simplify the authentication process.
 
 ## SessionTemplate (CIMI)
 
@@ -2319,67 +2318,6 @@ resources that still work with SlipStream.  Although these features
 work, they should not be used for any new code and existing code
 should migrate to equivalent, non-deprecated resources.
 
-## Login
-
-### Generate a cookie
-
-`POST https://nuv.la/auth/login`
-
-
-Parameter | Required | Description
---------- | -------- | -----------
-username | true | Name of the user to authenticate with
-password | true | Password corresponding to the username
-
-This resource allows users to generate a time limited cookie. The value of the cookie corresponds
-to the `Set-Cookie` of the response header.
-
-```shell
-curl -k -s -D - https://nuv.la/auth/login -X POST -d "username=name&password=secret" -c cookie-user.txt
-```
-
-This `curl` command will store the authentication token inside `cookie-user.txt` file.
-This cookie must be used later on (for example with `-b` option in curl command) to access the API.
-
-
-<aside class="notice">
-Remember — with the exception of this resource and the documentation, all resources require authentication.
-</aside>
-
-
-### Basic authentication (deprecated)
-
-```shell
-curl https://nuv.la?media=xml -u <user>:<password>
-```
-> or
-
-```shell
-curl https://<user>:<password>@slipstream.sixsq.com?media=xml
-```
-
-```xml
-<welcome>
-   <modules>
-      <item resourceUri="module/Mebster/48" category="Project" version="48" name="Mebster">
-         <authz owner="meb" ownerGet="true" ownerPut="true" ownerPost="false" ownerDelete="true" ownerCreateChildren="true" groupGet="false" groupPut="false" groupPost="false" groupDelete="false" groupCreateChildren="false" publicGet="false" publicPut="false" publicPost="false" publicDelete="false" publicCreateChildren="false" inheritedGroupMembers="true">
-            <groupMembers class="java.util.ArrayList"/>
-         </authz>
-      </item>
-      <item resourceUri="module/SlipStream/280" category="Project" description="SlipStream dog fooding :-)" version="280" name="SlipStream">
-         <authz owner="sixsq_dev" ownerGet="true" ownerPut="true" ownerPost="false" ownerDelete="true" ownerCreateChildren="true" groupGet="true" groupPut="true" groupPost="false" groupDelete="false" groupCreateChildren="false" publicGet="false" publicPut="false" publicPost="false" publicDelete="false" publicCreateChildren="false" inheritedGroupMembers="false">
-            <groupMembers class="java.util.ArrayList">
-               <string>lionel</string>
-               <string>konstan</string>
-               <string>loomis</string>
-               <string>meb</string>
-               <string>rob</string>
-               <string>sebastien.fievet</string>
-            </groupMembers>
-         </authz>
-      </item>
-...
-
-```
-
-Basic authentication can be tested using simple username/password pair.
+**There are currently no deprecated resources, although the user,
+module, and run resources will be moved to the CIMI API in the near
+future.**
