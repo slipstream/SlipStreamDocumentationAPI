@@ -538,10 +538,12 @@ filtering and ordering.
 </code></pre>
 
 <p>The CIMI specification defines a simple, but powerful, filtering
-language to make sophisticated selections of resources. The syntax of
-the <code class="prettyprint">$filter</code> query parameter consists of infix binary comparisons
-combined with <code class="prettyprint">and</code> or <code class="prettyprint">or</code> operators. Parentheses can be used to
-force the ordering of operations.  Whitespace is ignored.</p>
+language to make sophisticated selections of resources. (See Section
+4.1.6.1 of the full <a href="https://www.dmtf.org/sites/default/files/standards/documents/DSP0263_2.0.0.pdf">CIMI
+specification</a>.)
+The syntax of the <code class="prettyprint">$filter</code> query parameter consists of infix binary
+comparisons combined with <code class="prettyprint">and</code> or <code class="prettyprint">or</code> operators. Parentheses can be
+used to force the ordering of operations.  Whitespace is ignored.</p>
 
 <p>The following tables list the supported relational operators and
 types. All comparisons use the natural ordering of the data type.</p>
@@ -609,6 +611,29 @@ types. All comparisons use the natural ordering of the data type.</p>
 <td>null values (SlipStream extension)</td>
 </tr>
 </tbody></table>
+
+<p>The SlipStream filtering implementation is a superset of the CIMI
+filtering specification.  These extentions include:</p>
+
+<ul>
+<li>The arguments for binary operators can be specified in either order
+(attribute, value or value, attribute).</li>
+<li>&ldquo;null&rdquo; is supported as a literal value to allow the
+existence/non-existence of a value to be determined.</li>
+<li>A &ldquo;prefix&rdquo; or &ldquo;starts with&rdquo; operator (&ldquo;^=&rdquo;) is supported. This was
+judged to be generally useful and was easy to implement for
+Elasticsearch.</li>
+<li>Nested attributes are supported with levels separated by slashes
+(&rsquo;/&rsquo;). This syntax is used elsewhere in the CIMI standard, but not
+specifically mentioned in the filter specification.</li>
+</ul>
+
+<p>The filter syntax may be extended in the future to also support the
+&ldquo;not&rdquo; logical operation.</p>
+
+<p>The <a href="https://raw.githubusercontent.com/slipstream/SlipStreamServer/master/cimi/resources/com/sixsq/slipstream/ssclj/filter/cimi-filter-grammar.txt">full
+grammar</a>
+of our extended CIMI filtering is documented in GitHub.</p>
 
 <h3 id="aggregations">Aggregations</h3>
 
@@ -721,11 +746,10 @@ with subsequent interactions with the SlipStream server.  The details
 are covered in the sections for the Session and SessionTemplate
 resources.</p>
 
-<aside class="notice">
-Older authentication methods currently still work with SlipStream
-servers but are deprecated.  Information on the older methods can be
-found in the &ldquo;Deprecated Resources&rdquo; section. 
-</aside>
+<p>The supported Python and Clojure(Script) libraries (see
+<a href="#libraries">Libraries</a>) directly use the REST API defined here for
+Session management, but also provide higher-level functions that
+simplify the authentication process.</p>
 
 <h2 id="sessiontemplate-(cimi)">SessionTemplate (CIMI)</h2>
 <pre><code class="highlight shell"><span class="c"># List all of the configured authentication mechanisms</span>
@@ -2937,76 +2961,9 @@ resources that still work with SlipStream.  Although these features
 work, they should not be used for any new code and existing code
 should migrate to equivalent, non-deprecated resources.</p>
 
-<h2 id="login">Login</h2>
-
-<h3 id="generate-a-cookie">Generate a cookie</h3>
-
-<p><code class="prettyprint">POST https://nuv.la/auth/login</code></p>
-
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Required</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>username</td>
-<td>true</td>
-<td>Name of the user to authenticate with</td>
-</tr>
-<tr>
-<td>password</td>
-<td>true</td>
-<td>Password corresponding to the username</td>
-</tr>
-</tbody></table>
-
-<p>This resource allows users to generate a time limited cookie. The value of the cookie corresponds
-to the <code class="prettyprint">Set-Cookie</code> of the response header.</p>
-<pre><code class="highlight shell">curl -k -s -D - https://nuv.la/auth/login -X POST -d <span class="s2">"username=name&amp;password=secret"</span> -c cookie-user.txt
-</code></pre>
-
-<p>This <code class="prettyprint">curl</code> command will store the authentication token inside <code class="prettyprint">cookie-user.txt</code> file.
-This cookie must be used later on (for example with <code class="prettyprint">-b</code> option in curl command) to access the API.</p>
-
-<aside class="notice">
-Remember — with the exception of this resource and the documentation, all resources require authentication.
-</aside>
-
-<h3 id="basic-authentication-(deprecated)">Basic authentication (deprecated)</h3>
-<pre><code class="highlight shell">curl https://nuv.la?media<span class="o">=</span>xml -u &lt;user&gt;:&lt;password&gt;
-</code></pre>
-
-<blockquote>
-<p>or</p>
-</blockquote>
-<pre><code class="highlight shell">curl https://&lt;user&gt;:&lt;password&gt;@slipstream.sixsq.com?media<span class="o">=</span>xml
-</code></pre>
-<pre><code class="highlight xml"><span class="nt">&lt;welcome&gt;</span>
-   <span class="nt">&lt;modules&gt;</span>
-      <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"module/Mebster/48"</span> <span class="na">category=</span><span class="s">"Project"</span> <span class="na">version=</span><span class="s">"48"</span> <span class="na">name=</span><span class="s">"Mebster"</span><span class="nt">&gt;</span>
-         <span class="nt">&lt;authz</span> <span class="na">owner=</span><span class="s">"meb"</span> <span class="na">ownerGet=</span><span class="s">"true"</span> <span class="na">ownerPut=</span><span class="s">"true"</span> <span class="na">ownerPost=</span><span class="s">"false"</span> <span class="na">ownerDelete=</span><span class="s">"true"</span> <span class="na">ownerCreateChildren=</span><span class="s">"true"</span> <span class="na">groupGet=</span><span class="s">"false"</span> <span class="na">groupPut=</span><span class="s">"false"</span> <span class="na">groupPost=</span><span class="s">"false"</span> <span class="na">groupDelete=</span><span class="s">"false"</span> <span class="na">groupCreateChildren=</span><span class="s">"false"</span> <span class="na">publicGet=</span><span class="s">"false"</span> <span class="na">publicPut=</span><span class="s">"false"</span> <span class="na">publicPost=</span><span class="s">"false"</span> <span class="na">publicDelete=</span><span class="s">"false"</span> <span class="na">publicCreateChildren=</span><span class="s">"false"</span> <span class="na">inheritedGroupMembers=</span><span class="s">"true"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;groupMembers</span> <span class="na">class=</span><span class="s">"java.util.ArrayList"</span><span class="nt">/&gt;</span>
-         <span class="nt">&lt;/authz&gt;</span>
-      <span class="nt">&lt;/item&gt;</span>
-      <span class="nt">&lt;item</span> <span class="na">resourceUri=</span><span class="s">"module/SlipStream/280"</span> <span class="na">category=</span><span class="s">"Project"</span> <span class="na">description=</span><span class="s">"SlipStream dog fooding :-)"</span> <span class="na">version=</span><span class="s">"280"</span> <span class="na">name=</span><span class="s">"SlipStream"</span><span class="nt">&gt;</span>
-         <span class="nt">&lt;authz</span> <span class="na">owner=</span><span class="s">"sixsq_dev"</span> <span class="na">ownerGet=</span><span class="s">"true"</span> <span class="na">ownerPut=</span><span class="s">"true"</span> <span class="na">ownerPost=</span><span class="s">"false"</span> <span class="na">ownerDelete=</span><span class="s">"true"</span> <span class="na">ownerCreateChildren=</span><span class="s">"true"</span> <span class="na">groupGet=</span><span class="s">"true"</span> <span class="na">groupPut=</span><span class="s">"true"</span> <span class="na">groupPost=</span><span class="s">"false"</span> <span class="na">groupDelete=</span><span class="s">"false"</span> <span class="na">groupCreateChildren=</span><span class="s">"false"</span> <span class="na">publicGet=</span><span class="s">"false"</span> <span class="na">publicPut=</span><span class="s">"false"</span> <span class="na">publicPost=</span><span class="s">"false"</span> <span class="na">publicDelete=</span><span class="s">"false"</span> <span class="na">publicCreateChildren=</span><span class="s">"false"</span> <span class="na">inheritedGroupMembers=</span><span class="s">"false"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;groupMembers</span> <span class="na">class=</span><span class="s">"java.util.ArrayList"</span><span class="nt">&gt;</span>
-               <span class="nt">&lt;string&gt;</span>lionel<span class="nt">&lt;/string&gt;</span>
-               <span class="nt">&lt;string&gt;</span>konstan<span class="nt">&lt;/string&gt;</span>
-               <span class="nt">&lt;string&gt;</span>loomis<span class="nt">&lt;/string&gt;</span>
-               <span class="nt">&lt;string&gt;</span>meb<span class="nt">&lt;/string&gt;</span>
-               <span class="nt">&lt;string&gt;</span>rob<span class="nt">&lt;/string&gt;</span>
-               <span class="nt">&lt;string&gt;</span>sebastien.fievet<span class="nt">&lt;/string&gt;</span>
-            <span class="nt">&lt;/groupMembers&gt;</span>
-         <span class="nt">&lt;/authz&gt;</span>
-      <span class="nt">&lt;/item&gt;</span>
-...
-
-</code></pre>
-
-<p>Basic authentication can be tested using simple username/password pair.</p>
+<p><strong>There are currently no deprecated resources, although the user,
+module, and run resources will be moved to the CIMI API in the near
+future.</strong></p>
 
       </div>
       <div class="dark-box">
