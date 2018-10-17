@@ -1311,6 +1311,19 @@ Delete a specific (the event-uuid is known) event.
 
 `DELETE https://nuv.la/api/event/<event-uuid>`
 
+## VirtualMachine (CIMI)
+
+These resources provide information for all active virtual machines on
+the underlying cloud infrastructures. Together they constitute the
+current global state of compute resources managed by SlipStream.
+
+## StorageBucket (CIMI)
+
+These resources provide information for S3 buckets accessible via the
+cloud credentials stored in SlipStream. Together they provide a global
+snapshot of S3 object storage on the cloud infrastructures accessible
+through SlipStream.
+
 ## Usage (CIMI)
 
 Represents the summary of cloud usage records for a given user and cloud, on a specific period.
@@ -1485,6 +1498,16 @@ positions of the entities within the Collection that are returned. The query par
 `GET https://nuv.la/api/usage?%24first=2&%24last=2`
 
 will return only the *second* usage record.
+
+# Accounting
+
+## Metering (CIMI)
+
+The Metering resources are snapshots of the monitoring information
+(VirtualMachine and StorageBucket resources) that are taken every
+minute to provide historical usage information.  These resources can
+be queried to provide aggregate usage information for a given time
+period, specific groups or users, etc.
 
 # Module
 
