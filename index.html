@@ -406,8 +406,8 @@ of the key will contain a list of actions (e.g. <code class="prettyprint">add</c
 <code class="prettyprint">delete</code>, <code class="prettyprint">start</code>) along with the URL to use to execute the action.</p>
 
 <p>The HTTP methods to use for the CIMI <code class="prettyprint">add</code>, <code class="prettyprint">edit</code>, and <code class="prettyprint">delete</code>
-operations are POST, PUT, and DELETE, respectively.  All other actions
-use the HTTP POST method. </p>
+operations are POST, PUT, and DELETE, respectively.  All other
+operations use the HTTP POST method.</p>
 
 <h2 id="resource-management-(crud)">Resource Management (CRUD)</h2>
 
@@ -419,6 +419,8 @@ although the specification uses &ldquo;Add&rdquo; for &ldquo;Create&rdquo; and &
 <p><strong>See Section 4.2.1 of the CIMI specification for detailed
 descriptions of these patterns.</strong>  Only differences from the standard
 patterns are documented here.</p>
+
+<h3 id="http-methods">HTTP Methods</h3>
 
 <p>The following table shows the mapping between the resource management
 action and the HTTP method to be used. <strong>Those resources <em>with</em> a CIMI
@@ -456,23 +458,42 @@ notation follow the CIMI patterns.</strong></p>
 <td><code class="prettyprint">DELETE</code></td>
 <td>resource</td>
 </tr>
+<tr>
+<td>Other</td>
+<td><code class="prettyprint">POST</code></td>
+<td>operation URL</td>
+</tr>
 </tbody></table>
 
-<p>Any other action listed in the operations section of a response will
-use the HTTP POST method to the provided URL.</p>
+<aside class="notice">
 
-<p>Note that there are two CIMI add (create) patterns: one that uses a
-template to create the resource and another that creates a resource
-without a template.  In the Cloud Entry Point, <strong>any resource that has
-a corresponding template resource will use the templated add
-pattern</strong>. For example, the Session resource will use the templated
-add pattern because there is a SessionTemplate resource also listed.</p>
+Specialized actions can appear in the operations section of a
+resource.  Any non-standard operation will use the POST method for the
+request.  The parameters (if any) will depend on the operation. 
+
+</aside>
+
+<h3 id="add-pattern-variations">Add Pattern Variations</h3>
+
+<p>Note that there are two CIMI add (create) patterns:</p>
+
+<ul>
+<li><p><strong>Direct creation</strong> that takes uses the new resource&rsquo;s content
+directly in the creation request, and</p></li>
+<li><p><strong>Templated creation</strong> that uses a template to create the resource.</p></li>
+</ul>
+
+<p>In the Cloud Entry Point, <strong>any resource that has a corresponding
+template resource will use the templated add pattern</strong>. For example,
+the Session resource will use the templated add pattern because there
+is a SessionTemplate resource also listed.</p>
 
 <h2 id="resource-selection">Resource Selection</h2>
 
 <p>The CIMI specification provides advanced features for selecting
 resources when searching collections, including paging (CIMI Section
-4.1.6.2), sorting (4.1.6.6), and filtering (4.1.6.1).</p>
+4.1.6.2), subsetting (4.1.6.3), sorting (4.1.6.6), and filtering
+(4.1.6.1).</p>
 
 <p>All of the resource selection parameters are specified as HTTP query
 parameters.  These are specified directly within the URL when using
@@ -480,12 +501,6 @@ the HTTP <code class="prettyprint">GET</code> method.  They are specified in a b
 type of <code class="prettyprint">application/x-www-form-urlencoded</code> when using the <code class="prettyprint">PUT</code>
 method. (Note that use of <code class="prettyprint">PUT</code> for searches is an SlipStream
 extension to the CIMI standard.)</p>
-
-<aside class="notice">
-The standard also describes facilities for subsetting resources and
-expanding resource references.  These are not yet implemented by
-SlipStream. 
-</aside>
 
 <aside class="warning">
 All of the CIMI query parameters are prefixed with a dollar sign
@@ -526,6 +541,28 @@ excessively large responses.
 The selection of resources via these parameters is done after any
 filtering and ordering.
 </aside>
+
+<h3 id="subsetting">Subsetting</h3>
+
+<p>Using the <code class="prettyprint">$select</code> parameter allows you to select only certain
+attributes to be returned by the server.  Avoiding sending information
+that will not be useful reduces the load on the network and the
+server.</p>
+
+<p>Multiple attributes may be specified by providing a string with
+comma-separated values or with multiple <code class="prettyprint">$select</code> parameters.</p>
+
+<aside class="notice">
+For various reasons, the server may return attributes that you have
+not selected in the responses.  The server should always return the
+selected attributes.
+</aside>
+
+<blockquote>
+<p>Example select values</p>
+</blockquote>
+<pre><code class="highlight c"><span class="n">name</span><span class="p">,</span><span class="n">description</span>
+</code></pre>
 
 <h3 id="filtering">Filtering</h3>
 
@@ -1575,199 +1612,462 @@ An event can <strong>not</strong> be updated, only deleted.
 
 <p><code class="prettyprint">DELETE https://nuv.la/api/event/&lt;event-uuid&gt;</code></p>
 
-<h2 id="usage-(cimi)">Usage (CIMI)</h2>
+<h2 id="virtualmachine-(cimi)">VirtualMachine (CIMI)</h2>
 
-<p>Represents the summary of cloud usage records for a given user and cloud, on a specific period.</p>
+<p>These resources provide information for all active virtual machines on
+the underlying cloud infrastructures. Together they constitute the
+current global state of compute resources managed by SlipStream.</p>
 
-<h3 id="list-all-usage">List all Usage</h3>
+<p>You must be authenticated with the SlipStream server to access the
+VirtualMachine collection and resources.</p>
 
-<p>The collection of usage records (most recent are listed first) is returned filtered with the provided authentication.
-(Only resources for the given user are returned.)</p>
+<aside class="warning">
 
-<h4 id="http-request">HTTP Request</h4>
+SlipStream handles the lifecycle of these resources, creating,
+updating, and deleting them as it monitors the associated virtual
+machines.  Users typically are only interested in viewing and querying
+these resources.
 
-<p><code class="prettyprint">GET https://nuv.la/api/usage</code></p>
-<pre><code class="highlight shell">curl https://nuv.la/api/usage -b cookie-user.txt -D -
+</aside>
+
+<h3 id="list-virtual-machines">List Virtual Machines</h3>
+<pre><code class="highlight shell">curl https://nuv.la/api/virtual-machine -b ~/cookies -D -
 </code></pre>
+<pre><code class="highlight http"><span class="err">HTTP/2 200
+server: nginx
+date: Wed, 17 Oct 2018 08:36:24 GMT
+content-type: application/json
+content-length: 3254718
+vary: Accept-Encoding
+strict-transport-security: max-age=31536000
+</span></code></pre>
+<pre><code class="highlight json"><span class="p">{</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/VirtualMachineCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"virtual-machine"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">870</span><span class="p">,</span><span class="w">
 
-<blockquote>
-<p>The above command returns a json structured like this:</p>
-</blockquote>
-<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
-<span class="na">Content-Length</span><span class="p">:</span> <span class="s">1511</span>
-<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
-<span class="na">Date</span><span class="p">:</span> <span class="s">Mon, 22 Jun 2015 08:49:33 GMT</span>
+  </span><span class="err">...</span><span class="w">
 
-<span class="p">{</span><span class="w">
-  </span><span class="s2">"usages"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"usage"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"DISK"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"unit_minutes"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mf">86400.0</span><span class="w">
-      </span><span class="p">}</span><span class="w">
+  </span><span class="s2">"virtualMachines"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"connector"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"connector/exoscale-de-fra"</span><span class="w">
     </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"end_timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-09-26T00:00:00.000Z"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"start_timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-09-25T00:00:00.000Z"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"cloud"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"cloud-8"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"user"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-1"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-1"</span><span class="w">
-      </span><span class="p">},</span><span class="w">
-      </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-1"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
-      </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"cloud-8"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
-      </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Usage/056169bf-ac20-47dd-a7f9-e6b835265a01"</span><span class="w">
-  </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"usage"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"vm"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"unit_minutes"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mf">1192.0</span><span class="w">
-      </span><span class="p">}</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"end_timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-09-26T00:00:00.000Z"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"start_timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-09-25T00:00:00.000Z"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"cloud"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"cloud-5"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"user"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-1"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-1"</span><span class="w">
-      </span><span class="p">},</span><span class="w">
-      </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-1"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
-      </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"cloud-5"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
-      </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Usage/baf5ce10-9cee-4407-9860-61c2da0c0b13"</span><span class="w">
-  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
-  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"VIEW"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ANON"</span><span class="w">
+    </span><span class="s2">"ip"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"194.182.170.118"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"credentials"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"credential/7353af45-cd25-4bb0-9444-ee1935aa8a81"</span><span class="w">
     </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+    </span><span class="s2">"updated"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-10-17T08:28:59.345Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"billable"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"created"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-10-15T13:54:48.539Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"state"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"running"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"currency"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"EUR"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"instanceID"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"0781484e-c82a-4522-b339-386e12c9e8ce"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"virtual-machine/a5d482e1-1fc0-33b7-b3b0-78fc4a5d08b2"</span><span class="p">,</span><span class="w">
+    </span><span class="err">...</span><span class="w">    
+    </span><span class="err">}</span><span class="p">]</span><span class="w">
+    </span><span class="err">...</span><span class="w">
+</span></code></pre>
+
+<p>Listing the VirtualMachine resources follows the standard CIMI
+pattern, using an HTTP GET request on the collection URL. </p>
+
+<p>The example command returns the HTTP headers of the request and then
+the full list of Virtual Machine resources as a JSON document. The
+returned JSON document contains some general information concerning,
+for example, the total number of documents (&ldquo;count&rdquo; key), followed by
+the list of VirtualMachine resource under the &ldquo;virtualMachines&rdquo; key.</p>
+
+<h3 id="filtering-virtual-machines">Filtering Virtual Machines</h3>
+
+<p>The full <a href="#resource-selection">CIMI filtering syntax</a> (with SlipStream
+extensions) can be used to find a subset of the VirtualMachine
+resources. For example, the filter terms:</p>
+
+<ul>
+<li><code class="prettyprint">connector/href=&quot;connector/exoscale-de-fra&quot;</code></li>
+<li><code class="prettyprint">state=&quot;running&quot;</code></li>
+</ul>
+
+<p>would limit the response to only virtual machines in a running state
+on the &ldquo;exoscale-de-fra&rdquo; cloud.  Other query parameters, can also be
+used, for example <code class="prettyprint">$last=0</code> to just return the global count
+information.</p>
+<pre><code class="highlight shell">curl <span class="s1">'https://nuv.la/api/virtual-machine?$filter=connector/href="connector/exoscale-de-fra"%20and%20state="running"&amp;$last=0'</span> -b ~/cookies -D -
+</code></pre>
+<pre><code class="highlight json"><span class="p">{</span><span class="w">
+  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">351</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="p">,</span><span class="w">
       </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"MODIFY"</span><span class="w">
+    </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"VIEW"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
   </span><span class="p">},</span><span class="w">
-  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/UsageCollection"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Usage"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/VirtualMachineCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"virtual-machine"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"add"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"virtual-machine"</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"virtualMachines"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">]</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 
-<h3 id="filtering-usage">Filtering Usage</h3>
+<h2 id="storagebucket-(cimi)">StorageBucket (CIMI)</h2>
 
-<aside class="notice">
+<p>These resources provide information for S3 buckets accessible via the
+cloud credentials stored in SlipStream. Together they provide a global
+snapshot of S3 object storage on the cloud infrastructures accessible
+through SlipStream.</p>
 
-From <a target="_blank" href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">
-CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections</a>
-<br />
-<br />
-If retrieving the representation of a Collection, Consumers may include the $filter query parameter to
-reduce the number of entries of the Collection that are returned based on the data within the entries of the
-Collection. Providers shall interpret and process the $filter query parameter as described in this
-section. The $filter parameter shall be of the form:
-?$filter=expression
+<p>You must be authenticated with the SlipStream server to access the
+StorageBucket collection and resources.</p>
+
+<aside class="warning">
+
+SlipStream handles the lifecycle of these resources, creating,
+updating, and deleting them as it monitors the associated S3 storage.
+Users typically are only interested in viewing and querying these
+resources.
+
 </aside>
 
-<h4 id="filtering-on-string-comparison">Filtering on string comparison</h4>
+<h3 id="list-and-filter-storage-buckets">List and Filter Storage Buckets</h3>
 
-<p>To retrieve the usage records for a given cloud, the CIMI filter can be written</p>
+<p>Listing and filtering the StorageBucket resources follows the standard
+CIMI patterns.  The full CIMI filtering syntax is available when
+listing the StorageBucket resources.</p>
+<pre><code class="highlight shell">curl <span class="s1">'https://nuv.la/api/storage-bucket?$last=1'</span> -b ~/cookies -D -
+</code></pre>
+<pre><code class="highlight json"><span class="p">{</span><span class="w">
+  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">638</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"MODIFY"</span><span class="w">
+    </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"VIEW"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/StorageBucketCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"storage-bucket"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"add"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"storage-bucket"</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"storageBuckets"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"connector"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"connector/exoscale-ch-gva"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"description"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"obj store usage for bucket slipstream-test-1533528220, from credential credential/df3e1df6-37e5-4bf2-9366-7f0d5ae072a8 in connector/exoscale-ch-gva"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"credentials"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"credential/df3e1df6-37e5-4bf2-9366-7f0d5ae072a8"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+    </span><span class="s2">"updated"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-08-22T19:06:51.545Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"name"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"bucket slipstream-test-1533528220 size in connector/exoscale-ch-gva"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"created"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-08-22T15:09:25.951Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"usageInKiB"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">51</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"currency"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"EUR"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"storage-bucket/a048beb7-2dc2-3899-92fc-2f6abeadd1f5"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"SixSq:/admin"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"VIEW"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="w">
+      </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="w">
+      </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"RHEA:/admin"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"VIEW"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="w">
+      </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"VIEW"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="w">
+      </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"edit"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"storage-bucket/a048beb7-2dc2-3899-92fc-2f6abeadd1f5"</span><span class="w">
+    </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"delete"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"storage-bucket/a048beb7-2dc2-3899-92fc-2f6abeadd1f5"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+    </span><span class="s2">"bucketName"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"slipstream-test-1533528220"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/StorageBucket"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"serviceOffer"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"resource:host"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"sos.exo.io"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"service-offer/08b86233-0ef2-4716-a58d-901816738955"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"price:unitCost"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mf">2.0E-5</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"resource:storage"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"resource:type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"DATA"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"resource:platform"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"S3"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"price:billingUnit"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"GiBh"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"price:currency"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"EUR"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
 
-<p><code class="prettyprint">$filter=cloud=&#39;cloud-name&#39;</code></p>
+<h2 id="metering-(cimi)">Metering (CIMI)</h2>
 
-<p>Note, however, that such a filter contains characters that must be <strong>URL-encoded</strong>, and the HTTP request will look like this:</p>
+<p>The Metering resources are snapshots of the monitoring information
+(VirtualMachine and StorageBucket resources) that are taken every
+minute to provide historical usage information.  These resources can
+be queried to provide aggregate usage information for a given time
+period, specific groups or users, etc.</p>
 
-<p><code class="prettyprint">GET https://nuv.la/api/usage?%24filter=cloud%3D%27cloud-name%27</code></p>
+<aside class="warning">
 
-<h4 id="filtering-on-date-comparison-(equality)">Filtering on date comparison (equality)</h4>
+SlipStream handles the lifecycle of these resources, creating them
+with each periodic snapshot. Users typically are only interested in
+viewing, querying, and aggregating values for these resources.
 
-<p>To retrieve the usage records for a specific date, the CIMI filter can be written</p>
-
-<p><code class="prettyprint">?$filter=start_timestamp=2015-06-22</code></p>
-
-<p>Full URL with encoding:</p>
-
-<p><code class="prettyprint">GET https://nuv.la/api/usage?%24filter=start_timestamp%3D2015-06-22</code></p>
-
-<h4 id="filtering-on-date-comparison-(before-or-after)">Filtering on date comparison (before or after)</h4>
-
-<p>To retrieve the usage records after a specific date, the CIMI filter can be written</p>
-
-<p><code class="prettyprint">?$filter=start_timestamp&gt;2015-06-22</code></p>
-
-<p>Full URL with encoding:</p>
-
-<p><code class="prettyprint">GET https://nuv.la/api/usage?%24filter=start_timestamp%3E2015-06-22</code></p>
-
-<p>To filter usage records before a specific date, use <strong>&lt;</strong> (URL-encoded as <strong>%3C</strong>) instead.</p>
-
-<h4 id="filtering-with-multiple-conditions">Filtering with multiple conditions</h4>
-
-<p>You can join conditons with <strong>and</strong> (logical and), or <strong>or</strong> (logical or).</p>
-
-<p><code class="prettyprint">?$filter=start_timestamp&gt;2015-06-22 and cloud=&#39;cloud-name&#39;</code></p>
-
-<p>Full URL with encoding:</p>
-
-<p><code class="prettyprint">GET https://nuv.la/api/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27</code></p>
-
-<p>These are only some examples, consult the CIMI documentation for an exhaustive list of possibilities.</p>
-
-<h3 id="paginating-usage">Paginating Usage</h3>
-
-<p>From <a href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.2 Subsetting Collections</a></p>
-
-<aside class="notice">
-If retrieving the representation of a Collection, Consumers may include query parameters to subset the
-number of entities of the Collection that are returned.
-&hellip;
-This specification defined two query parameters that, if used, shall indicate the first and last ordinal
-positions of the entities within the Collection that are returned. The query parameters shall be of the form:
-￼?$first=number
- ?$last=number
 </aside>
 
-<h4 id="http-request">HTTP Request</h4>
+<h3 id="filtering-and-aggregation">Filtering and Aggregation</h3>
 
-<p><code class="prettyprint">GET https://nuv.la/api/usage?%24first=2&amp;%24last=2</code></p>
+<blockquote>
+<p>Provide the average number of CPU cores and total cost for the
+  &ldquo;user/test&rdquo; user for the given time period.</p>
+</blockquote>
+<pre><code class="highlight shell">curl <span class="s1">'https://nuv.la/api/metering?$last=0&amp;deployment/user!='</span>user/test<span class="s1">'&amp;$aggregation=sum:price,avg:serviceOffer/resource:vpu&amp;$filter=created&lt;"now"%20and%20created&gt;"2018-09-13T00:00:00Z"%20and%20deployment/user/href="user/test"'</span> <span class="se">\</span>
+    -b ~/cookies -D -
+</code></pre>
+<pre><code class="highlight json"><span class="p">{</span><span class="w">
+  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">45083692</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"aggregations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"avg:serviceOffer/resource:vcpu"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"value"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mf">6.730052249501845</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"sum:price"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"value"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mf">187186.03962752942</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"MODIFY"</span><span class="w">
+    </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"VIEW"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/MeteringCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"metering"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"add"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"metering"</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"meterings"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
 
-<p>will return only the <em>second</em> usage record.</p>
+<p>Typically you will query these resources by providing a time window, a
+user/group, and the value(s) to aggregate.  To filter by the date and
+user, a <code class="prettyprint">$filter</code> expression similar to the following can be used:</p>
 
-<h1 id="module">Module</h1>
+<p><code class="prettyprint">created&lt;&quot;now-1d&quot; and created&gt;&quot;2018-09-13T00:00:00Z&quot;</code></p>
 
-<p>(Extracted from the <a href="http://ssdocs.sixsq.com/documentation/advanced_tutorial/key_concepts.html">tutorial documentation</a>)</p>
+<p>Explicit dates can be used or relative times compared to &ldquo;now&rdquo;.  The
+support for &ldquo;now&rdquo; expressions is an extension to the CIMI
+standard. The &ldquo;now&rdquo; expression syntax comes directly from the
+underlying Elasticsearch database.</p>
 
-<p>Metadata about your images and deployments are organized into projects in SlipStream. Each project consists of a number of modules. The modules may be Project, Machine Image or Deployment modules:</p>
+<p>You will almost never be interested in the individual metering
+resources.  <strong>As there are an extremely large number in any time
+window, the list can be suppressed by providing the query parameter
+<code class="prettyprint">$last=0</code>.</strong> With the general information and any aggregation
+information will be returned, but none of the selected resources.</p>
+
+<p>You can review the <a href="#resource-selection">aggregation documentation</a> to
+see what aggregations are supported.  In the context of accounting,
+the &ldquo;count&rdquo;, &ldquo;avg&rdquo;, and &ldquo;sum&rdquo; aggregations are usually the most
+useful.  To sum the money spent on the resources (assuming that prices
+have been defined for the cloud), you can use a query expression like
+the following:</p>
+
+<p><code class="prettyprint">$aggregation=sum:price</code></p>
+
+<p>to calculate the total cost of the selected resources.  Multiple
+aggregations can be specified either as a multiple parameters or as a
+comma-separated value.  The requested information will be returned in
+the &ldquo;aggregations&rdquo; key of the response.</p>
+
+<p>The example shows a full example and the JSON response.</p>
+
+<h1 id="user">User</h1>
+
+<h2 id="user-(cimi)">User (CIMI)</h2>
+
+<p>User resources contain personal information and a few parameters
+concerning the registered users.  This is a templated resource, so
+creating a new user requires a template.  All the SCRUD
+actions follow the standard CIMI patterns. </p>
+
+<h2 id="usertemplate-(cimi)">UserTemplate (CIMI)</h2>
+
+<blockquote>
+<p>Listing of the available UserTemplate resources on Nuvla.</p>
+</blockquote>
+<pre><code class="highlight shell">curl <span class="s1">'https://nuv.la/api/user-template?$select=name,description'</span>
+</code></pre>
+<pre><code class="highlight json"><span class="p">{</span><span class="w">
+  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w">
+  </span><span class="err">...</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/UserTemplateCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"user-template"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"userTemplates"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"name"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ESRF Realm"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"description"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Creates a new user through OIDC registration"</span><span class="p">,</span><span class="w">
+    </span><span class="err">...</span><span class="w">
+    </span><span class="err">}</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="err">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/UserTemplate"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"operations"</span><span class="w"> </span><span class="err">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/action/describe"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"/describe"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+  </span><span class="err">}</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"name"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"INFN Realm"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"description"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Creates a new user through OIDC registration"</span><span class="p">,</span><span class="w">
+    </span><span class="err">...</span><span class="w">
+
+</span></code></pre>
+
+<p>UserTemplate resources define the &ldquo;user registration&rdquo; methods that are
+permitted by the server.  The UserTemplate collection follows all of
+the CIMI SCRUD patterns. </p>
+
+<p>The server will always contain the &ldquo;direct&rdquo; user template.  This
+template is only acceptable to administrators and allows the direct
+creation of a new user without any email verification, etc.</p>
+
+<p>The system administrator may create additional templates to allow
+other user registration methods.  If the ACL of the template allows
+for &ldquo;anonymous&rdquo; access, then the server will support self-registration
+of users.  The registration processes will typically require
+additional validation step, such as email verification.</p>
+
+<h2 id="userparam-(cimi)">UserParam (CIMI)</h2>
+
+<p>The UserParam resource contains default values for a number of
+user-level parameters.  These include things like the default
+deployment timeout, verbosity, and the default cloud service.</p>
+
+<p>This is a templated resource that follows all the standard CIMI SCRUD
+patterns. Normally, these resources are created during the user
+registration process and not created manually.</p>
+
+<p>A UserParam resource can be matched to the User resource via a
+<code class="prettyprint">$filter</code> like the following:</p>
+
+<p><code class="prettyprint">acl/owner/principal=&#39;83c39a85-1d03-4931-9c82-c015e0452359&#39;</code></p>
+
+<p>where the value is the <code class="prettyprint">id</code> of the User resource without the &ldquo;user/&rdquo;
+prefix. </p>
+
+<h2 id="userparamtemplate-(cimi)">UserParamTemplate (CIMI)</h2>
+
+<p>The UserParamTemplate resources allow UserParam resources to be
+created.  Normally, users and administrators will never create a
+UserParam resource manually and will not need to use these templates.</p>
+
+<h2 id="useridentifier-(cimi)">UserIdentifier (CIMI)</h2>
+
+<p>The UserIdentifier resources provide a mapping between an external
+identity (for a given authentication method) and a registered user.
+Multiple external identities can be mapped to the same SlipStream
+user, allowing that user to authenticate in different ways while using
+the same account.</p>
+
+<p>This resource follows the standard CIMI SCRUD patterns.  However, the
+resource <code class="prettyprint">id</code> is a hashed value of the <code class="prettyprint">identifier</code>.  This guarantees
+that a single external identifier cannot be mapped to more than one
+user.</p>
+
+<p>Users will normally not be concerned with these resources, although
+they can list them to see what authentication methods are mapped to
+their accounts.</p>
+
+<p>Administrators may create new UserIdentifier resources to allow a user
+to have more than one authentication method.</p>
+
+<aside class="warning">
+
+Because the resource identifier and the resource id are linked, you
+cannot &ldquo;edit&rdquo; the `identifier` field of a UserIdentifier resource;
+doing so will invalidate resource.  If you want to change an external
+identifier, you must delete the old one and create a new one.
+
+</aside>
+
+<h1 id="applications">Applications</h1>
+
+<h2 id="module-(legacy)">Module (Legacy)</h2>
+
+<p>(Extracted from the <a href="http://ssdocs.sixsq.com/documentation/advanced_tutorial/key_concepts.html">tutorial
+documentation</a>)</p>
+
+<p>Metadata about your images and deployments are organized into projects
+in SlipStream. Each project consists of a number of modules. The
+modules may be Project, Machine Image or Deployment modules:</p>
 
 <ul>
-<li><p><em>Project</em>: A container of modules used to provide logical grouping. A project may contain other projects allowing a hierarchical organization for large projects.</p></li>
-<li><p><em>Machine image</em>: A module that contains information about a virtual machine image. One type of machine image is a native image. These contain a cloud-specific identifier for a particular cloud infrastructure. The other type of machine image, a derived image, references another image (which can be a native image or another derived image) and includes a list of packages to install and/or recipes to configure the machine. These modules also include input/output parameters such that the machine can be synchronized as part of a deployment.</p></li>
-<li><p><em>Deployment</em>: A module that describes a coordinated deployment of one or more nodes. The deployment associates a machine image to each node and defines the synchronizaton necessary for the coordinated deployment.</p></li>
+<li><p><em>Project</em>: A container of modules used to provide logical
+ grouping. A project may contain other projects allowing a
+ hierarchical organization for large projects.</p></li>
+<li><p><em>Machine image</em>: A module that contains information about a
+ virtual machine image. One type of machine image is a native
+ image. These contain a cloud-specific identifier for a particular
+ cloud infrastructure. The other type of machine image, a derived
+ image, references another image (which can be a native image or
+ another derived image) and includes a list of packages to install
+ and/or recipes to configure the machine. These modules also
+ include input/output parameters such that the machine can be
+ synchronized as part of a deployment.</p></li>
+<li><p><em>Deployment</em>: A module that describes a coordinated deployment of
+ one or more nodes. The deployment associates a machine image to
+ each node and defines the synchronizaton necessary for the
+ coordinated deployment.</p></li>
 </ul>
 
 <p>These items are normalised into <em>module</em> resources in the REST API.</p>
 
 <aside class="notice">
-Remember, image, deployment and project are type attributes of the module resource.
+
+Remember, image, deployment and project are type attributes of the
+module resource.
+
 </aside>
 
-<h2 id="get-a-module">Get a module</h2>
+<h3 id="get-a-module">Get a module</h3>
 <pre><code class="highlight shell">curl https://nuv.la/module/&lt;module&gt; --user &lt;user&gt;:&lt;password&gt; -H <span class="s2">"Content-Type: application/xml"</span>
 </code></pre>
 
@@ -1822,11 +2122,11 @@ Remember, image, deployment and project are type attributes of the module resour
 
 <p>Get a module (i.e. image, deployment or project).</p>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">GET https://nuv.la/module/&lt;module&gt;[/&lt;version&gt;]</code></p>
 
-<h3 id="url-parameters">Url Parameters</h3>
+<h4 id="url-parameters">URL Parameters</h4>
 
 <table><thead>
 <tr>
@@ -1851,7 +2151,7 @@ Remember, image, deployment and project are type attributes of the module resour
 To list the root projects, simply omit the <em>&lt;MODULE></em> from the request.
 </aside>
 
-<h2 id="update-a-module">Update a module</h2>
+<h3 id="update-a-module">Update a module</h3>
 <pre><code class="highlight shell">curl https://nuv.la/module/&lt;module&gt; --user &lt;user&gt;:&lt;password&gt; --data @&lt;file&gt; -X PUT -H <span class="s2">"Content-Type: application/xml"</span>
 </code></pre>
 
@@ -1877,13 +2177,13 @@ To list the root projects, simply omit the <em>&lt;MODULE></em> from the request
 
 <p>The PUT request will create a new resource with the same &lt;module&gt; name but a higher &lt;version&gt;. The response includes the new fully qualified resource.</p>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">PUT https://nuv.la/module/&lt;module&gt;[/&lt;version&gt;]</code></p>
 
 <p>The <strong>Location</strong> attribute in the response header provides the full url of the updated resource, with the incremented version.</p>
 
-<h3 id="url-parameters">URL Parameters</h3>
+<h4 id="url-parameters">URL Parameters</h4>
 
 <table><thead>
 <tr>
@@ -1905,10 +2205,13 @@ To list the root projects, simply omit the <em>&lt;MODULE></em> from the request
 </tbody></table>
 
 <aside class="warning">
-This PUT request is not idem potent - i.e. calling it several times will create new resources.
+
+This PUT request is not idem potent - i.e. calling it several times
+will create new resources.
+
 </aside>
 
-<h2 id="delete-a-module">Delete a module</h2>
+<h3 id="delete-a-module">Delete a module</h3>
 <pre><code class="highlight shell">curl https://nuv.la/module/&lt;module&gt; -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
 </code></pre>
 
@@ -1928,11 +2231,11 @@ This PUT request is not idem potent - i.e. calling it several times will create 
 
 <p>The DELETE request will delete the specified resource if fully qualified (i.e. including the &lt;VERSION&gt;) or the latest version otherwise.</p>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">DELETE https://nuv.la/module/&lt;module&gt;[/&lt;version&gt;]</code></p>
 
-<h3 id="url-parameters">URL Parameters</h3>
+<h4 id="url-parameters">URL Parameters</h4>
 
 <table><thead>
 <tr>
@@ -1953,7 +2256,7 @@ This PUT request is not idem potent - i.e. calling it several times will create 
 </tr>
 </tbody></table>
 
-<h2 id="delete-all-versions-of-a-module">Delete all versions of a module</h2>
+<h3 id="delete-all-versions-of-a-module">Delete all versions of a module</h3>
 <pre><code class="highlight shell">curl https://nuv.la/module/&lt;module&gt;/ -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
 </code></pre>
 
@@ -1973,7 +2276,7 @@ This PUT request is not idem potent - i.e. calling it several times will create 
 
 <p>The DELETE request will delete all versions of the specified resource.</p>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">DELETE https://nuv.la/module/&lt;module&gt;/</code></p>
 
@@ -1985,7 +2288,7 @@ Notice the trailing &rsquo;/&rsquo; in the URL
 This call doesn&rsquo;t fails if the authenticated user doesn&rsquo;t have the right to delete some or all versions of the module.
 </aside>
 
-<h3 id="url-parameters">URL Parameters</h3>
+<h4 id="url-parameters">URL Parameters</h4>
 
 <table><thead>
 <tr>
@@ -2001,7 +2304,7 @@ This call doesn&rsquo;t fails if the authenticated user doesn&rsquo;t have the r
 </tr>
 </tbody></table>
 
-<h2 id="module-history-(versions)">Module history (versions)</h2>
+<h3 id="module-history-(versions)">Module history (versions)</h3>
 <pre><code class="highlight shell">curl https://nuv.la/module/&lt;module&gt;/ -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
 <pre><code class="highlight xml"><span class="nt">&lt;versionList&gt;</span>
@@ -2025,7 +2328,7 @@ This call doesn&rsquo;t fails if the authenticated user doesn&rsquo;t have the r
 <p>List all the history (i.e. all the versions) of the module. Since each PUT creates a new version
 of the module, this request allows users to list these.</p>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">GET https://nuv.la/module/&lt;module&gt;/</code></p>
 
@@ -2033,7 +2336,7 @@ of the module, this request allows users to list these.</p>
 Notice the trailing &rsquo;/&rsquo; in the URL
 </aside>
 
-<h3 id="url-parameters">URL Parameters</h3>
+<h4 id="url-parameters">URL Parameters</h4>
 
 <table><thead>
 <tr>
@@ -2049,7 +2352,35 @@ Notice the trailing &rsquo;/&rsquo; in the URL
 </tr>
 </tbody></table>
 
-<h1 id="run">Run</h1>
+<h2 id="module-(cimi)">Module (CIMI)</h2>
+
+<p>This is a prototype resource that will eventually replace the legacy
+module resource.  This resource should not be used in production. </p>
+
+<h2 id="moduleapplication-(cimi)">ModuleApplication (CIMI)</h2>
+
+<p>This is a prototype resource that supports the new CIMI Module
+resource.  This resource would be accessed only through the CIMI
+Module resource and not used directly.  This should not be used in
+production at this time. </p>
+
+<h2 id="modulecomponent-(cimi)">ModuleComponent (CIMI)</h2>
+
+<p>This is a prototype resource that supports the new CIMI Module
+resource.  This resource would be accessed only through the CIMI
+Module resource and not used directly.  This should not be used in
+production at this time. </p>
+
+<h2 id="moduleproject-(cimi)">ModuleProject (CIMI)</h2>
+
+<p>This is a prototype resource that supports the new CIMI Module
+resource.  This resource would be accessed only through the CIMI
+Module resource and not used directly.  This should not be used in
+production at this time. </p>
+
+<h1 id="deployment">Deployment</h1>
+
+<h2 id="run-(legacy)">Run (Legacy)</h2>
 
 <p>The <em>run</em> resource represents an execution in the cloud - i.e. running VMs.
 SlipStream supports 3 types of runs:</p>
@@ -2063,7 +2394,7 @@ SlipStream supports 3 types of runs:</p>
 <p>The run resource therefore represents one or several VMs, running or not depending
 on the state of the run.</p>
 
-<h2 id="list-all-runs">List all Runs</h2>
+<h3 id="list-all-runs">List all Runs</h3>
 <pre><code class="highlight shell">curl https://nuv.la/run -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
 <pre><code class="highlight xml"><span class="nt">&lt;runs</span> <span class="na">offset=</span><span class="s">"0"</span> <span class="na">limit=</span><span class="s">"20"</span> <span class="na">count=</span><span class="s">"20"</span> <span class="na">totalCount=</span><span class="s">"93"</span><span class="nt">&gt;</span>
@@ -2075,11 +2406,11 @@ on the state of the run.</p>
 
 <p>List all runs of a user.</p>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">GET https://nuv.la/run</code></p>
 
-<h2 id="get-a-run">Get a Run</h2>
+<h3 id="get-a-run">Get a Run</h3>
 <pre><code class="highlight shell">curl https://nuv.la/run/&lt;run&gt; -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
 <pre><code class="highlight xml"><span class="nt">&lt;runs&gt;</span>
@@ -2090,11 +2421,11 @@ on the state of the run.</p>
 
 <p>Get a specific run.</p>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">GET https://nuv.la/run/&lt;run-uuid&gt;</code></p>
 
-<h3 id="url-parameters">Url Parameters</h3>
+<h4 id="url-parameters">URL Parameters</h4>
 
 <table><thead>
 <tr>
@@ -2110,7 +2441,7 @@ on the state of the run.</p>
 </tr>
 </tbody></table>
 
-<h2 id="create-a-run">Create a Run</h2>
+<h3 id="create-a-run">Create a Run</h3>
 <pre><code class="highlight shell">curl https://nuv.la/run -d <span class="nv">refqname</span><span class="o">=</span>module/examples/an-image -d <span class="nb">type</span><span class="o">=</span>Run -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
@@ -2138,11 +2469,11 @@ This scalable/non-scalable feature only applies to deployment type run (aka <em>
 
 <p>The <strong>Location</strong> attribute in the response header provides the full url of the updated resource, with the incremented version.</p>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">POST https://nuv.la/run</code></p>
 
-<h3 id="body-parameters">Body Parameters</h3>
+<h4 id="body-parameters">Body Parameters</h4>
 
 <table><thead>
 <tr>
@@ -2183,7 +2514,7 @@ This scalable/non-scalable feature only applies to deployment type run (aka <em>
 </tr>
 </tbody></table>
 
-<h2 id="create-a-scalable-run">Create a scalable Run</h2>
+<h3 id="create-a-scalable-run">Create a scalable Run</h3>
 <pre><code class="highlight shell">curl https://nuv.la/run -d <span class="nv">refqname</span><span class="o">=</span>module/examples/a-deployment -d <span class="nv">mutable</span><span class="o">=</span><span class="nb">true</span> -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
@@ -2232,7 +2563,7 @@ This scalable/non-scalable feature only applies to deployment type run (aka <em>
 Only <em>Orchestration</em> type run can be created as scalable.
 </aside>
 
-<h2 id="add-node-instances-to-a-scalable-run">Add node instances to a scalable Run</h2>
+<h3 id="add-node-instances-to-a-scalable-run">Add node instances to a scalable Run</h3>
 <pre><code class="highlight shell">curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d <span class="nv">n</span><span class="o">=</span>2 -u &lt;user&gt;:&lt;password&gt; -X POST -H <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
@@ -2253,11 +2584,11 @@ centos_node.2,centos_node.3
 
 <p>Add node instances on a scalable Run.</p>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">POST https://nuv.la/run/&lt;run-uuid&gt;/&lt;node-name&gt;</code></p>
 
-<h3 id="url-parameters">Url Parameters</h3>
+<h4 id="url-parameters">URL Parameters</h4>
 
 <table><thead>
 <tr>
@@ -2278,7 +2609,7 @@ centos_node.2,centos_node.3
 </tr>
 </tbody></table>
 
-<h3 id="body-parameters">Body Parameters</h3>
+<h4 id="body-parameters">Body Parameters</h4>
 
 <table><thead>
 <tr>
@@ -2294,7 +2625,7 @@ centos_node.2,centos_node.3
 </tr>
 </tbody></table>
 
-<h2 id="remove-node-instances-from-a-run">Remove node instances from a Run</h2>
+<h3 id="remove-node-instances-from-a-run">Remove node instances from a Run</h3>
 <pre><code class="highlight shell">curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d <span class="nv">ids</span><span class="o">=</span>1,2 -u &lt;user&gt;:&lt;password&gt; -X DELETE -D -
 </code></pre>
 
@@ -2311,11 +2642,11 @@ centos_node.2,centos_node.3
 
 <p>Remove node instances from a Run.</p>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">DELETE https://nuv.la/run/&lt;run-uuid&gt;/&lt;node-name&gt;</code></p>
 
-<h3 id="url-parameters">Url Parameters</h3>
+<h4 id="url-parameters">URL Parameters</h4>
 
 <table><thead>
 <tr>
@@ -2336,7 +2667,7 @@ centos_node.2,centos_node.3
 </tr>
 </tbody></table>
 
-<h3 id="body-parameters">Body Parameters</h3>
+<h4 id="body-parameters">Body Parameters</h4>
 
 <table><thead>
 <tr>
@@ -2352,7 +2683,7 @@ centos_node.2,centos_node.3
 </tr>
 </tbody></table>
 
-<h2 id="get-instance-names-of-a-node-in-run">Get instance names of a node in Run</h2>
+<h3 id="get-instance-names-of-a-node-in-run">Get instance names of a node in Run</h3>
 <pre><code class="highlight shell">curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u &lt;user&gt;:&lt;password&gt; <span class="s2">"Content-Type: text/plain"</span> -D -
 </code></pre>
 
@@ -2373,11 +2704,11 @@ centos_node.1,centos_node.2,centos_node.3
 
 <p>Get instance names of a node in Run.</p>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">GET https://nuv.la/run/&lt;run-uuid&gt;/&lt;node-name&gt;</code></p>
 
-<h3 id="url-parameters">Url Parameters</h3>
+<h4 id="url-parameters">URL Parameters</h4>
 
 <table><thead>
 <tr>
@@ -2398,7 +2729,7 @@ centos_node.1,centos_node.2,centos_node.3
 </tr>
 </tbody></table>
 
-<h2 id="set-a-node-instance-(vm)-runtime-parameter">Set a node instance (VM) runtime parameter</h2>
+<h3 id="set-a-node-instance-(vm)-runtime-parameter">Set a node instance (VM) runtime parameter</h3>
 <pre><code class="highlight shell">curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -d my_value -u &lt;user&gt;:&lt;password&gt; -X PUT
 </code></pre>
 
@@ -2410,11 +2741,11 @@ said to be <code class="prettyprint">unset</code>. Please refer to the <code cla
 section for handling the cases of the parameters either being <code class="prettyprint">not yet set</code> or <code class="prettyprint">unset</code>.</p>
 </blockquote>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">PUT https://nuv.la/run/&lt;run-uuid&gt;/&lt;node-instance-name&gt;:&lt;parameter-name&gt;</code></p>
 
-<h3 id="url-parameters">Url Parameters</h3>
+<h4 id="url-parameters">URL Parameters</h4>
 
 <table><thead>
 <tr>
@@ -2440,7 +2771,7 @@ section for handling the cases of the parameters either being <code class="prett
 </tr>
 </tbody></table>
 
-<h3 id="body-parameters">Body Parameters</h3>
+<h4 id="body-parameters">Body Parameters</h4>
 
 <table><thead>
 <tr>
@@ -2456,7 +2787,7 @@ section for handling the cases of the parameters either being <code class="prett
 </tr>
 </tbody></table>
 
-<h2 id="get-a-node-instance-(vm)-runtime-parameter">Get a node instance (VM) runtime parameter</h2>
+<h3 id="get-a-node-instance-(vm)-runtime-parameter">Get a node instance (VM) runtime parameter</h3>
 <pre><code class="highlight shell">curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -u &lt;user&gt;:&lt;password&gt;
 </code></pre>
 
@@ -2499,11 +2830,11 @@ key centos_node.1:my_parameter not yet set
 <span class="nt">&lt;/error&gt;</span>
 </code></pre>
 
-<h3 id="http-request">HTTP Request</h3>
+<h4 id="http-request">HTTP Request</h4>
 
 <p><code class="prettyprint">GET https://nuv.la/run/&lt;run-uuid&gt;/&lt;node-instance-name&gt;:&lt;parameter-name&gt;</code></p>
 
-<h3 id="url-parameters">Url Parameters</h3>
+<h4 id="url-parameters">URL Parameters</h4>
 
 <table><thead>
 <tr>
@@ -2529,370 +2860,15 @@ key centos_node.1:my_parameter not yet set
 </tr>
 </tbody></table>
 
-<h1 id="virtual-machines">Virtual machines</h1>
-<pre><code class="highlight shell">curl https://nuv.la/vms --user &lt;user&gt;:&lt;password&gt;
-</code></pre>
+<h2 id="deployment-(cimi)">Deployment (CIMI)</h2>
 
-<blockquote>
-<p>The above command returns a body structured like this:</p>
-</blockquote>
-<pre><code class="highlight xml"><span class="nt">&lt;vms</span> <span class="na">offset=</span><span class="s">"0"</span> <span class="na">limit=</span><span class="s">"20"</span> <span class="na">count=</span><span class="s">"4"</span> <span class="na">totalCount=</span><span class="s">"4"</span> <span class="na">user=</span><span class="s">"super"</span><span class="nt">&gt;</span>
-   <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"Exoscale"</span>
-      <span class="na">user=</span><span class="s">"test"</span>
-      <span class="na">instanceId=</span><span class="s">"96101801-b636-4752-9b04-74ec9a9abbc9"</span>
-      <span class="na">state=</span><span class="s">"Booting"</span>
-      <span class="na">measurement=</span><span class="s">"2015-04-01 14:34:22.273 CEST"</span>
-      <span class="na">isUsable=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
-   <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"Exoscale"</span>
-      <span class="na">user=</span><span class="s">"test"</span>
-      <span class="na">instanceId=</span><span class="s">"bbb07949-ab64-4556-88fd-f9aed872e9d1"</span>
-      <span class="na">state=</span><span class="s">"Running"</span>
-      <span class="na">measurement=</span><span class="s">"2015-04-01 14:34:22.273 CEST"</span>
-      <span class="na">runUuid=</span><span class="s">"ce3dfa8b-5a13-473b-bdd1-6e40ab71294b"</span>
-      <span class="na">runOwner=</span><span class="s">"test"</span>
-      <span class="na">ip=</span><span class="s">"185.19.29.126"</span>
-      <span class="na">name=</span><span class="s">"testclient.1"</span>
-      <span class="na">nodeName=</span><span class="s">"testclient"</span>
-      <span class="na">nodeInstanceId=</span><span class="s">"1"</span>
-      <span class="na">isUsable=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
-   <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"Exoscale"</span>
-      <span class="na">user=</span><span class="s">"test"</span>
-      <span class="na">instanceId=</span><span class="s">"ec05f8f2-1f05-48bc-aa33-b99f60b2209b"</span>
-      <span class="na">state=</span><span class="s">"Running"</span>
-      <span class="na">measurement=</span><span class="s">"2015-04-01 14:33:31.905 CEST"</span>
-      <span class="na">runUuid=</span><span class="s">"ce3dfa8b-5a13-473b-bdd1-6e40ab71294b"</span>
-      <span class="na">runOwner=</span><span class="s">"test"</span>
-      <span class="na">ip=</span><span class="s">"185.19.29.122"</span>
-      <span class="na">name=</span><span class="s">"orchestrator-Exoscale"</span>
-      <span class="na">isUsable=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
-   <span class="nt">&lt;vm</span> <span class="na">cloud=</span><span class="s">"Amazon-EC2"</span>
-      <span class="na">user=</span><span class="s">"test"</span>
-      <span class="na">instanceId=</span><span class="s">"a2ca20d8-9506-42b9-80a3-ce15579591ab"</span>
-      <span class="na">state=</span><span class="s">"Running"</span>
-      <span class="na">measurement=</span><span class="s">"2015-04-01 14:33:21.426 CEST"</span>
-      <span class="na">runUuid=</span><span class="s">"857fc1d4-6206-4d88-8a1c-81d83a117e86"</span>
-      <span class="na">runOwner=</span><span class="s">"test"</span>
-      <span class="na">ip=</span><span class="s">"185.19.29.123"</span>
-      <span class="na">name=</span><span class="s">"machine"</span>
-      <span class="na">isUsable=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
-<span class="nt">&lt;/vms&gt;</span>
-</code></pre>
+<p>This is a prototype resource that will eventually replace the legacy
+Run resource.  This should not be used in production at this time.</p>
 
-<p>List status of all virtual machines (VMs), as known by the cloud providers.</p>
+<h2 id="deploymenttemplate-(cimi)">DeploymentTemplate (CIMI)</h2>
 
-<aside class="notice">
-A privileged user sees by default VMs of all users.
-</aside>
-
-<aside class="notice">
-VMs are sorted by <code class="prettyprint">measurment</code>
-</aside>
-
-<h3 id="http-request">HTTP Request</h3>
-
-<p><code class="prettyprint">GET https://nuv.la/vms</code></p>
-
-<h3 id="query-parameters">Query Parameters</h3>
-
-<aside class="notice">
-None of these parameters are mandatory.
-</aside>
-
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Default value</th>
-<th>Possible values</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>cloud</td>
-<td></td>
-<td><em>one cloud</em></td>
-<td>Show only the specified Cloud</td>
-</tr>
-<tr>
-<td>limit</td>
-<td>20</td>
-<td>[1 - 500]</td>
-<td>Set the maximum number of VMs per page.</td>
-</tr>
-<tr>
-<td>offset</td>
-<td>0</td>
-<td>[0 - inf]</td>
-<td>Offset to navigate through pages.</td>
-</tr>
-<tr>
-<td>runUuid</td>
-<td></td>
-<td><em>one run uuid</em></td>
-<td>Show only VMs associated with the specified run uuid</td>
-</tr>
-<tr>
-<td>runOwner</td>
-<td></td>
-<td><em>one username</em></td>
-<td>Show only VMs associated with Runs owned by a specific user</td>
-</tr>
-<tr>
-<td>user</td>
-<td></td>
-<td><em>one username</em></td>
-<td>Show VMs the specified user can see</td>
-</tr>
-</tbody></table>
-
-<aside class="warning">
-The <code class="prettyprint">user</code> parameter is reserved to privileged users.
-</aside>
-
-<h3 id="&lt;vms&gt;-attributes"><code class="prettyprint">&lt;vms&gt;</code> Attributes</h3>
-
-<table><thead>
-<tr>
-<th>Attribute</th>
-<th>Always present</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>cloud</td>
-<td>no</td>
-<td>The Cloud specified in the request if any</td>
-</tr>
-<tr>
-<td>limit</td>
-<td>no</td>
-<td>The limit specified in the request if any</td>
-</tr>
-<tr>
-<td>offset</td>
-<td>no</td>
-<td>The offset specified in the request if any</td>
-</tr>
-<tr>
-<td>count</td>
-<td>yes</td>
-<td>The number of <code class="prettyprint">&lt;vm&gt;</code> elements returned</td>
-</tr>
-<tr>
-<td>totalCount</td>
-<td>yes</td>
-<td>The total number of <code class="prettyprint">&lt;vm&gt;</code> elements for this request</td>
-</tr>
-<tr>
-<td>runUuid</td>
-<td>no</td>
-<td>The Run uuid specified in the request if any</td>
-</tr>
-<tr>
-<td>runOwner</td>
-<td>no</td>
-<td>The Run owner (username) specified in the request if any</td>
-</tr>
-<tr>
-<td>user</td>
-<td>no</td>
-<td>The user for which VMs are displayed. Doesn&rsquo;t exist if VMs for all users are displayed</td>
-</tr>
-</tbody></table>
-
-<h3 id="&lt;vm&gt;-attributes"><code class="prettyprint">&lt;vm&gt;</code> Attributes</h3>
-
-<table><thead>
-<tr>
-<th>Attribute</th>
-<th>Always present</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>cloud</td>
-<td>yes</td>
-<td>The Cloud on which the VM is running</td>
-</tr>
-<tr>
-<td>user</td>
-<td>yes</td>
-<td>The user from which the VM was retrived</td>
-</tr>
-<tr>
-<td>instanceId</td>
-<td>yes</td>
-<td>The id of the VM on the Cloud</td>
-</tr>
-<tr>
-<td>state</td>
-<td>yes</td>
-<td>The state of the VM as provided by the Cloud</td>
-</tr>
-<tr>
-<td>measurement</td>
-<td>yes</td>
-<td>The time when the VM was seen for the first time</td>
-</tr>
-<tr>
-<td>runUuid</td>
-<td>no</td>
-<td>The uuid of the Run from which the VM is part of</td>
-</tr>
-<tr>
-<td>runOwner</td>
-<td>no</td>
-<td>The owner of the Run from which the VM is part of</td>
-</tr>
-<tr>
-<td>ip</td>
-<td>no</td>
-<td>The IP address of the VM</td>
-</tr>
-<tr>
-<td>name</td>
-<td>no</td>
-<td>The name of the VM in his Run.</td>
-</tr>
-<tr>
-<td>nodeName</td>
-<td>no</td>
-<td>The name of the node from which the VM is part of in his Run.</td>
-</tr>
-<tr>
-<td>nodeInstanceId</td>
-<td>no</td>
-<td>The id of the node instance of the VM in his Run.</td>
-</tr>
-<tr>
-<td>isUsable</td>
-<td>no</td>
-<td>Indicate if the VM is in a state where it can be used.</td>
-</tr>
-</tbody></table>
-
-<h1 id="user">User</h1>
-
-<p>The user resource provides user management.</p>
-
-<h2 id="get-all-users">Get All Users</h2>
-<pre><code class="highlight shell">curl https://nuv.la/user --user &lt;user&gt;:&lt;password&gt;
-</code></pre>
-
-<blockquote>
-<p>The above command returns XML structured like this:</p>
-</blockquote>
-<pre><code class="highlight xml"><span class="nt">&lt;list&gt;</span>
-<span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">"super"</span>  <span class="na">resourceUri=</span><span class="s">"user/super"</span>  <span class="na">firstName=</span><span class="s">"Super"</span>  <span class="na">lastName=</span><span class="s">"User"</span>  <span class="na">email=</span><span class="s">"super@sixsq.com"</span>  <span class="na">state=</span><span class="s">"ACTIVE"</span>  <span class="na">activeSince=</span><span class="s">"2015-03-11 14:00:57.656 CET"</span>  <span class="na">lastOnline=</span><span class="s">"2015-04-01 14:58:57.466 CEST"</span>  <span class="na">lastExecute=</span><span class="s">"2015-03-12 18:03:13.853 CET"</span>  <span class="na">organization=</span><span class="s">"SixSq"</span>  <span class="na">issuper=</span><span class="s">"true"</span>  <span class="na">online=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
-<span class="nt">&lt;/list&gt;</span>
-</code></pre>
-
-<aside class="warning">
-This resource is restricted to privileged users.
-</aside>
-
-<p>List all users.</p>
-
-<h3 id="http-request">HTTP Request</h3>
-
-<p><code class="prettyprint">GET https://nuv.la/user</code></p>
-
-<h2 id="get-a-specific-user">Get a specific user</h2>
-<pre><code class="highlight shell">curl https://nuv.la/user/&lt;user&gt; --user &lt;user&gt;:&lt;password&gt;
-</code></pre>
-
-<blockquote>
-<p>The above command returns xml structured like this:</p>
-</blockquote>
-<pre><code class="highlight xml"><span class="cp">&lt;?xml version="1.0"?&gt;</span>
-<span class="nt">&lt;user</span> <span class="na">deleted=</span><span class="s">"false"</span> <span class="na">resourceUri=</span><span class="s">"user/super"</span> <span class="na">name=</span><span class="s">"super"</span> <span class="na">email=</span><span class="s">"super@sixsq.com"</span> <span class="na">firstName=</span><span class="s">"Super"</span> <span class="na">lastName=</span><span class="s">"User"</span> <span class="na">organization=</span><span class="s">"SixSq"</span> <span class="na">issuper=</span><span class="s">"true"</span> <span class="na">state=</span><span class="s">"ACTIVE"</span> <span class="na">lastOnline=</span><span class="s">"2015-04-01 17:48:21.661 CEST"</span> <span class="na">lastExecute=</span><span class="s">"2015-04-01 17:19:46.364 CEST"</span> <span class="na">activeSince=</span><span class="s">"2015-03-24 18:07:21.757 CET"</span> <span class="na">creation=</span><span class="s">"2015-03-24 18:07:21.746 CET"</span><span class="nt">&gt;</span>
-   <span class="nt">&lt;parameters</span> <span class="na">class=</span><span class="s">"org.hibernate.collection.internal.PersistentMap"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;entry&gt;</span>
-         <span class="nt">&lt;string&gt;</span>General.Verbosity Level<span class="nt">&lt;/string&gt;</span>
-         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.Verbosity Level"</span> <span class="na">description=</span><span class="s">"Level of verbosity"</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Enum"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"30"</span> <span class="na">order=</span><span class="s">"30"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;instructions&gt;</span><span class="cp">&lt;![CDATA[0 - Actions,  1 - Steps,  2 - Details data,  3 - Debugging]]&gt;</span><span class="nt">&lt;/instructions&gt;</span>
-            <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"4"</span><span class="nt">&gt;</span>
-               <span class="nt">&lt;string&gt;</span>0<span class="nt">&lt;/string&gt;</span>
-               <span class="nt">&lt;string&gt;</span>1<span class="nt">&lt;/string&gt;</span>
-               <span class="nt">&lt;string&gt;</span>2<span class="nt">&lt;/string&gt;</span>
-               <span class="nt">&lt;string&gt;</span>3<span class="nt">&lt;/string&gt;</span>
-            <span class="nt">&lt;/enumValues&gt;</span>
-            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[0]]&gt;</span><span class="nt">&lt;/value&gt;</span>
-         <span class="nt">&lt;/parameter&gt;</span>
-      <span class="nt">&lt;/entry&gt;</span>
-      <span class="nt">&lt;entry&gt;</span>
-         <span class="nt">&lt;string&gt;</span>test-cloud.username<span class="nt">&lt;/string&gt;</span>
-         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"test-cloud.username"</span> <span class="na">description=</span><span class="s">"Account username"</span> <span class="na">category=</span><span class="s">"test-cloud"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"RestrictedString"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"10"</span> <span class="na">order=</span><span class="s">"10"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[]]&gt;</span><span class="nt">&lt;/value&gt;</span>
-         <span class="nt">&lt;/parameter&gt;</span>
-      <span class="nt">&lt;/entry&gt;</span>
-      <span class="nt">&lt;entry&gt;</span>
-         <span class="nt">&lt;string&gt;</span>General.ssh.public.key<span class="nt">&lt;/string&gt;</span>
-         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.ssh.public.key"</span> <span class="na">description=</span><span class="s">"SSH Public Key(s) (one per line)"</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"RestrictedText"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"50"</span> <span class="na">order=</span><span class="s">"50"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;instructions&gt;</span><span class="cp">&lt;![CDATA[Warning: Some clouds may take into account only the first key until SlipStream bootstraps the machine.]]&gt;</span><span class="nt">&lt;/instructions&gt;</span>
-            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[adasdasd]]&gt;</span><span class="nt">&lt;/value&gt;</span>
-         <span class="nt">&lt;/parameter&gt;</span>
-      <span class="nt">&lt;/entry&gt;</span>
-      <span class="nt">&lt;entry&gt;</span>
-         <span class="nt">&lt;string&gt;</span>test-cloud.password<span class="nt">&lt;/string&gt;</span>
-         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"test-cloud.password"</span> <span class="na">description=</span><span class="s">"Account password"</span> <span class="na">category=</span><span class="s">"test-cloud"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Password"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"20"</span> <span class="na">order=</span><span class="s">"20"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[]]&gt;</span><span class="nt">&lt;/value&gt;</span>
-         <span class="nt">&lt;/parameter&gt;</span>
-      <span class="nt">&lt;/entry&gt;</span>
-      <span class="nt">&lt;entry&gt;</span>
-         <span class="nt">&lt;string&gt;</span>General.keep-running<span class="nt">&lt;/string&gt;</span>
-         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.keep-running"</span> <span class="na">description=</span><span class="s">"Keep running after deployment"</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Enum"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"15"</span> <span class="na">order=</span><span class="s">"15"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;instructions&gt;</span><span class="cp">&lt;![CDATA[Here you can define if and when SlipStream should leave the application running after performing the deployment. &lt;br/&gt;&lt;code&gt;On success&lt;/code&gt; is useful for production deployments or long tests. &lt;/br&gt;&lt;code&gt;On Error&lt;/code&gt; might be useful so that resources are consumed only when debugging is needed. &lt;br/&gt;&lt;code&gt;Never&lt;/code&gt; ensures that SlipStream automatically terminates the application after performing the deployment. &lt;br/&gt;Note: This parameter doesn't apply to &lt;code&gt;scalable deployment&lt;/code&gt; Runs and to &lt;code&gt;build image&lt;/code&gt; Runs.]]&gt;</span><span class="nt">&lt;/instructions&gt;</span>
-            <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"4"</span><span class="nt">&gt;</span>
-               <span class="nt">&lt;string&gt;</span>always<span class="nt">&lt;/string&gt;</span>
-               <span class="nt">&lt;string&gt;</span>on-success<span class="nt">&lt;/string&gt;</span>
-               <span class="nt">&lt;string&gt;</span>on-error<span class="nt">&lt;/string&gt;</span>
-               <span class="nt">&lt;string&gt;</span>never<span class="nt">&lt;/string&gt;</span>
-            <span class="nt">&lt;/enumValues&gt;</span>
-            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[on-success]]&gt;</span><span class="nt">&lt;/value&gt;</span>
-         <span class="nt">&lt;/parameter&gt;</span>
-      <span class="nt">&lt;/entry&gt;</span>
-      <span class="nt">&lt;entry&gt;</span>
-         <span class="nt">&lt;string&gt;</span>General.default.cloud.service<span class="nt">&lt;/string&gt;</span>
-         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.default.cloud.service"</span> <span class="na">description=</span><span class="s">"Default Cloud"</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"Enum"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"10"</span> <span class="na">order=</span><span class="s">"10"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;instructions&gt;</span><span class="cp">&lt;![CDATA[Select the cloud that you want to use as the default.]]&gt;</span><span class="nt">&lt;/instructions&gt;</span>
-            <span class="nt">&lt;enumValues</span> <span class="na">length=</span><span class="s">"1"</span><span class="nt">&gt;</span>
-               <span class="nt">&lt;string&gt;</span>test-cloud<span class="nt">&lt;/string&gt;</span>
-            <span class="nt">&lt;/enumValues&gt;</span>
-            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[test-cloud]]&gt;</span><span class="nt">&lt;/value&gt;</span>
-         <span class="nt">&lt;/parameter&gt;</span>
-      <span class="nt">&lt;/entry&gt;</span>
-      <span class="nt">&lt;entry&gt;</span>
-         <span class="nt">&lt;string&gt;</span>General.Timeout<span class="nt">&lt;/string&gt;</span>
-         <span class="nt">&lt;parameter</span> <span class="na">name=</span><span class="s">"General.Timeout"</span> <span class="na">description=</span><span class="s">"Execution timeout (in minutes)"</span> <span class="na">category=</span><span class="s">"General"</span> <span class="na">mandatory=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"String"</span> <span class="na">readonly=</span><span class="s">"false"</span> <span class="na">order_=</span><span class="s">"40"</span> <span class="na">order=</span><span class="s">"40"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;instructions&gt;</span><span class="cp">&lt;![CDATA[If the execution stays in a transitional state for more than the value of this timeout, the execution is forcefully terminated.]]&gt;</span><span class="nt">&lt;/instructions&gt;</span>
-            <span class="nt">&lt;value&gt;</span><span class="cp">&lt;![CDATA[30]]&gt;</span><span class="nt">&lt;/value&gt;</span>
-         <span class="nt">&lt;/parameter&gt;</span>
-      <span class="nt">&lt;/entry&gt;</span>
-   <span class="nt">&lt;/parameters&gt;</span>
-<span class="nt">&lt;/user&gt;</span>
-</code></pre>
-
-<p>This resource retrieves a specific user.</p>
-
-<h3 id="http-request">HTTP Request</h3>
-
-<p><code class="prettyprint">GET https://nuv.la/user/&lt;user&gt;</code></p>
-
-<h3 id="url-parameters">URL Parameters</h3>
-
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Required</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>user</td>
-<td>true</td>
-<td>User name to retrieve</td>
-</tr>
-</tbody></table>
+<p>This is a prototype resource that allows the Deployment resource to be
+created. This resource should not be used in production at this time. </p>
 
 <h1 id="errors">Errors</h1>
 
@@ -2957,13 +2933,25 @@ This resource is restricted to privileged users.
 <h1 id="deprecated-resources">Deprecated Resources</h1>
 
 <p>The following sections describe the details of older, deprecated
-resources that still work with SlipStream.  Although these features
-work, they should not be used for any new code and existing code
-should migrate to equivalent, non-deprecated resources.</p>
+resources.  These resource may still work, but developers are
+encouraged to move to the given replacement resources.</p>
 
-<p><strong>There are currently no deprecated resources, although the user,
-module, and run resources will be moved to the CIMI API in the near
-future.</strong></p>
+<h2 id="legacy-user-resource">Legacy User Resource</h2>
+
+<p><code class="prettyprint">https://nuv.la/user</code></p>
+
+<p>The legacy user resource is deprecated. All of the user information
+has been migrated to CIMI resources; use those in preference to this
+resource. Internally, this resource is implemented via the CIMI
+resources.</p>
+
+<aside class="warning">
+
+Developers are strongly recommended to migrate to the CIMI
+resources. The resource will be removed in a future SlipStream
+release and announced via the release notes. 
+
+</aside>
 
       </div>
       <div class="dark-box">
