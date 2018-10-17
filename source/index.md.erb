@@ -322,6 +322,8 @@ although the specification uses "Add" for "Create" and "Edit" for
 descriptions of these patterns.**  Only differences from the standard
 patterns are documented here.
 
+### HTTP Methods
+
 The following table shows the mapping between the resource management
 action and the HTTP method to be used. **Those resources *with* a CIMI
 notation follow the CIMI patterns.**
@@ -333,16 +335,30 @@ Add (create) | `POST` | resource collection
 Read | `GET` | resource
 Edit (update) | `PUT` | resource
 Delete | `DELETE` | resource
+Other | `POST` | operation URL
 
-Any other action listed in the operations section of a response will
-use the HTTP POST method to the provided URL.
+<aside class="notice">
 
-Note that there are two CIMI add (create) patterns: one that uses a
-template to create the resource and another that creates a resource
-without a template.  In the Cloud Entry Point, **any resource that has
-a corresponding template resource will use the templated add
-pattern**. For example, the Session resource will use the templated
-add pattern because there is a SessionTemplate resource also listed.
+Specialized actions can appear in the operations section of a
+resource.  Any non-standard operation will use the POST method for the
+request.  The parameters (if any) will depend on the operation. 
+
+</aside>
+
+
+### Add Pattern Variations
+
+Note that there are two CIMI add (create) patterns:
+
+ * **Direct creation** that takes uses the new resource's content
+   directly in the creation request, and
+
+ * **Templated creation** that uses a template to create the resource.
+
+In the Cloud Entry Point, **any resource that has a corresponding
+template resource will use the templated add pattern**. For example,
+the Session resource will use the templated add pattern because there
+is a SessionTemplate resource also listed.
 
 ## Resource Selection
 
@@ -1317,6 +1333,117 @@ These resources provide information for all active virtual machines on
 the underlying cloud infrastructures. Together they constitute the
 current global state of compute resources managed by SlipStream.
 
+You must be authenticated with the SlipStream server to access the
+VirtualMachine collection and resources.
+
+<aside class="warning">
+
+SlipStream handles the lifecycle of these resources, creating,
+updating, and deleting them as it monitors the associated virtual
+machines.  Users typically are only interested in viewing and querying
+these resources.
+
+</aside>
+
+### List Virtual Machines
+
+```shell
+curl https://nuv.la/api/virtual-machine -b ~/cookies -D -
+```
+
+```http
+HTTP/2 200
+server: nginx
+date: Wed, 17 Oct 2018 08:36:24 GMT
+content-type: application/json
+content-length: 3254718
+vary: Accept-Encoding
+strict-transport-security: max-age=31536000
+```
+
+```json
+{
+  "resourceURI" : "http://sixsq.com/slipstream/1/VirtualMachineCollection",
+  "id" : "virtual-machine",
+  "count" : 870,
+  
+  ...
+  
+  "virtualMachines" : [ {
+    "connector" : {
+      "href" : "connector/exoscale-de-fra"
+    },
+    "ip" : "194.182.170.118",
+    "credentials" : [ {
+      "href" : "credential/7353af45-cd25-4bb0-9444-ee1935aa8a81"
+    } ],
+    "updated" : "2018-10-17T08:28:59.345Z",
+    "billable" : true,
+    "created" : "2018-10-15T13:54:48.539Z",
+    "state" : "running",
+    "currency" : "EUR",
+    "instanceID" : "0781484e-c82a-4522-b339-386e12c9e8ce",
+    "id" : "virtual-machine/a5d482e1-1fc0-33b7-b3b0-78fc4a5d08b2",
+    ...    
+    }]
+    ...
+```
+
+Listing the VirtualMachine resources follows the standard CIMI
+pattern, using an HTTP GET request on the collection URL. 
+
+The example command returns the HTTP headers of the request and then
+the full list of Virtual Machine resources as a JSON document. The
+returned JSON document contains some general information concerning,
+for example, the total number of documents ("count" key), followed by
+the list of VirtualMachine resource under the "virtualMachines" key.
+
+### Filtering Virtual Machines
+
+The full [CIMI filtering syntax](#resource-selection) (with SlipStream
+extensions) can be used to find a subset of the VirtualMachine
+resources. For example, the filter terms:
+
+ - `connector/href="connector/exoscale-de-fra"`
+ - `state="running"`
+
+would limit the response to only virtual machines in a running state
+on the "exoscale-de-fra" cloud.  Other query parameters, can also be
+used, for example `$last=0` to just return the global count
+information.
+
+```shell
+curl 'https://nuv.la/api/virtual-machine?$filter=connector/href="connector/exoscale-de-fra"%20and%20state="running"&$last=0' -b ~/cookies -D -
+```
+
+```json
+{
+  "count" : 351,
+  "acl" : {
+    "owner" : {
+      "principal" : "ADMIN",
+      "type" : "ROLE"
+    },
+    "rules" : [ {
+      "principal" : "ADMIN",
+      "type" : "ROLE",
+      "right" : "MODIFY"
+    }, {
+      "principal" : "USER",
+      "type" : "ROLE",
+      "right" : "VIEW"
+    } ]
+  },
+  "resourceURI" : "http://sixsq.com/slipstream/1/VirtualMachineCollection",
+  "id" : "virtual-machine",
+  "operations" : [ {
+    "rel" : "add",
+    "href" : "virtual-machine"
+  } ],
+  "virtualMachines" : [ ]
+}
+```
+
 ## StorageBucket (CIMI)
 
 These resources provide information for S3 buckets accessible via the
@@ -1324,182 +1451,111 @@ cloud credentials stored in SlipStream. Together they provide a global
 snapshot of S3 object storage on the cloud infrastructures accessible
 through SlipStream.
 
-## Usage (CIMI)
+You must be authenticated with the SlipStream server to access the
+StorageBucket collection and resources.
 
-Represents the summary of cloud usage records for a given user and cloud, on a specific period.
+<aside class="warning">
 
-### List all Usage
+SlipStream handles the lifecycle of these resources, creating,
+updating, and deleting them as it monitors the associated S3 storage.
+Users typically are only interested in viewing and querying these
+resources.
 
-The collection of usage records (most recent are listed first) is returned filtered with the provided authentication.
-(Only resources for the given user are returned.)
+</aside>
 
-#### HTTP Request
+### List and Filter Storage Buckets
 
-`GET https://nuv.la/api/usage`
+Listing and filtering the StorageBucket resources follows the standard
+CIMI patterns.  The full CIMI filtering syntax is available when
+listing the StorageBucket resources.
 
 ```shell
-curl https://nuv.la/api/usage -b cookie-user.txt -D -
+curl 'https://nuv.la/api/storage-bucket?$last=1' -b ~/cookies -D -
 ```
 
-> The above command returns a json structured like this:
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 1511
-Server: http-kit
-Date: Mon, 22 Jun 2015 08:49:33 GMT
-
+```json
 {
-  "usages" : [ {
-    "usage" : {
-      "DISK" : {
-        "unit_minutes" : 86400.0
-      }
-    },
-    "end_timestamp" : "2017-09-26T00:00:00.000Z",
-    "start_timestamp" : "2017-09-25T00:00:00.000Z",
-    "cloud" : "cloud-8",
-    "user" : "user-1",
-    "acl" : {
-      "owner" : {
-        "type" : "USER",
-        "principal" : "user-1"
-      },
-      "rules" : [ {
-        "type" : "USER",
-        "principal" : "user-1",
-        "right" : "ALL"
-      }, {
-        "type" : "ROLE",
-        "principal" : "cloud-8",
-        "right" : "ALL"
-      } ]
-    },
-    "id" : "Usage/056169bf-ac20-47dd-a7f9-e6b835265a01"
-  }, {
-    "usage" : {
-      "vm" : {
-        "unit_minutes" : 1192.0
-      }
-    },
-    "end_timestamp" : "2017-09-26T00:00:00.000Z",
-    "start_timestamp" : "2017-09-25T00:00:00.000Z",
-    "cloud" : "cloud-5",
-    "user" : "user-1",
-    "acl" : {
-      "owner" : {
-        "type" : "USER",
-        "principal" : "user-1"
-      },
-      "rules" : [ {
-        "type" : "USER",
-        "principal" : "user-1",
-        "right" : "ALL"
-      }, {
-        "type" : "ROLE",
-        "principal" : "cloud-5",
-        "right" : "ALL"
-      } ]
-    },
-    "id" : "Usage/baf5ce10-9cee-4407-9860-61c2da0c0b13"
-  } ],
+  "count" : 638,
   "acl" : {
-    "rules" : [ {
-      "type" : "ROLE",
-      "right" : "VIEW",
-      "principal" : "ANON"
-    } ],
     "owner" : {
+      "principal" : "ADMIN",
+      "type" : "ROLE"
+    },
+    "rules" : [ {
+      "principal" : "ADMIN",
       "type" : "ROLE",
-      "principal" : "ADMIN"
-    }
+      "right" : "MODIFY"
+    }, {
+      "principal" : "USER",
+      "type" : "ROLE",
+      "right" : "VIEW"
+    } ]
   },
-  "resourceURI" : "http://sixsq.com/slipstream/1/UsageCollection",
-  "id" : "Usage",
-  "count" : 2
+  "resourceURI" : "http://sixsq.com/slipstream/1/StorageBucketCollection",
+  "id" : "storage-bucket",
+  "operations" : [ {
+    "rel" : "add",
+    "href" : "storage-bucket"
+  } ],
+  "storageBuckets" : [ {
+    "connector" : {
+      "href" : "connector/exoscale-ch-gva"
+    },
+    "description" : "obj store usage for bucket slipstream-test-1533528220, from credential credential/df3e1df6-37e5-4bf2-9366-7f0d5ae072a8 in connector/exoscale-ch-gva",
+    "credentials" : [ {
+      "href" : "credential/df3e1df6-37e5-4bf2-9366-7f0d5ae072a8"
+    } ],
+    "updated" : "2018-08-22T19:06:51.545Z",
+    "name" : "bucket slipstream-test-1533528220 size in connector/exoscale-ch-gva",
+    "created" : "2018-08-22T15:09:25.951Z",
+    "usageInKiB" : 51,
+    "currency" : "EUR",
+    "id" : "storage-bucket/a048beb7-2dc2-3899-92fc-2f6abeadd1f5",
+    "acl" : {
+      "owner" : {
+        "type" : "ROLE",
+        "principal" : "ADMIN"
+      },
+      "rules" : [ {
+        "principal" : "SixSq:/admin",
+        "right" : "VIEW",
+        "type" : "ROLE"
+      }, {
+        "principal" : "ADMIN",
+        "right" : "ALL",
+        "type" : "ROLE"
+      }, {
+        "principal" : "RHEA:/admin",
+        "right" : "VIEW",
+        "type" : "ROLE"
+      }, {
+        "principal" : "ADMIN",
+        "right" : "VIEW",
+        "type" : "ROLE"
+      } ]
+    },
+    "operations" : [ {
+      "rel" : "edit",
+      "href" : "storage-bucket/a048beb7-2dc2-3899-92fc-2f6abeadd1f5"
+    }, {
+      "rel" : "delete",
+      "href" : "storage-bucket/a048beb7-2dc2-3899-92fc-2f6abeadd1f5"
+    } ],
+    "bucketName" : "slipstream-test-1533528220",
+    "resourceURI" : "http://sixsq.com/slipstream/1/StorageBucket",
+    "serviceOffer" : {
+      "resource:host" : "sos.exo.io",
+      "href" : "service-offer/08b86233-0ef2-4716-a58d-901816738955",
+      "price:unitCost" : 2.0E-5,
+      "resource:storage" : 1,
+      "resource:type" : "DATA",
+      "resource:platform" : "S3",
+      "price:billingUnit" : "GiBh",
+      "price:currency" : "EUR"
+    }
+  } ]
 }
 ```
-
-### Filtering Usage
-
-<aside class="notice">
-
-From <a target="_blank" href="http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf">
-CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.1 Filtering Collections</a>
-<br />
-<br />
-If retrieving the representation of a Collection, Consumers may include the $filter query parameter to
-reduce the number of entries of the Collection that are returned based on the data within the entries of the
-Collection. Providers shall interpret and process the $filter query parameter as described in this
-section. The $filter parameter shall be of the form:
-?$filter=expression
-</aside>
-
-#### Filtering on string comparison
-
-To retrieve the usage records for a given cloud, the CIMI filter can be written
-
-`$filter=cloud='cloud-name'`
-
-Note, however, that such a filter contains characters that must be **URL-encoded**, and the HTTP request will look like this:
-
-`GET https://nuv.la/api/usage?%24filter=cloud%3D%27cloud-name%27`
-
-#### Filtering on date comparison (equality)
-
-To retrieve the usage records for a specific date, the CIMI filter can be written
-
-`?$filter=start_timestamp=2015-06-22`
-
-Full URL with encoding:
-
-`GET https://nuv.la/api/usage?%24filter=start_timestamp%3D2015-06-22`
-
-#### Filtering on date comparison (before or after)
-
-To retrieve the usage records after a specific date, the CIMI filter can be written
-
-`?$filter=start_timestamp>2015-06-22`
-
-Full URL with encoding:
-
-`GET https://nuv.la/api/usage?%24filter=start_timestamp%3E2015-06-22`
-
-To filter usage records before a specific date, use **<** (URL-encoded as **%3C**) instead.
-
-#### Filtering with multiple conditions
-
-You can join conditons with **and** (logical and), or **or** (logical or).
-
-`?$filter=start_timestamp>2015-06-22 and cloud='cloud-name'`
-
-Full URL with encoding:
-
-`GET https://nuv.la/api/usage?%24filter=start_timestamp%3E2015-06-22%20and%20cloud%3D%27cloud-name%27`
-
-These are only some examples, consult the CIMI documentation for an exhaustive list of possibilities.
-
-### Paginating Usage
-From [CIMI Model and RESTful HTTP-based Protocol documentation 4.1.6.2 Subsetting Collections](http://dmtf.org/sites/default/files/standards/documents/DSP0263_1.0.1.pdf)
-
-<aside class="notice">
-If retrieving the representation of a Collection, Consumers may include query parameters to subset the
-number of entities of the Collection that are returned.
-...
-This specification defined two query parameters that, if used, shall indicate the first and last ordinal
-positions of the entities within the Collection that are returned. The query parameters shall be of the form:
-￼?$first=number
- ?$last=number
-</aside>
-
-#### HTTP Request
-
-`GET https://nuv.la/api/usage?%24first=2&%24last=2`
-
-will return only the *second* usage record.
-
-# Accounting
 
 ## Metering (CIMI)
 
@@ -1509,25 +1565,58 @@ minute to provide historical usage information.  These resources can
 be queried to provide aggregate usage information for a given time
 period, specific groups or users, etc.
 
-# Module
+# User
 
-(Extracted from the [tutorial documentation](http://ssdocs.sixsq.com/documentation/advanced_tutorial/key_concepts.html))
+## User (CIMI)
 
-Metadata about your images and deployments are organized into projects in SlipStream. Each project consists of a number of modules. The modules may be Project, Machine Image or Deployment modules:
+## UserTemplate (CIMI)
 
-  * *Project*: A container of modules used to provide logical grouping. A project may contain other projects allowing a hierarchical organization for large projects.
+## UserParam (CIMI)
 
-  * *Machine image*: A module that contains information about a virtual machine image. One type of machine image is a native image. These contain a cloud-specific identifier for a particular cloud infrastructure. The other type of machine image, a derived image, references another image (which can be a native image or another derived image) and includes a list of packages to install and/or recipes to configure the machine. These modules also include input/output parameters such that the machine can be synchronized as part of a deployment.
+## UserParamTemplate (CIMI)
 
-  * *Deployment*: A module that describes a coordinated deployment of one or more nodes. The deployment associates a machine image to each node and defines the synchronizaton necessary for the coordinated deployment.
+## UserIdentifier (CIMI)
+
+# Applications
+
+## Module (Legacy)
+
+(Extracted from the [tutorial
+documentation](http://ssdocs.sixsq.com/documentation/advanced_tutorial/key_concepts.html))
+
+Metadata about your images and deployments are organized into projects
+in SlipStream. Each project consists of a number of modules. The
+modules may be Project, Machine Image or Deployment modules:
+
+  * *Project*: A container of modules used to provide logical
+     grouping. A project may contain other projects allowing a
+     hierarchical organization for large projects.
+
+  * *Machine image*: A module that contains information about a
+     virtual machine image. One type of machine image is a native
+     image. These contain a cloud-specific identifier for a particular
+     cloud infrastructure. The other type of machine image, a derived
+     image, references another image (which can be a native image or
+     another derived image) and includes a list of packages to install
+     and/or recipes to configure the machine. These modules also
+     include input/output parameters such that the machine can be
+     synchronized as part of a deployment.
+
+  * *Deployment*: A module that describes a coordinated deployment of
+     one or more nodes. The deployment associates a machine image to
+     each node and defines the synchronizaton necessary for the
+     coordinated deployment.
 
 These items are normalised into *module* resources in the REST API.
 
 <aside class="notice">
-Remember, image, deployment and project are type attributes of the module resource.
+
+Remember, image, deployment and project are type attributes of the
+module resource.
+
 </aside>
 
-## Get a module
+### Get a module
 
 ```shell
 curl https://nuv.la/module/<module> --user <user>:<password> -H "Content-Type: application/xml"
@@ -1586,11 +1675,11 @@ curl https://nuv.la/module/examples/foo -H "Content-Type: application/xml" --use
 
 Get a module (i.e. image, deployment or project).
 
-### HTTP Request
+#### HTTP Request
 
 `GET https://nuv.la/module/<module>[/<version>]`
 
-### Url Parameters
+#### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -1601,7 +1690,7 @@ version | false | Version of the module to update. If not provided, get the late
 To list the root projects, simply omit the <em>&lt;MODULE></em> from the request.
 </aside>
 
-## Update a module
+### Update a module
 
 ```shell
 curl https://nuv.la/module/<module> --user <user>:<password> --data @<file> -X PUT -H "Content-Type: application/xml"
@@ -1628,13 +1717,13 @@ Update a module (i.e. image, deployment or project).
 
 The PUT request will create a new resource with the same &lt;module> name but a higher &lt;version>. The response includes the new fully qualified resource.
 
-### HTTP Request
+#### HTTP Request
 
 `PUT https://nuv.la/module/<module>[/<version>]`
 
 The **Location** attribute in the response header provides the full url of the updated resource, with the incremented version.
 
-### URL Parameters
+#### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -1642,10 +1731,13 @@ module | true | Unique identifier of the module - e.g. *examples/images/ubuntu-1
 version | false | Version of the module. If not provided, get the latest (most recent)
 
 <aside class="warning">
-This PUT request is not idem potent - i.e. calling it several times will create new resources.
+
+This PUT request is not idem potent - i.e. calling it several times
+will create new resources.
+
 </aside>
 
-## Delete a module
+### Delete a module
 
 ```shell
 curl https://nuv.la/module/<module> -u <user>:<password> -X DELETE -D -
@@ -1667,18 +1759,18 @@ Delete a module (i.e. image, deployment or project).
 
 The DELETE request will delete the specified resource if fully qualified (i.e. including the &lt;VERSION>) or the latest version otherwise.
 
-### HTTP Request
+#### HTTP Request
 
 `DELETE https://nuv.la/module/<module>[/<version>]`
 
-### URL Parameters
+#### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
 module | true | Unique identifier of the module - e.g. *examples/images/ubuntu-12.04*.
 version | false | Version of the module. If not provided, delete the latest (most recent)
 
-## Delete all versions of a module
+### Delete all versions of a module
 
 ```shell
 curl https://nuv.la/module/<module>/ -u <user>:<password> -X DELETE -D -
@@ -1700,7 +1792,7 @@ Delete all versions of a module (i.e. image, deployment or project) for which th
 
 The DELETE request will delete all versions of the specified resource.
 
-### HTTP Request
+#### HTTP Request
 
 `DELETE https://nuv.la/module/<module>/`
 
@@ -1713,13 +1805,13 @@ This call doesn't fails if the authenticated user doesn't have the right to dele
 </aside>
 
 
-### URL Parameters
+#### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
 module | true | Unique identifier of the module with the trailing slash - e.g. *examples/images/ubuntu-12.04/*.
 
-## Module history (versions)
+### Module history (versions)
 
 ```shell
 curl https://nuv.la/module/<module>/ -u <user>:<password>
@@ -1747,7 +1839,7 @@ curl https://nuv.la/module/<module>/ -u <user>:<password>
 List all the history (i.e. all the versions) of the module. Since each PUT creates a new version
 of the module, this request allows users to list these.
 
-### HTTP Request
+#### HTTP Request
 
 `GET https://nuv.la/module/<module>/`
 
@@ -1755,13 +1847,23 @@ of the module, this request allows users to list these.
 Notice the trailing '/' in the URL
 </aside>
 
-### URL Parameters
+#### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
 module | true | Unique identifier of the module with the trailing slash - e.g. *examples/images/ubuntu-12.04*.
 
-# Run
+## Module (CIMI)
+
+## ModuleApplication (CIMI)
+
+## ModuleComponent (CIMI)
+
+## ModuleProject (CIMI)
+
+# Deployment
+
+## Run (Legacy)
 
 The *run* resource represents an execution in the cloud - i.e. running VMs.
 SlipStream supports 3 types of runs:
@@ -1773,7 +1875,7 @@ SlipStream supports 3 types of runs:
 The run resource therefore represents one or several VMs, running or not depending
 on the state of the run.
 
-## List all Runs
+### List all Runs
 
 ```shell
 curl https://nuv.la/run -u <user>:<password>
@@ -1789,11 +1891,11 @@ curl https://nuv.la/run -u <user>:<password>
 
 List all runs of a user.
 
-### HTTP Request
+#### HTTP Request
 
 `GET https://nuv.la/run`
 
-## Get a Run
+### Get a Run
 
 ```shell
 curl https://nuv.la/run/<run> -u <user>:<password>
@@ -1808,17 +1910,17 @@ curl https://nuv.la/run/<run> -u <user>:<password>
 
 Get a specific run.
 
-### HTTP Request
+#### HTTP Request
 
 `GET https://nuv.la/run/<run-uuid>`
 
-### Url Parameters
+#### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
 run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
 
-## Create a Run
+### Create a Run
 
 ```shell
 curl https://nuv.la/run -d refqname=module/examples/an-image -d type=Run -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
@@ -1848,11 +1950,11 @@ This scalable/non-scalable feature only applies to deployment type run (aka <em>
 
 The **Location** attribute in the response header provides the full url of the updated resource, with the incremented version.
 
-### HTTP Request
+#### HTTP Request
 
 `POST https://nuv.la/run`
 
-### Body Parameters
+#### Body Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -1865,7 +1967,7 @@ Orchestration  | Deployment: only applies to deployment category.  This is the o
 Machine        | Build: build a new image on the targeted cloud and set the unique id back in the image definition.
 Run            | Simple run: single VM deployment.
 
-## Create a scalable Run
+### Create a scalable Run
 
 ```shell
 curl https://nuv.la/run -d refqname=module/examples/a-deployment -d mutable=true -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
@@ -1902,7 +2004,7 @@ mutable  | true     | Define that the run is scalable - i.e., providing a possib
 Only <em>Orchestration</em> type run can be created as scalable.
 </aside>
 
-## Add node instances to a scalable Run
+### Add node instances to a scalable Run
 
 ```shell
 curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d n=2 -u <user>:<password> -X POST -H "Content-Type: text/plain" -D -
@@ -1925,24 +2027,24 @@ centos_node.2,centos_node.3
 
 Add node instances on a scalable Run.
 
-### HTTP Request
+#### HTTP Request
 
 `POST https://nuv.la/run/<run-uuid>/<node-name>`
 
-### Url Parameters
+#### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
 run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
 node-name | true     | Node name - e.g. *centos_node*.
 
-### Body Parameters
+#### Body Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
 n         | false    | Defines a number of node instances to be added. If omitted, one node instance is added.
 
-## Remove node instances from a Run
+### Remove node instances from a Run
 
 ```shell
 curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -d ids=1,2 -u <user>:<password> -X DELETE -D -
@@ -1961,24 +2063,24 @@ Set-cookie: com.sixsq.slipstream.cookie=com.sixsq.idtype=local&com.sixsq.identif
 
 Remove node instances from a Run.
 
-### HTTP Request
+#### HTTP Request
 
 `DELETE https://nuv.la/run/<run-uuid>/<node-name>`
 
-### Url Parameters
+#### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
 run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b761777c8238*.
 node-name | true     | Node name - e.g. *centos_node*.
 
-### Body Parameters
+#### Body Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
 ids       | true     | Defines the comma separated list of indices of the node instances to be removed.
 
-## Get instance names of a node in Run
+### Get instance names of a node in Run
 
 ```shell
 curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node -u <user>:<password> "Content-Type: text/plain" -D -
@@ -2001,11 +2103,11 @@ centos_node.1,centos_node.2,centos_node.3
 
 Get instance names of a node in Run.
 
-### HTTP Request
+#### HTTP Request
 
 `GET https://nuv.la/run/<run-uuid>/<node-name>`
 
-### Url Parameters
+#### URL Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
@@ -2013,7 +2115,7 @@ run-uuid  | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2-9573-b76
 node-name | true     | Node name - e.g. *centos_node*.
 
 
-## Set a node instance (VM) runtime parameter
+### Set a node instance (VM) runtime parameter
 
 ```shell
 curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -d my_value -u <user>:<password> -X PUT
@@ -2025,11 +2127,11 @@ body of the request is not provided or set to an empty string, the parameter is
 said to be `unset`. Please refer to the `"Get a node instance (VM) runtime parameter"`
 section for handling the cases of the parameters either being `not yet set` or `unset`.
 
-### HTTP Request
+#### HTTP Request
 
 `PUT https://nuv.la/run/<run-uuid>/<node-instance-name>:<parameter-name>`
 
-### Url Parameters
+#### URL Parameters
 
 Parameter          | Required | Description
 ------------------ | -------- | -----------
@@ -2037,14 +2139,14 @@ run-uuid           | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2
 node-instance-name | true     | Node instance name - e.g. *centos_node.1*
 parameter-name     | true     | Parameter name - e.g. *my_parameter*
 
-### Body Parameters
+#### Body Parameters
 
 Parameter | Required | Description
 --------- | -------- | -----------
 `value`   | false    | The actual value of the parameter to be set
 
 
-## Get a node instance (VM) runtime parameter
+### Get a node instance (VM) runtime parameter
 
 ```shell
 curl https://nuv.la/run/cce5ac6d-5465-4773-9875-66f21c65e15e/centos_node.1:my_parameter -u <user>:<password>
@@ -2089,11 +2191,11 @@ key centos_node.1:my_parameter not yet set
 </error>
 ```
 
-### HTTP Request
+#### HTTP Request
 
 `GET https://nuv.la/run/<run-uuid>/<node-instance-name>:<parameter-name>`
 
-### Url Parameters
+#### URL Parameters
 
 Parameter          | Required | Description
 ------------------ | -------- | -----------
@@ -2101,241 +2203,9 @@ run-uuid           | true     | Run unique identifier - e.g. *fa3b9652-9dac-49e2
 node-instance-name | true     | Node instance name - e.g. *centos_node.1*
 parameter-name     | true     | Parameter name - e.g. *my_parameter*
 
+## Deployment (CIMI)
 
-# Virtual machines
-
-```shell
-curl https://nuv.la/vms --user <user>:<password>
-```
-
-> The above command returns a body structured like this:
-
-```xml
-<vms offset="0" limit="20" count="4" totalCount="4" user="super">
-   <vm cloud="Exoscale"
-      user="test"
-      instanceId="96101801-b636-4752-9b04-74ec9a9abbc9"
-      state="Booting"
-      measurement="2015-04-01 14:34:22.273 CEST"
-      isUsable="false"/>
-   <vm cloud="Exoscale"
-      user="test"
-      instanceId="bbb07949-ab64-4556-88fd-f9aed872e9d1"
-      state="Running"
-      measurement="2015-04-01 14:34:22.273 CEST"
-      runUuid="ce3dfa8b-5a13-473b-bdd1-6e40ab71294b"
-      runOwner="test"
-      ip="185.19.29.126"
-      name="testclient.1"
-      nodeName="testclient"
-      nodeInstanceId="1"
-      isUsable="true"/>
-   <vm cloud="Exoscale"
-      user="test"
-      instanceId="ec05f8f2-1f05-48bc-aa33-b99f60b2209b"
-      state="Running"
-      measurement="2015-04-01 14:33:31.905 CEST"
-      runUuid="ce3dfa8b-5a13-473b-bdd1-6e40ab71294b"
-      runOwner="test"
-      ip="185.19.29.122"
-      name="orchestrator-Exoscale"
-      isUsable="true"/>
-   <vm cloud="Amazon-EC2"
-      user="test"
-      instanceId="a2ca20d8-9506-42b9-80a3-ce15579591ab"
-      state="Running"
-      measurement="2015-04-01 14:33:21.426 CEST"
-      runUuid="857fc1d4-6206-4d88-8a1c-81d83a117e86"
-      runOwner="test"
-      ip="185.19.29.123"
-      name="machine"
-      isUsable="true"/>
-</vms>
-```
-
-List status of all virtual machines (VMs), as known by the cloud providers.
-
-<aside class="notice">
-A privileged user sees by default VMs of all users.
-</aside>
-
-<aside class="notice">
-VMs are sorted by <code class="prettyprint">measurment</code>
-</aside>
-
-### HTTP Request
-
-`GET https://nuv.la/vms`
-
-### Query Parameters
-
-<aside class="notice">
-None of these parameters are mandatory.
-</aside>
-
-Parameter | Default value | Possible values | Description
---------- | ------------- | --------------- |----------------------------
-cloud     |               | *one cloud*     | Show only the specified Cloud
-limit     | 20            | [1 - 500]       | Set the maximum number of VMs per page.
-offset    | 0             | [0 - inf]       | Offset to navigate through pages.
-runUuid   |               | *one run uuid*  | Show only VMs associated with the specified run uuid
-runOwner  |               | *one username*  | Show only VMs associated with Runs owned by a specific user
-user      |               | *one username*  | Show VMs the specified user can see
-
-<aside class="warning">
-The <code class="prettyprint">user</code> parameter is reserved to privileged users.
-</aside>
-
-### `<vms>` Attributes
-
-Attribute  | Always present | Description
----------- | -------------- | -----------------------------------------------------
-cloud      | no             | The Cloud specified in the request if any
-limit      | no             | The limit specified in the request if any
-offset     | no             | The offset specified in the request if any
-count      | yes            | The number of `<vm>` elements returned
-totalCount | yes            | The total number of `<vm>` elements for this request
-runUuid    | no             | The Run uuid specified in the request if any
-runOwner   | no             | The Run owner (username) specified in the request if any
-user       | no             | The user for which VMs are displayed. Doesn't exist if VMs for all users are displayed
-
-
-### `<vm>` Attributes
-
-Attribute      | Always present | Description
--------------- | -------------- | -----------------------------------------------------
-cloud          | yes            | The Cloud on which the VM is running
-user           | yes            | The user from which the VM was retrived
-instanceId     | yes            | The id of the VM on the Cloud
-state          | yes            | The state of the VM as provided by the Cloud
-measurement    | yes            | The time when the VM was seen for the first time
-runUuid        | no             | The uuid of the Run from which the VM is part of
-runOwner       | no             | The owner of the Run from which the VM is part of
-ip             | no             | The IP address of the VM
-name           | no             | The name of the VM in his Run.
-nodeName       | no             | The name of the node from which the VM is part of in his Run.
-nodeInstanceId | no             | The id of the node instance of the VM in his Run.
-isUsable       | no             | Indicate if the VM is in a state where it can be used.
-
-
-# User
-
-The user resource provides user management.
-
-## Get All Users
-
-```shell
-curl https://nuv.la/user --user <user>:<password>
-```
-
-> The above command returns XML structured like this:
-
-```xml
-<list>
-<item name="super"  resourceUri="user/super"  firstName="Super"  lastName="User"  email="super@sixsq.com"  state="ACTIVE"  activeSince="2015-03-11 14:00:57.656 CET"  lastOnline="2015-04-01 14:58:57.466 CEST"  lastExecute="2015-03-12 18:03:13.853 CET"  organization="SixSq"  issuper="true"  online="true" />
-</list>
-```
-
-<aside class="warning">
-This resource is restricted to privileged users.
-</aside>
-
-List all users.
-
-### HTTP Request
-
-`GET https://nuv.la/user`
-
-
-## Get a specific user
-
-```shell
-curl https://nuv.la/user/<user> --user <user>:<password>
-```
-
-> The above command returns xml structured like this:
-
-```xml
-<?xml version="1.0"?>
-<user deleted="false" resourceUri="user/super" name="super" email="super@sixsq.com" firstName="Super" lastName="User" organization="SixSq" issuper="true" state="ACTIVE" lastOnline="2015-04-01 17:48:21.661 CEST" lastExecute="2015-04-01 17:19:46.364 CEST" activeSince="2015-03-24 18:07:21.757 CET" creation="2015-03-24 18:07:21.746 CET">
-   <parameters class="org.hibernate.collection.internal.PersistentMap">
-      <entry>
-         <string>General.Verbosity Level</string>
-         <parameter name="General.Verbosity Level" description="Level of verbosity" category="General" mandatory="true" type="Enum" readonly="false" order_="30" order="30">
-            <instructions><![CDATA[0 - Actions,  1 - Steps,  2 - Details data,  3 - Debugging]]></instructions>
-            <enumValues length="4">
-               <string>0</string>
-               <string>1</string>
-               <string>2</string>
-               <string>3</string>
-            </enumValues>
-            <value><![CDATA[0]]></value>
-         </parameter>
-      </entry>
-      <entry>
-         <string>test-cloud.username</string>
-         <parameter name="test-cloud.username" description="Account username" category="test-cloud" mandatory="true" type="RestrictedString" readonly="false" order_="10" order="10">
-            <value><![CDATA[]]></value>
-         </parameter>
-      </entry>
-      <entry>
-         <string>General.ssh.public.key</string>
-         <parameter name="General.ssh.public.key" description="SSH Public Key(s) (one per line)" category="General" mandatory="true" type="RestrictedText" readonly="false" order_="50" order="50">
-            <instructions><![CDATA[Warning: Some clouds may take into account only the first key until SlipStream bootstraps the machine.]]></instructions>
-            <value><![CDATA[adasdasd]]></value>
-         </parameter>
-      </entry>
-      <entry>
-         <string>test-cloud.password</string>
-         <parameter name="test-cloud.password" description="Account password" category="test-cloud" mandatory="true" type="Password" readonly="false" order_="20" order="20">
-            <value><![CDATA[]]></value>
-         </parameter>
-      </entry>
-      <entry>
-         <string>General.keep-running</string>
-         <parameter name="General.keep-running" description="Keep running after deployment" category="General" mandatory="true" type="Enum" readonly="false" order_="15" order="15">
-            <instructions><![CDATA[Here you can define if and when SlipStream should leave the application running after performing the deployment. <br/><code>On success</code> is useful for production deployments or long tests. </br><code>On Error</code> might be useful so that resources are consumed only when debugging is needed. <br/><code>Never</code> ensures that SlipStream automatically terminates the application after performing the deployment. <br/>Note: This parameter doesn't apply to <code>scalable deployment</code> Runs and to <code>build image</code> Runs.]]></instructions>
-            <enumValues length="4">
-               <string>always</string>
-               <string>on-success</string>
-               <string>on-error</string>
-               <string>never</string>
-            </enumValues>
-            <value><![CDATA[on-success]]></value>
-         </parameter>
-      </entry>
-      <entry>
-         <string>General.default.cloud.service</string>
-         <parameter name="General.default.cloud.service" description="Default Cloud" category="General" mandatory="true" type="Enum" readonly="false" order_="10" order="10">
-            <instructions><![CDATA[Select the cloud that you want to use as the default.]]></instructions>
-            <enumValues length="1">
-               <string>test-cloud</string>
-            </enumValues>
-            <value><![CDATA[test-cloud]]></value>
-         </parameter>
-      </entry>
-      <entry>
-         <string>General.Timeout</string>
-         <parameter name="General.Timeout" description="Execution timeout (in minutes)" category="General" mandatory="true" type="String" readonly="false" order_="40" order="40">
-            <instructions><![CDATA[If the execution stays in a transitional state for more than the value of this timeout, the execution is forcefully terminated.]]></instructions>
-            <value><![CDATA[30]]></value>
-         </parameter>
-      </entry>
-   </parameters>
-</user>
-```
-
-This resource retrieves a specific user.
-
-### HTTP Request
-
-`GET https://nuv.la/user/<user>`
-
-### URL Parameters
-
-Parameter | Required | Description
---------- | -------- | -----------
-user | true | User name to retrieve
+## DeploymentTemplate (CIMI)
 
 # Errors
 
@@ -2360,10 +2230,39 @@ Error Code | Meaning
 # Deprecated Resources
 
 The following sections describe the details of older, deprecated
-resources that still work with SlipStream.  Although these features
-work, they should not be used for any new code and existing code
-should migrate to equivalent, non-deprecated resources.
+resources.  These resource may still work, but developers are
+encouraged to move to the given replacement resources.
 
-**There are currently no deprecated resources, although the user,
-module, and run resources will be moved to the CIMI API in the near
-future.**
+## Legacy User Resource
+
+`https://nuv.la/user`
+
+The legacy user resource is deprecated. All of the user information
+has been migrated to CIMI resources; use those in preference to this
+resource. Internally, this resource is implemented via the CIMI
+resources.
+
+<aside class="warning">
+
+Developers are strongly recommended to migrate to the CIMI
+resources. The resource will be removed in a future SlipStream
+release and announced via the release notes. 
+
+</aside>
+
+## Legacy Virtual Machine Resource
+
+`https://nuv.la/vms`
+
+The legacy Virtual Machine resource available from the above URL is
+deprecated.  It does not provide current Virtual Machine information.
+The CIMI VirtualMachine resource replaces it and should be used
+instead.
+
+<aside class="warning">
+
+Developers must migrate to the CIMI Virtual Machine resource. This
+resource will be removed from a future SlipStream release without
+warning.  The change wil appear in the SlipStream release notes.
+
+</aside>
