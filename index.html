@@ -1362,256 +1362,6 @@ at the details for a particular ServiceAttributeNamespace resource.</p>
 
 <h1 id="monitoring">Monitoring</h1>
 
-<h2 id="event-(cimi)">Event (CIMI)</h2>
-
-<p>Event resources provide a timestamp for the occurrence of some action.
-These are used within the SlipStream server to mark changes in the
-lifecycle of a cloud application and for other important actions. </p>
-
-<p>Some of the lifecycle changes that generate events are:</p>
-
-<ul>
-<li>State transition</li>
-<li>Termination (manual)</li>
-<li>First abort call (with reason)</li>
-<li>Scaling up or down</li>
-</ul>
-
-<aside class="warning">
-An event can <strong>not</strong> be updated, only deleted.
-</aside>
-
-<h3 id="list-all-events">List all Events</h3>
-<pre><code class="highlight shell">curl https://nuv.la/api/event/ -b cookie-user.txt -D -
-</code></pre>
-
-<blockquote>
-<p>The above command returns json structured like this:</p>
-</blockquote>
-<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
-<span class="na">Content-Length</span><span class="p">:</span> <span class="s">2284</span>
-<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
-<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:15:48 GMT</span>
-
-<span class="p">{</span><span class="w">
-  </span><span class="s2">"events"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"content"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"resource"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Run/45614147-aed1-4a24-889d-6365b0b1f2cd"</span><span class="w">
-      </span><span class="p">},</span><span class="w">
-      </span><span class="s2">"state"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Started"</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"updated"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-19T09:39:38.238Z"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"state"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"created"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-19T09:39:38.238Z"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/0d78db78-1b98-4bd1-ba14-bf378da68a66"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"severity"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"medium"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"joe"</span><span class="w">
-      </span><span class="p">},</span><span class="w">
-      </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ANON"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
-      </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/delete"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/0d78db78-1b98-4bd1-ba14-bf378da68a66"</span><span class="w">
-    </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
-    </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Event"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-01-10T08:20:00.0Z"</span><span class="w">
-  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
-  </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/add"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event"</span><span class="w">
-  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
-  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ANON"</span><span class="w">
-    </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
-    </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/EventCollection"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-
-<p>Lists all events accessible by the authenticated user. A user has the right to see an event if she is the owner, or is a super user.</p>
-
-<h4 id="http-request">HTTP Request</h4>
-
-<p><code class="prettyprint">GET https://nuv.la/api/event/</code></p>
-
-<h3 id="create-an-event">Create an Event</h3>
-<pre><code class="highlight shell">curl https://nuv.la/api/event -d <span class="s2">"{ </span><span class="se">\"</span><span class="s2">acl</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">owner</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">USER</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">principal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">joe</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">rules</span><span class="se">\"</span><span class="s2">: [{</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ROLE</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">prinipal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ANON</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">right</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ALL</span><span class="se">\"</span><span class="s2">}]},    </span><span class="se">\"</span><span class="s2">id</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">123</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">created</span><span class="se">\"</span><span class="s2"> :  </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">updated</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">resourceURI</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">http://slipstream.sixsq.com/ssclj/1/Event</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">timestamp</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">2015-01-10T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">content</span><span class="se">\"</span><span class="s2"> :  { </span><span class="se">\"</span><span class="s2">resource</span><span class="se">\"</span><span class="s2">:  {</span><span class="se">\"</span><span class="s2">href</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Run/45614147-aed1-4a24-889d-6365b0b1f2cd</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">Started</span><span class="se">\"</span><span class="s2"> } ,    </span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">severity</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">medium</span><span class="se">\"</span><span class="s2">}"</span> -X POST -H <span class="s2">"Content-Type: application/json"</span> -b cookie-user.txt -D -
-</code></pre>
-
-<blockquote>
-<p>The above command returns a json structured like this:</p>
-</blockquote>
-<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
-<span class="na">Location</span><span class="p">:</span> <span class="s">Event/257cf1bd-1397-4296-8124-bb2213425b6e</span>
-<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
-<span class="na">Content-Length</span><span class="p">:</span> <span class="s">152</span>
-<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
-<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 12:47:38 GMT</span>
-
-<span class="p">{</span><span class="w">
-  </span><span class="s2">"status"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">201</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"created Event/257cf1bd-1397-4296-8124-bb2213425b6e"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"resource-id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/257cf1bd-1397-4296-8124-bb2213425b6e"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-
-<blockquote>
-<p>In case of error (e.g invalid value for <code class="prettyprint">severity</code>), the following json is returned (note that the message details the origin of the problem):</p>
-</blockquote>
-<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">400</span> <span class="ne">Bad Request</span>
-<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
-<span class="na">Content-Length</span><span class="p">:</span> <span class="s">232</span>
-<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
-<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:48:11 GMT</span>
-
-<span class="p">{</span><span class="w">
-  </span><span class="s2">"status"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"resource does not satisfy defined schema: {:acl {:rules [{:prinicpal disallowed-key, :principal missing-required-key}]}, :severity (not (#{\"low\" \"high\" \"medium\" \"critical\"} \"urgent\"))}"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-
-<p>Create an event that contains information (mainly timestamp and state) related to a target resource.</p>
-
-<h4 id="http-request">HTTP Request</h4>
-
-<p><code class="prettyprint">POST https://nuv.la/api/event</code></p>
-
-<h4 id="body-parameters">Body Parameters</h4>
-
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Required</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>timestamp</td>
-<td>true</td>
-<td>The timestamp (GMT time) of the event (not to be confused with created and updated timestamps of the resource representing the event)</td>
-</tr>
-<tr>
-<td>content</td>
-<td>true</td>
-<td>Structure containing the resource reference (i.e the <strong>target</strong> of this event) and its state</td>
-</tr>
-<tr>
-<td>type</td>
-<td>true</td>
-<td>Accepted values: <code class="prettyprint">state</code> and <code class="prettyprint">alarm</code></td>
-</tr>
-<tr>
-<td>severity</td>
-<td>true</td>
-<td>Accepted values: <code class="prettyprint">critical</code>, <code class="prettyprint">high</code>, <code class="prettyprint">medium</code> and <code class="prettyprint">low</code></td>
-</tr>
-</tbody></table>
-
-<h3 id="get-an-event">Get an Event</h3>
-<pre><code class="highlight shell">curl https://nuv.la/api/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -b cookie-user.txt -D -
-</code></pre>
-
-<blockquote>
-<p>The above command returns a json structured like this:</p>
-</blockquote>
-<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
-<span class="na">Content-Length</span><span class="p">:</span> <span class="s">869</span>
-<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
-<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:17:06 GMT</span>
-
-<span class="p">{</span><span class="w">
-  </span><span class="s2">"content"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"resource"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Run/45614147-aed1-4a24-889d-6365b0b1f2cd"</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"state"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Started"</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="s2">"updated"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-19T12:46:16.766Z"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"state"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"created"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-19T12:46:16.766Z"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/4605ee06-ccda-48f5-a481-23c6ab296b0d"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"severity"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"medium"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"joe"</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ANON"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
-    </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/delete"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/4605ee06-ccda-48f5-a481-23c6ab296b0d"</span><span class="w">
-  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
-  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Event"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-01-10T08:20:00.0Z"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-
-<p>Get a specific event.</p>
-
-<h4 id="http-request">HTTP Request</h4>
-
-<p><code class="prettyprint">GET https://nuv.la/api/event/&lt;event-uuid&gt;</code></p>
-
-<h3 id="delete-an-event">Delete an Event</h3>
-<pre><code class="highlight shell">curl -X DELETE  https://nuv.la/api/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -b cookie-user.txt -D -
-</code></pre>
-
-<blockquote>
-<p>The above command returns a json structured like this:</p>
-</blockquote>
-<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">No Content</span>
-<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
-<span class="na">Content-Length</span><span class="p">:</span> <span class="s">152</span>
-<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
-<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:26:27 GMT</span>
-</code></pre>
-
-<blockquote>
-<p>When providing an invalid event-uuid, here is the response:</p>
-</blockquote>
-<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">404</span> <span class="ne">Not Found</span>
-<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
-<span class="na">Content-Length</span><span class="p">:</span> <span class="s">102</span>
-<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
-<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:35:57 GMT</span>
-
-<span class="p">{</span><span class="w">
-  </span><span class="s2">"status"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">404</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/wrong-uuid not found"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"resource-id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/wrong-uuid"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-
-<p>Delete a specific (the event-uuid is known) event.</p>
-
-<h4 id="http-request">HTTP Request</h4>
-
-<p><code class="prettyprint">DELETE https://nuv.la/api/event/&lt;event-uuid&gt;</code></p>
-
 <h2 id="virtualmachine-(cimi)">VirtualMachine (CIMI)</h2>
 
 <p>These resources provide information for all active virtual machines on
@@ -1829,6 +1579,132 @@ listing the StorageBucket resources.</p>
   </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
+
+<h2 id="quota-(cimi)">Quota (CIMI)</h2>
+
+<p>The collection of Quota resources defines the overall resource
+utilization policy for the SlipStream server.  Each Quota resource
+defines a limit on an identified resource.  For new resource requests,
+SlipStream will verify that the request will not exceed the defined
+quotas before executing the request.  Currently, SlipStream only
+checks quotas when deploying new workloads.</p>
+
+<p>The Quota resource follows the standard CIMI SCRUD patterns. It is
+<strong>not</strong> a templated resource and uses the simple CIMI add pattern.</p>
+
+<aside class="notice">
+
+Because quotas can potentially impact a large number of users, only
+administrators can create Quota resources.
+
+</aside>
+
+<h3 id="quota-attributes">Quota Attributes</h3>
+
+<blockquote>
+<p>An abbreviated example of a Quota resource that sets a limit (116)
+  on the total number (count:id) of VirtualMachine resources for the
+  given credential for the MYORG organization. </p>
+</blockquote>
+<pre><code class="highlight json"><span class="p">{</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"quota/a6d547cd-3855-4b24-aae2-73ad0707d828"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Quota"</span><span class="p">,</span><span class="w">
+
+  </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"max_instances in connector/exoscale-ch-dk"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"limits regarding max_instances, for credential credential/45765716-33f0-46bb-b3de-7bef04a58998 in connector/exoscale-ch-dk"</span><span class="p">,</span><span class="w">
+
+  </span><span class="s2">"updated"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-10-18T05:17:21.162Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"created"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-08-06T05:30:03.214Z"</span><span class="p">,</span><span class="w">
+
+  </span><span class="s2">"resource"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VirtualMachine"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"selection"</span><span class="p">:</span><span class="w"> </span><span class="s2">"credentials/href='credential/45765716-33f0-46bb-b3de-7bef04a58998'"</span><span class="w">
+  </span><span class="s2">"aggregation"</span><span class="err">:</span><span class="w"> </span><span class="s2">"count:id"</span><span class="p">,</span><span class="w">
+
+  </span><span class="s2">"limit"</span><span class="p">:</span><span class="w"> </span><span class="mi">116</span><span class="p">,</span><span class="w">
+
+  </span><span class="s2">"acl"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"owner"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"rules"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"right"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VIEW"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MYORG:can_deploy"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"operations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"rel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/action/collect"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"quota/a6d547cd-3855-4b24-aae2-73ad0707d828/collect"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Attribute&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><code class="prettyprint">resource</code></td>
+<td style="text-align: left">Identifies the resource to which the quota applies. Current examples include &ldquo;VirtualMachine&rdquo; and &ldquo;NuvlaBoxRecord&rdquo;, the source of the current debate.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code class="prettyprint">selection</code></td>
+<td style="text-align: left">A CIMI filter expression that identifies the resources to include in the calculation of the current resource utilization.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code class="prettyprint">aggregation</code></td>
+<td style="text-align: left">A CIMI aggregation expression that calculates the values for the current resource utilization. One number is calculated with the access rights of the user and another, with the access rights of &ldquo;super&rdquo;.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code class="prettyprint">limit</code></td>
+<td style="text-align: left">The value to compare the calculated resource utilization against.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code class="prettyprint">acl</code></td>
+<td style="text-align: left">Defines to whom a given quota resource applies. If a quota resource is visible to an entity (user, group, role, etc.), it applies to that entity.</td>
+</tr>
+</tbody></table>
+
+<h3 id="collect-action">Collect Action</h3>
+
+<p>The &ldquo;collect&rdquo; action (shown in the operations section) can be executed
+by sending an HTTP POST request to the given URL.</p>
+
+<p>This action will calculate the Quota&rsquo;s aggregation by running the
+defined selection filter against the specified resource collection.
+This will be done twice: once as the user and once with as the
+administrator.</p>
+
+<p>The Quota resource will be returned with two attributes added:
+<code class="prettyprint">current</code> and <code class="prettyprint">currentAll</code>.  These are described below.</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left"></th>
+<th style="text-align: left"></th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><code class="prettyprint">current</code></td>
+<td style="text-align: left">Aggregation result when run as the user.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code class="prettyprint">currentAll</code></td>
+<td style="text-align: left">Aggregation result when run as the administrator.</td>
+</tr>
+</tbody></table>
+
+<p>The enforcement algorithm for the resource will then accept or reject
+a request by comparing the <code class="prettyprint">current</code> or <code class="prettyprint">currentAll</code> values to the
+defined <code class="prettyprint">limit</code>.  How the comparison is done and how multiple
+quotas are combined are defined by the enforcement algorithm itself.</p>
 
 <h2 id="metering-(cimi)">Metering (CIMI)</h2>
 
@@ -2869,6 +2745,256 @@ Run resource.  This should not be used in production at this time.</p>
 
 <p>This is a prototype resource that allows the Deployment resource to be
 created. This resource should not be used in production at this time. </p>
+
+<h2 id="event-(cimi)">Event (CIMI)</h2>
+
+<p>Event resources provide a timestamp for the occurrence of some action.
+These are used within the SlipStream server to mark changes in the
+lifecycle of a cloud application and for other important actions. </p>
+
+<p>Some of the lifecycle changes that generate events are:</p>
+
+<ul>
+<li>State transition</li>
+<li>Termination (manual)</li>
+<li>First abort call (with reason)</li>
+<li>Scaling up or down</li>
+</ul>
+
+<aside class="warning">
+An event can <strong>not</strong> be updated, only deleted.
+</aside>
+
+<h3 id="list-all-events">List all Events</h3>
+<pre><code class="highlight shell">curl https://nuv.la/api/event/ -b cookie-user.txt -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns json structured like this:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">2284</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:15:48 GMT</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"events"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"content"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"resource"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Run/45614147-aed1-4a24-889d-6365b0b1f2cd"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"state"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Started"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"updated"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-19T09:39:38.238Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"state"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"created"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-19T09:39:38.238Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/0d78db78-1b98-4bd1-ba14-bf378da68a66"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"severity"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"medium"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"joe"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ANON"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
+      </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/delete"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/0d78db78-1b98-4bd1-ba14-bf378da68a66"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+    </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Event"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-01-10T08:20:00.0Z"</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/add"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event"</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ANON"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+    </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ADMIN"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/EventCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"count"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>Lists all events accessible by the authenticated user. A user has the right to see an event if she is the owner, or is a super user.</p>
+
+<h4 id="http-request">HTTP Request</h4>
+
+<p><code class="prettyprint">GET https://nuv.la/api/event/</code></p>
+
+<h3 id="create-an-event">Create an Event</h3>
+<pre><code class="highlight shell">curl https://nuv.la/api/event -d <span class="s2">"{ </span><span class="se">\"</span><span class="s2">acl</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">owner</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">USER</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">principal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">joe</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">rules</span><span class="se">\"</span><span class="s2">: [{</span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ROLE</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">prinipal</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ANON</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">right</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">ALL</span><span class="se">\"</span><span class="s2">}]},    </span><span class="se">\"</span><span class="s2">id</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">123</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">created</span><span class="se">\"</span><span class="s2"> :  </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">updated</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">2015-01-16T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">resourceURI</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">http://slipstream.sixsq.com/ssclj/1/Event</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">timestamp</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">2015-01-10T08:20:00.0Z</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">content</span><span class="se">\"</span><span class="s2"> :  { </span><span class="se">\"</span><span class="s2">resource</span><span class="se">\"</span><span class="s2">:  {</span><span class="se">\"</span><span class="s2">href</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Run/45614147-aed1-4a24-889d-6365b0b1f2cd</span><span class="se">\"</span><span class="s2">},    </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2"> : </span><span class="se">\"</span><span class="s2">Started</span><span class="se">\"</span><span class="s2"> } ,    </span><span class="se">\"</span><span class="s2">type</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2">,    </span><span class="se">\"</span><span class="s2">severity</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">medium</span><span class="se">\"</span><span class="s2">}"</span> -X POST -H <span class="s2">"Content-Type: application/json"</span> -b cookie-user.txt -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns a json structured like this:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
+<span class="na">Location</span><span class="p">:</span> <span class="s">Event/257cf1bd-1397-4296-8124-bb2213425b6e</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">152</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 12:47:38 GMT</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">201</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"created Event/257cf1bd-1397-4296-8124-bb2213425b6e"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"resource-id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/257cf1bd-1397-4296-8124-bb2213425b6e"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<blockquote>
+<p>In case of error (e.g invalid value for <code class="prettyprint">severity</code>), the following json is returned (note that the message details the origin of the problem):</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">400</span> <span class="ne">Bad Request</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">232</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:48:11 GMT</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"resource does not satisfy defined schema: {:acl {:rules [{:prinicpal disallowed-key, :principal missing-required-key}]}, :severity (not (#{\"low\" \"high\" \"medium\" \"critical\"} \"urgent\"))}"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>Create an event that contains information (mainly timestamp and state) related to a target resource.</p>
+
+<h4 id="http-request">HTTP Request</h4>
+
+<p><code class="prettyprint">POST https://nuv.la/api/event</code></p>
+
+<h4 id="body-parameters">Body Parameters</h4>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>timestamp</td>
+<td>true</td>
+<td>The timestamp (GMT time) of the event (not to be confused with created and updated timestamps of the resource representing the event)</td>
+</tr>
+<tr>
+<td>content</td>
+<td>true</td>
+<td>Structure containing the resource reference (i.e the <strong>target</strong> of this event) and its state</td>
+</tr>
+<tr>
+<td>type</td>
+<td>true</td>
+<td>Accepted values: <code class="prettyprint">state</code> and <code class="prettyprint">alarm</code></td>
+</tr>
+<tr>
+<td>severity</td>
+<td>true</td>
+<td>Accepted values: <code class="prettyprint">critical</code>, <code class="prettyprint">high</code>, <code class="prettyprint">medium</code> and <code class="prettyprint">low</code></td>
+</tr>
+</tbody></table>
+
+<h3 id="get-an-event">Get an Event</h3>
+<pre><code class="highlight shell">curl https://nuv.la/api/event/4605ee06-ccda-48f5-a481-23c6ab296b0d -b cookie-user.txt -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns a json structured like this:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">869</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:17:06 GMT</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"content"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"resource"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Run/45614147-aed1-4a24-889d-6365b0b1f2cd"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"state"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Started"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"updated"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-19T12:46:16.766Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"state"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"created"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-19T12:46:16.766Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/4605ee06-ccda-48f5-a481-23c6ab296b0d"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"severity"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"medium"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"acl"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"owner"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"USER"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"joe"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"rules"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ROLE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"principal"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ANON"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"right"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"ALL"</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"operations"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"rel"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Action/delete"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"href"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/4605ee06-ccda-48f5-a481-23c6ab296b0d"</span><span class="w">
+  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"resourceURI"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"http://sixsq.com/slipstream/1/Event"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"timestamp"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-01-10T08:20:00.0Z"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>Get a specific event.</p>
+
+<h4 id="http-request">HTTP Request</h4>
+
+<p><code class="prettyprint">GET https://nuv.la/api/event/&lt;event-uuid&gt;</code></p>
+
+<h3 id="delete-an-event">Delete an Event</h3>
+<pre><code class="highlight shell">curl -X DELETE  https://nuv.la/api/event/85d787ea-a06e-4577-bf2b-1e681d5769a2 -b cookie-user.txt -D -
+</code></pre>
+
+<blockquote>
+<p>The above command returns a json structured like this:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">No Content</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">152</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:26:27 GMT</span>
+</code></pre>
+
+<blockquote>
+<p>When providing an invalid event-uuid, here is the response:</p>
+</blockquote>
+<pre><code class="highlight http"><span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">404</span> <span class="ne">Not Found</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">102</span>
+<span class="na">Server</span><span class="p">:</span> <span class="s">http-kit</span>
+<span class="na">Date</span><span class="p">:</span> <span class="s">Thu, 19 Mar 2015 13:35:57 GMT</span>
+
+<span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">404</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/wrong-uuid not found"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"resource-id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Event/wrong-uuid"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>Delete a specific (the event-uuid is known) event.</p>
+
+<h4 id="http-request">HTTP Request</h4>
+
+<p><code class="prettyprint">DELETE https://nuv.la/api/event/&lt;event-uuid&gt;</code></p>
 
 <h1 id="errors">Errors</h1>
 
